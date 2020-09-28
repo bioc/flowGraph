@@ -1,0 +1,12 @@
+build_pkg.R
+R/_unexported_functions.R
+flowGraph.Rproj
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+inst/doc
+doc
+Meta
+vignettes/*.html
+vignettes/*.R

@@ -1,0 +1,231 @@
+#' 'flowGraph': A class for storing cell count feature values
+#'  for the Phenotype class.
+#' @name flowGraph-class
+#' @aliases flowGraph-class
+#' @docType class
+#'
+#' @slot feat A list containing elements \code{node} and \code{edge},
+#' each containing a list with feature values;
+#'   each element in this list is named by the feature name and contains a
+#'   numeric matrix with the sample id's as row names and cell populations
+#'   phenotype labels or edge labels as column names. Column names
+#'   for edge features are labelled as <from>_<to> e.g. A+_A+B+.
+#' @slot feat_desc A list containing elements \code{node} and \code{edge},
+#' each containing a data frame describing the features in the \code{feat} slot
+#' with columns:
+#' \itemize{
+#'   \item{\code{feat}: feature name.}
+#'   \item{\code{nrow}: number of samples.}
+#'   \item{\code{ncol}: number of nodes or edges.}
+#'   \item{\code{inf}: number of infinite values in the matrix.}
+#'   \item{\code{neginf}: number of negative infinite values in the matrix.}
+#'   \item{\code{na}: number of NA values in the matrix.}
+#'   \item{\code{nan}: number of NaN values in the matrix.}
+#'   \item{\code{neg}: number of negative values in the matrix.}
+#'   \item{\code{pos}: number of positive values in the matrix.}
+#'   \item{\code{zero}: number of 0's in the matrix.}
+#'   \item{\code{max}: The maximum value in the matrix.}
+#'   \item{\code{min}: The minimum value in the matrix.}
+#' }
+#' @slot summary A list containing elements \code{node} and \code{edge},
+#'  each containing a list with a feature summary list;
+#'  each feature summary in this list contains elements:
+#' \itemize{
+#'   \item{\code{values}: a numeric vector the same length
+#'    as the number of nodes or edges.}
+#'   \item{test_custom: a function or a string name
+#'    of the summary test method used.}
+#' }
+#' @slot summary_desc
+#'  A list containing elements \code{node} and \code{edge},
+#'  each containing a data frame describing the features in \code{feat} with
+#'  columns:
+#' \itemize{
+#'   \item{\code{feat}: A string indicating feature name the
+#'    summary was created for.}
+#'   \item{\code{test_name}: A string containing the name of the summary.}
+#'   \item{\code{class}: A string corresponding to the column name
+#'    of the \code{meta} slot whose values represent the class label of
+#'    each sample on which the summary was created to compare or analyze.}
+#'    \item{\code{label1}: A string from the \code{class} column of the
+#'     \code{meta} slot indicating one of the labels compared to create
+#'     the summary statistic.}
+#'    \item{\code{label2}: A string from the \code{class} column of the
+#'     \code{meta} slot indicating one of the labels compared to create
+#'     the summary statistic.}
+#' }
+#' @slot meta A data frame containing the column(s) \code{id} (sample id's
+#'  corresponding to row names of features in the \code{feat} slot) and any
+#'  other meta data pertaining to samples being analyzed.
+#' @slot markers A character vector containing markers used.
+#' @slot edge_list A list containing elements \code{child} and \code{parent}.
+#'  These elements contain an edge list from child to parent and vice versa.
+#' @slot graph A list containing data frames \code{v} and \code{e} with
+#'  information on cell population nodes and edges. \code{v} contains columns:
+#'  \itemize{
+#'    \item{\code{phenotype}: The cell population node label names e.g. A+B+C+.}
+#'    \item{\code{phenocode}: See the \code{phenoCode} slot of
+#'     \code{\link[flowType]{Phenotypes}}.}
+#'    \item{\code{phenolayer}: The layer on which a cell population resides i.e.
+#'     the numer of markers in its phenotype label.}
+#'    \item{\code{phenogroup}: The markers used the make up the phenotype.}
+#'  }
+#' @slot plot_layout A string indicating the name of the \code{igraph} layout
+#'  function used to layout the cell population nodes for plotting.
+#' @slot etc A list containing other information
+#'  (see \code{\link[flowGraph]{fg_get_summary}} for other things stored
+#'  in this slot):
+#'  \itemize{
+#'    \item{\code{cumsumpos}: A logical indicating whether cell counts
+#'     in \code{flowGraph} object contains cumulated cell counts;
+#'     this is optional and can be done only for there is
+#'     more than one threshold for one or more markers.
+#'     This should also only be ran when initializing a \code{flowGraph} object
+#'     as converting back and forth is computationally expensive.
+#'     If the user is interested in seeing non- and cumulated counts,
+#'     we recommend keeping two \code{flowGraph} objects, one for each version.
+#'     This function simply converts e.g. the count of A+ or A++ into
+#'     the sum of count of A+, A++, and A+++ or A++, and A+++.}
+#'    \item{\code{class_mean_normalized}: A logical indicating whether the
+#'     features in the flowGraph object has been normalized according to
+#'     some sample meta e.g. subject.}
+#'     \item{\code{save}: A list containing a string indicating the save ID
+#'      of the object
+#'  and a string indicating path where the object is saved -- used in function
+#'  \code{save_fg} to identify whether or not to save to the same folder.}
+#'  }
+#' @section Creating Objects: Objects can be created using
+#' \code{new("flowFrame")} or the constructor \code{flowGraph},
+#' with mandatory argument \code{input_}.
+#' Creating objects using \code{new} is discouraged.
+#'
+#' @section Methods:
+#' \itemize{
+#'   \item{\code{show}: Shows a description of the \code{flowGraph} object.}
+#'   \item{\code{fg_get_meta}: Retrieves the sample meta data
+#'    from a given \code{flowGraph} object.
+#'    See \code{\link[flowGraph]{fg_get_meta}}.}
+#'   \item{\code{fg_get_graph}: Retrieves the cell population (v) and edge (e)
+#'    meta data from a given \code{flowGraph} object.
+#'    See \code{\link[flowGraph]{fg_get_graph}}.}
+#'   \item{\code{fg_get_feature}: Retrieves the numeric feature matrix requested
+#'    by the user from a given \code{flowGraph} object.
+#'    See \code{\link[flowGraph]{fg_get_feature}}.}
+#'   \item{\code{fg_get_summary}: Retrieves the feature summary list requested
+#'    by the user from a given \code{flowGraph} object.
+#'    See \code{\link[flowGraph]{fg_get_summary}}.}
+#'   \item{\code{fg_get_feature_desc}: Retrieves the data frame from the
+#'    \code{feat_desc} slot of a given \code{flowGraph} object.
+#'    See \code{\link[flowGraph]{fg_get_feature_desc}}.}
+#'   \item{\code{fg_get_summary_desc}: Retrieves the data frame
+#'    from the \code{summary_desc}
+#'    slot of a given \code{flowGraph} object.
+#'    See \code{\link[flowGraph]{fg_get_summary_desc}}.}
+#'   \item{\code{fg_add_feature}: Adds a feature to a given
+#'    \code{flowGraph} object;
+#'    we do not recommend users directly use this method, instead please use
+#'    wrapper functions e.g. \code{\link[flowGraph]{fg_feat_node_prop}},
+#'    \code{\link[flowGraph]{fg_feat_node_specenr}},
+#'    \code{\link[flowGraph]{fg_feat_node_norm}}.
+#'    See \code{\link[flowGraph]{fg_add_feature}}.}
+#'   \item{\code{fg_rm_feature}: Removes a user specified feature
+#'    from a given flowGraph object.
+#'    See \code{\link[flowGraph]{fg_rm_feature}}.}
+#'   \item{\code{fg_add_summary}: Adds a feature to a given \code{flowGraph}
+#'    object;
+#'    we do not recommend users directly use this method, instead please use
+#'    wrapper function \code{\link[flowGraph]{fg_summary}}.}
+#'   \item{\code{fg_clear_summary}: Removes all feature summaries
+#'    from a given flowGraph object.
+#'    See \code{\link[flowGraph]{fg_clear_summary}}.}
+#'   \item{\code{fg_rm_summary}: Removes a user specified feature summaries
+#'    from a given flowGraph object.
+#'    See \code{\link[flowGraph]{fg_rm_summary}}.}
+#'   \item{\code{fg_gsub_markers}:
+#'    Substitutes marker names in a given \code{flowGraph} object.
+#'    See \code{\link[flowGraph]{fg_gsub_markers}}.}
+#'   \item{\code{fg_gsub_ids}: substitutes sample id's in a \code{flowGraph}
+#'    object
+#'    See \code{\link[flowGraph]{fg_gsub_ids}}.}
+#'   \item{\code{fg_merge_samples}: Merges the samples of two \code{flowGraph}
+#'    objects;
+#'    we recomment users use the wrapper function
+#'     \code{\link[flowGraph]{fg_merge}} instead.
+#'    See \code{\link[flowGraph]{fg_merge_samples}}.}
+#'   \item{\code{fg_extract_samples}: Extract data for specific samples
+#'    from a flowGraph object.
+#'    See \code{\link[flowGraph]{fg_extract_samples}}.}
+#'   \item{\code{fg_extract_phenotypes}: Extract data for specific
+#'    cell population nodes from a \code{flowGraph} object.
+#'    See \code{\link[flowGraph]{fg_extract_phenotypes}}.}
+#'   \item{\code{fg_merge}: Merges two given \code{flowGraph} objects.
+#'    See \code{\link[flowGraph]{fg_merge}}.}
+#'   \item{\code{fg_set_layout}: Sets layout for cell population nodes
+#'    for the purpose of plotting.
+#'    See \code{\link[flowGraph]{fg_set_layout}}.}
+#'    \item{\code{fg_plot}: Plots cell hierarchies in the flowGraph object.
+#'    See \code{\link[flowGraph]{fg_plot}}.}
+#' }
+#' @examples
+#'
+#'  showClass("flowGraph")
+#'
+#' @export
+setClass(
+    "flowGraph",
+    slots <- list(
+        feat="list",
+        feat_desc="list",#list(node="list", edge="list"),
+        summary="list",
+        summary_desc="list",#list(node="list", edge="list",
+        #desc=list(node="list", edge="list")),
+        meta="data.frame",
+        markers="character", edge_list="list",
+        graph="list", plot_layout="character",
+        etc="list")
+)
+
+
+
+#' Accessor method for the data frames containing information on features
+#' and feature summaries in the \code{feat_desc} and \code{summary_desc}
+#' slots of a \code{flowGraph} object.
+#'
+#' @name show
+#' @title flowGraph object accessor
+#' @description Shows a summary of a given flowGraph object.
+#' @usage show(object)
+#' @param object Object of class \code{flowGraph}.
+#'
+#' @return A list containing the two data frames from the \code{feat_desc} and
+#'  \code{summary_desc} slots of a \code{flowGraph} object.
+#' @seealso
+#'  \code{\link[flowGraph]{flowGraph-class}}
+#' @keywords methods
+#' @examples
+#'
+#'  no_cores <- 1
+#'  data(fg_data_pos30)
+#'  fg <- flowGraph(fg_data_pos30$count, meta=fg_data_pos30$meta,
+#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  no_cores=no_cores)
+#'  show(fg)
+#'
+#' @rdname show
+#' @export
+setMethod(
+    "show", "flowGraph",
+    function(object) {
+        cat("flowGraph object with ", base::length(object@feat$node), "/",
+            base::length(object@summary$node)," node and ",
+            base::length(object@feat$edge), "/",
+            base::length(object@summary$edge),
+            " edge feature(s)/summaries.",
+            "\n- markers: ", paste0(object@markers, collapse=", "),
+            "\n- contains: ", base::nrow(object@graph$v),
+            " cell populations and ",
+            base::nrow(object@graph$e), " edges\n", sep="")
+        return(list(features=fg_get_feature_desc(object),
+                    summaries=fg_get_summary_desc(object)))
+    }
+)
