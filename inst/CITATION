@@ -1,0 +1,17 @@
+citHeader("To cite flowGraph in publications use:")
+
+citEntry(
+  entry = "Article",
+  title        = "Identifying differential cell populations in flow cytometry data accounting for marker frequency",
+  author       = personList(as.person("Alice Yue"),
+                   as.person("Cedric Chauve")),
+                   as.person("Maxwell Libbrecht")),
+                   as.person("Ryan Brinkman")),
+  journal      = "BioRxiv",
+  year         = "2019",
+  pages        = "837765",
+  publisher    = "Cold Spring Harbor Laboratory",
+
+  textVersion  =
+  paste("Yue, A., Chauve, C., Libbrecht, M., & Brinkman, R. (2019). Identifying differential cell populations in flow cytometry data accounting for marker frequency. BioRxiv, 837765.")
+)

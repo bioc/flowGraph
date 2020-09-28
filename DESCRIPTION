@@ -1,12 +1,12 @@
 Package: flowGraph
 Type: Package
 Title: Identifying differential cell populations in flow cytometry data accounting for marker frequency.
-Version: 0.1.0
-Description: Calculates and visualizes SpecEnr and other feature types for cell populations in flowType objects.
+Version: 0.99.0
+Description: Identifies maximal differential cell populations in flow cytometry data taking into account dependencies between cell populations; flowGraph calculates and plots SpecEnr abundance scores given flowType objects.
 Date: 2019-11-30
-Author: Alice Yue <aya43@sfu.ca>
+Authors@R: Alice Yue <aya43@sfu.ca>
 Maintainer: Alice Yue <aya43@sfu.ca>
-License: Artistic-2.0
+License: Artistic-3.0
 VignetteBuilder: knitr
 Depends: R (>= 3.5)
 Imports: 
@@ -37,7 +37,6 @@ Imports:
     stringi,
     visNetwork
 Suggests: 
-    RchyOptimyx,
     BiocStyle,
     knitr,
     rmarkdown,
@@ -50,6 +49,7 @@ biocViews:
     CellBasedAssays, 
     Visualization
 BugReports: https://github.com/aya49/flowGraph/issues
+URL: https://github.com/aya49/flowGraph
 RoxygenNote: 7.1.1
 RdMacros: Rdpack
 LazyData: no
