@@ -24,10 +24,9 @@ BiocStyle::markdown()
 
 # Installing the package
 
-**flowGraph** can be downloaded from "https://github.com/aya49/flowGraph" or 
-cloned from "https://github.com/aya49/flowGraph.git" and installed locally.
+**flowGraph** can be installed via Bioconductor.
 
-You can also intall it directly from Github using BiocManager:
+You can also intall the development version directly from Github using BiocManager:
 
 ```{r, eval=FALSE, label=library1, warning=FALSE, message=FALSE, echo=TRUE, fig=FALSE, results='hide'}
 if (!require("BiocManager")) install.packages('BiocManager') 

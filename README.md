@@ -27,7 +27,9 @@ The scripts and data from the paper can be downloaded on [Zenodo](https://zenodo
 
 ## Installation
 
-In R, install the package via BiocManager
+**flowGraph** can be installed via Bioconductor.
+
+You can also intall the development version directly from Github using BiocManager:
 
 ```{r}
 if (!require("BiocManager")) install.packages('BiocManager') 
