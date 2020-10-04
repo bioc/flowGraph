@@ -4,8 +4,7 @@ Title: Identifying differential cell populations in flow cytometry data accounti
 Version: 0.99.0
 Description: Identifies maximal differential cell populations in flow cytometry data taking into account dependencies between cell populations; flowGraph calculates and plots SpecEnr abundance scores given flowType objects.
 Date: 2019-11-30
-Authors@R: Alice Yue <aya43@sfu.ca>
-Maintainer: Alice Yue <aya43@sfu.ca>
+Authors@R: person("Alice", "Yue", email = "aya43@sfu.ca", role = c("aut", "cre"))
 License: Artistic-3.0
 VignetteBuilder: knitr
 Depends: R (>= 3.5)
