@@ -78,8 +78,8 @@ These elements contain an edge list from child to parent and vice versa.}
 information on cell population nodes and edges. \code{v} contains columns:
 \itemize{
   \item{\code{phenotype}: The cell population node label names e.g. A+B+C+.}
-  \item{\code{phenocode}: See the \code{phenoCode} slot of
-   \code{\link[flowType]{Phenotypes}}.}
+  \item{\code{phenocode}: A string of "0", "1", "2", ... indicating the
+   whether each marker is expressed on a cell population.}
   \item{\code{phenolayer}: The layer on which a cell population resides i.e.
    the numer of markers in its phenotype label.}
   \item{\code{phenogroup}: The markers used the make up the phenotype.}
