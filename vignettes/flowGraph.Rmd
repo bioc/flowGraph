@@ -435,11 +435,15 @@ plot_gr(gr, main="Example cell hierarchy with markers A, B, C, D")
 
 # Appendix
 
-## Appendix 1: Starting from raw FCS files, a Workflow for initializing a `flowGraph` object using `Phenotypes` objects.
+## Appendix 1: Starting from raw FCS files, a Workflow for initializing a `flowGraph` object using `Phenotypes` objects
 
+WARNING: the `flowType` package has been deprecated and will be replaced by the
+`flowTypeFilter` in BioConductor. This section was written based on `flowType`
+and will be updated.
 
 Other than using a cell count matrix, the user can also initialize a flowGraph 
-object directly from `Phenotypes` object(s) as defined in the `flowType` 
+object directly from `Phenotypes` object(s) as defined in the `flowTypeFilter`
+(deprecated: `flowType`)
 package. Below, we show an example of how to generate `Phenotypes` objects
 from raw FCS files and how that they can be used as input to initialize a 
 flowGraph object.
@@ -460,7 +464,7 @@ We first define the specifications and marker thresholds `thres`
 for our FCS files.
 
 ```{r eval=FALSE}
-# no_cores <- 1 #parallel::detectCores()-1 # prepare parallel backend
+no_cores <- 1 #parallel::detectCores()-1 # prepare parallel backend
 future::plan(future::multiprocess)
 
 ## create Phenotypes data ----------------------
@@ -543,6 +547,11 @@ fg_ <- flowGraph(ftl, class=meta_file$class, no_cores=no_cores)
 
 
 ## Appendix 2: Other options for flowGraph object initialization
+
+WARNING: the `flowType` package has been deprecated and will be replaced by the
+`flowTypeFilter` in BioConductor. This section was written based on `flowType`
+and will be updated.
+
 
 The input for `flowGraph` can have the following formats
 

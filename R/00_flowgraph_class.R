@@ -64,8 +64,8 @@
 #'  information on cell population nodes and edges. \code{v} contains columns:
 #'  \itemize{
 #'    \item{\code{phenotype}: The cell population node label names e.g. A+B+C+.}
-#'    \item{\code{phenocode}: See the \code{phenoCode} slot of
-#'     \code{\link[flowType]{Phenotypes}}.}
+#'    \item{\code{phenocode}: A string of "0", "1", "2", ... indicating the
+#'     whether each marker is expressed on a cell population.}
 #'    \item{\code{phenolayer}: The layer on which a cell population resides i.e.
 #'     the numer of markers in its phenotype label.}
 #'    \item{\code{phenogroup}: The markers used the make up the phenotype.}
@@ -194,7 +194,8 @@ setClass(
 #' @name show
 #' @title flowGraph object accessor
 #' @description Shows a summary of a given flowGraph object.
-#' @usage show(object)
+#' @aliases show,flowGraph-method
+#' @usage \\method{show}{flowGraph}(x)
 #' @param object Object of class \code{flowGraph}.
 #'
 #' @return A list containing the two data frames from the \code{feat_desc} and
@@ -211,7 +212,7 @@ setClass(
 #'                  no_cores=no_cores)
 #'  show(fg)
 #'
-#' @rdname show
+#' @rdname flowGraph-show
 #' @export
 setMethod(
     "show", "flowGraph",

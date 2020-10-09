@@ -1,52 +1,52 @@
 library(flowGraph)
-library(flowType)
+# library(flowType)
 library(testthat)
 
 # prepare parallel backend
 no_cores <- 1#parallel::detectCores()-1
-future::plan(future::multiprocess)
+# future::plan(future::multiprocess)
 
 ## create Phenotypes data ----------------------
 
 data(fg_data_pos30)
 
-# define marker and cell count
-celln <- 10000
-markern <- 3
-markers <- LETTERS[1:markern]
-
-# define marker thresholds
-cvd <- rnorm(celln,2,1)
-p50 <- quantile(cvd, .5)
-thres <- furrr::future_map(markers, function(x) p50)
-names(thres) <- markers
-
-# generate flowType Phenotypes list
-samplen <- 10
-ftl <- furrr::future_map(1:samplen, function(i) {
-    # make flow frame
-    f <- new("flowFrame")
-    f@exprs <- matrix(rnorm(celln*markern,2,1), nrow=celln)
-    colnames(f@exprs) <- markers
-
-    # marker indices in flow frame
-    ci <- c(1:ncol(f@exprs))
-    names(ci) <- colnames(f@exprs)
-
-    # modify experiment samples such that ABC increases by 50%
-    if (i>(samplen/2)) {
-        ap <- f@exprs[,1]>thres[[1]]
-        bp <- f@exprs[,2]>thres[[2]]
-        cp <- f@exprs[,3]>thres[[3]]
-        tm <- sum(ap & bp & cp)/2
-        f@exprs <- rbind(f@exprs, f@exprs[sample(which(ap & bp & cp),tm),])
-    }
-
-    # make flowType Phenotypes
-    flowType(Frame=f, PropMarkers=ci, MarkerNames=colnames(f@exprs),
-             MaxMarkersPerPop=markern, PartitionsPerMarker=2, Thresholds=thres,
-             Methods='Thresholds', verbose=FALSE, MemLimit=60)#@CellFreqs
-})
+# # define marker and cell count
+# celln <- 10000
+# markern <- 3
+# markers <- LETTERS[1:markern]
+#
+# # define marker thresholds
+# cvd <- rnorm(celln,2,1)
+# p50 <- quantile(cvd, .5)
+# thres <- furrr::future_map(markers, function(x) p50)
+# names(thres) <- markers
+#
+# # generate flowType Phenotypes list
+# samplen <- 10
+# ftl <- furrr::future_map(1:samplen, function(i) {
+#     # make flow frame
+#     f <- new("flowFrame")
+#     f@exprs <- matrix(rnorm(celln*markern,2,1), nrow=celln)
+#     colnames(f@exprs) <- markers
+#
+#     # marker indices in flow frame
+#     ci <- c(1:ncol(f@exprs))
+#     names(ci) <- colnames(f@exprs)
+#
+#     # modify experiment samples such that ABC increases by 50%
+#     if (i>(samplen/2)) {
+#         ap <- f@exprs[,1]>thres[[1]]
+#         bp <- f@exprs[,2]>thres[[2]]
+#         cp <- f@exprs[,3]>thres[[3]]
+#         tm <- sum(ap & bp & cp)/2
+#         f@exprs <- rbind(f@exprs, f@exprs[sample(which(ap & bp & cp),tm),])
+#     }
+#
+#     # make flowType Phenotypes
+#     flowType(Frame=f, PropMarkers=ci, MarkerNames=colnames(f@exprs),
+#              MaxMarkersPerPop=markern, PartitionsPerMarker=2, Thresholds=thres,
+#              Methods='Thresholds', verbose=FALSE, MemLimit=60)#@CellFreqs
+# })
 
 meta_file <- data.frame(
     id=1:samplen,
@@ -84,7 +84,8 @@ test_that("errors", {
                            meta=fg_data_pos30$meta[1:2,-1]))
 })
 
-for (context_no in c("phenotype", "phenotype list", "vector", "matrix")) {
+contexts <- c("vector", "matrix") #"phenotype", "phenotype list",
+for (context_no in contexts) {
     if (context_no == "phenotype")
         fg <- flowGraph(ftl[[1]], no_cores=no_cores)
     if (context_no == "phenotype list")
@@ -142,7 +143,7 @@ test_that("cumsumpos", {
 
 context("03_flowGraph_summary")
 
-fg <- flowGraph(ftl, meta=meta_file, no_cores=no_cores)
+# fg <- flowGraph(ftl, meta=meta_file, no_cores=no_cores)
 
 fg <- fg_summary(fg, no_cores=no_cores, class="class", label1="control",
                 overwrite=FALSE, test_name="wilcox", diminish=FALSE)

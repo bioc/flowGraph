@@ -13,6 +13,7 @@
 #'  function \code{fg_plot_box}.
 #' @param ... Other parameters for the \code{fg_save_plots} function.
 #' @details See generated README.md file.
+#' @value TRUE if flowGraph object successfully saved.
 #' @examples
 #'  no_cores <- 1
 #'  data(fg_data_pos15)
@@ -60,7 +61,7 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
         "",
         "This folder contains files in a flowGraph object created by the flowGraph package.",
         "",
-        "For a given flow cytometry sample and its flowType cell populations, flowGraph generates SpecEnr values for each cell population or immunophenotype of based their expected proportion.",
+        "For a given flow cytometry sample and its cell populations, flowGraph generates SpecEnr values for each cell population or immunophenotype of based their expected proportion.",
         "By doing so, flowGraph accounts for the relation between cell populations and flags truly enriched cell populations rather than those with induced changes.",
         "",
         "The Summary_statistics folder contains p-values obtained from features associated with each immunophenotype or/ relation between immunophenotypes. The plots folder contains plots to help interpret those p-values.",
@@ -153,6 +154,8 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
 
     if (save_plots)
         fg_save_plots(fg, plot_path=paste0(folder_path,"/plots"), paired=paired, ...)
+
+    return(TRUE)
 }
 
 #' @title Load a flowGraph object from a specified folder path.

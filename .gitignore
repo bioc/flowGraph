@@ -10,4 +10,5 @@ doc
 Meta
 vignettes/*.html
 vignettes/*.R
+tmp
 

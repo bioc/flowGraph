@@ -53,8 +53,8 @@ cell_type_layers <- function(phen)
 #' @importFrom purrr map_chr map_int map
 get_phen_meta <- function(phen, phenocode=NULL) {
     pm <- base::data.frame(phenotype=phen)
-    markers <- base::unique(base::unlist(stringr::str_split(phen,
-                                                            "[-+]")))
+    markers <- base::unique(base::unlist(stringr::str_split(phen, "[-+]")))
+    markers <- gsub("_","",markers)
     markers <- markers[markers != ""]
     if (base::is.null(phenocode)) {
         pm$phenocode <- purrr::map_chr(phen, function(x) {

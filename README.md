@@ -4,7 +4,7 @@
 
 This repository contains and R flowGraph package used to identify candidate biomarkers for disease diagnosis in flow cytometry data. It does so by identifying driver cell populations whose abundance changes significantly and independently given a disease.
 
-flowGraph takes flowType Phenotypes cell populations as input and outputs SpecEnr values for each cell populations nodes (immunophenotypes), within a flow cytometry sample, based on their expected proportion. In this way, SpecEnr accounts for relations between cell populations to produce cell population quantification whose changes are not induced by neighbouring cell populations but represent real differential abundance behaviour.
+flowGraph takes flowTypeFilter (deprecated: flowType) Phenotypes cell populations as input and outputs SpecEnr values for each cell populations nodes (immunophenotypes), within a flow cytometry sample, based on their expected proportion. In this way, SpecEnr accounts for relations between cell populations to produce cell population quantification whose changes are not induced by neighbouring cell populations but represent real differential abundance behaviour.
 
 ## Citation
 
@@ -40,7 +40,7 @@ BiocManager::install("aya49/flowGraph")
 
 See our [vignette](vignettes/flowGraph.Rmd) for different use cases of the package: generating features, calculating summary statistics, visualizing results, and data specific use cases.
 
-flowGraph takes as input either a (sample x cell population) raw cell count matrix OR an output from the [flowType](https://doi.org/doi:10.18129/B9.bioc.flowType) package.
+flowGraph takes as input a (sample x cell population) raw cell count matrix formatted from the flowTypeFilter (deprecated: [flowType](https://doi.org/doi:10.18129/B9.bioc.flowType)) package.
 
 flowGraph gives as output a flowGraph object that contains the SpecEnr abundance statistic and optionally its q-values. The flowGraph object can then be used to calculate more statistics, plot and visualize q-values on a cell hierarchy, etc.
 

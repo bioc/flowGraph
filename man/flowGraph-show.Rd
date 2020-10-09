@@ -2,9 +2,10 @@
 % Please edit documentation in R/00_flowgraph_class.R
 \name{show}
 \alias{show}
+\alias{show,flowGraph-method}
 \title{flowGraph object accessor}
 \usage{
-show(object)
+\\method{show}{flowGraph}(x)
 }
 \arguments{
 \item{object}{Object of class \code{flowGraph}.}

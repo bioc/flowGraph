@@ -84,53 +84,56 @@
 #'  must contain a \code{id} column corresponding to sample names.
 #' @examples
 #'
-#'  library(flowType)
+#' ## flowType package has been deprecated,
+#' ## Phenotypes input format will be restored after flowTypeFilter is uploaded.
+#' # library(flowType)
+#' #
+#' # # prepare parallel backend
+#' # no_cores <- 1 #parallel::detectCores()-1
+#' # # future::plan(future::multiprocess)
 #'
-#' # prepare parallel backend
-#' no_cores <- parallel::detectCores()-1
-#' future::plan(future::multiprocess)
+#' # ## create Phenotypes data ----------------------
 #'
-#' ## create Phenotypes data ----------------------
+#' # # define marker and total cell count
+#' # celln <- 10000
+#' # markern <- 3
+#' # markers <- LETTERS[1:markern]
 #'
-#' # define marker and total cell count
-#' celln <- 10000
-#' markern <- 3
-#' markers <- LETTERS[1:markern]
+#' # # define marker thresholds
+#' # cvd <- rnorm(celln,2,1)
+#' # p50 <- quantile(cvd, .5)
+#' # thres <- lapply(markers, function(x) p50)
+#' # names(thres) <- markers
 #'
-#' # define marker thresholds
-#' cvd <- rnorm(celln,2,1)
-#' p50 <- quantile(cvd, .5)
-#' thres <- lapply(markers, function(x) p50)
-#' names(thres) <- markers
-#'
-#' # generate flowType Phenotypes list
-#' samplen <- 10
-#' ftl <- furrr::future_map(1:samplen, function(i) {
-#'     # make flow frame
-#'     f <- new("flowFrame")
-#'     f@exprs <- matrix(rnorm(celln*markern,2,1), nrow=celln)
-#'     colnames(f@exprs) <- markers
-#'
-#'     # marker indices in flow frame
-#'     ci <- c(1:ncol(f@exprs))
-#'     names(ci) <- colnames(f@exprs)
-#'
-#'     # modify experiment samples such that ABC increases by 50%
-#'     if (i>(samplen/2)) {
-#'         ap <- f@exprs[,1]>thres[[1]]
-#'         bp <- f@exprs[,2]>thres[[2]]
-#'         cp <- f@exprs[,3]>thres[[3]]
-#'         tm <- sum(ap & bp & cp)/2
-#'         f@exprs <- rbind(f@exprs,
-#'                          f@exprs[sample(which(ap & bp & cp),tm),])
-#'     }
-#'
-#'     # make flowType Phenotypes
-#'     flowType(Frame=f, PropMarkers=ci, MarkerNames=colnames(f@exprs),
-#'              MaxMarkersPerPop=markern, PartitionsPerMarker=2,
-#'              Thresholds=thres,
-#'              Methods='Thresholds', verbose=FALSE, MemLimit=60)#@CellFreqs
-#' })
+#' # # generate flowType Phenotypes list
+#' # samplen <- 10
+#' # # ftl <- furrr::future_map(1:samplen, function(i) {
+#' # ftl <- lapply(1:samplen, function(i) {
+#' #     # make flow frame
+#' #     f <- new("flowFrame")
+#' #     f@exprs <- matrix(rnorm(celln*markern,2,1), nrow=celln)
+#' #     colnames(f@exprs) <- markers
+#' #
+#' #     # marker indices in flow frame
+#' #     ci <- c(1:ncol(f@exprs))
+#' #     names(ci) <- colnames(f@exprs)
+#' #
+#' #     # modify experiment samples such that ABC increases by 50%
+#' #     if (i>(samplen/2)) {
+#' #         ap <- f@exprs[,1]>thres[[1]]
+#' #         bp <- f@exprs[,2]>thres[[2]]
+#' #         cp <- f@exprs[,3]>thres[[3]]
+#' #         tm <- sum(ap & bp & cp)/2
+#' #         f@exprs <- rbind(f@exprs,
+#' #                          f@exprs[sample(which(ap & bp & cp),tm),])
+#' #     }
+#' #
+#' #     # make flowType Phenotypes
+#' #     flowType(Frame=f, PropMarkers=ci, MarkerNames=colnames(f@exprs),
+#' #              MaxMarkersPerPop=markern, PartitionsPerMarker=2,
+#' #              Thresholds=thres,
+#' #              Methods='Thresholds', verbose=FALSE, MemLimit=60)
+#' # })
 #'
 #' meta_file <- data.frame(
 #'     id=1:samplen,
@@ -143,19 +146,23 @@
 #'
 #' data(fg_data_pos30)
 #'
-#' # input: Phenotype object
-#' fg <- flowGraph(ftl[[1]], no_cores=no_cores)
+#' ## flowType package is deprecated,
+#' ## Phenotypes input format will be restored after flowTypeFilter is uploaded.
+#' # # input: Phenotype object
+#' # fg <- flowGraph(ftl[[1]], no_cores=no_cores)
 #'
-#' # input: Phenotype list
-#' fg <- flowGraph(ftl, class=meta_file$class, no_cores=no_cores)
-#' # fg <- flowGraph(ftl, meta=meta_file, no_cores=no_cores)
+#' # # input: Phenotype list
+#' # fg <- flowGraph(ftl, class=meta_file$class, no_cores=no_cores)
+#' # # fg <- flowGraph(ftl, meta=meta_file, no_cores=no_cores)
 #'
 #' # input: vector of load-able Phenotypes paths
 #' fg <- flowGraph(fg_data_pos30$count[1,], no_cores=no_cores)
 #'
-#' # input: matrix
+#' # input: matrix + vector of class corresponding to samples
 #' fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
 #'                 no_cores=no_cores)
+#'
+#' # input: matrix + meta data frame
 #' # fg <- flowGraph(fg_data_pos30$count, meta=fg_data_pos30$meta,
 #' #                 no_cores=no_cores)
 #'
@@ -184,7 +191,7 @@
 #' @importFrom future plan multiprocess
 #' @importFrom furrr future_map
 #' @importFrom purrr map_lgl map_chr map_dfr map compact map_int
-#' @importFrom flowType decodePhenotype
+# #' @importFrom flowType decodePhenotype
 #' @importFrom Matrix Matrix
 #' @importFrom methods new
 #' @importFrom igraph layout.reingold.tilford
@@ -254,59 +261,59 @@ flowGraph <- function(
         }
 
     } else {
-        if (class(input_)=="Phenotypes")
-            input_ <- base::list(s1=input_)
-        if (class(input_)=="list") {
-            testclass <- purrr::map_lgl(input_, function(x)
-                class(x)=="Phenotypes")
-            if (!all(testclass)) stop(msg)
-            ftl <- input_
-        } else if (class(input_)=="character") {
-            # ftl <- flowGraph_load_ftl(input_)
-            no_cores <- flowGraph:::ncores(no_cores)
-            if (no_cores>1) future::plan(future::multiprocess)
-
-            ftl <- furrr::future_map(input_, function(x) base::get(load(x)))
-            base::names(ftl) <- purrr::map_chr(stringr::str_split(input_,"/"),
-                                               function(x) x[base::length(x)])
-        } else {
-            stop(msg)
-        }
-
-        # make sample_id
-        if (base::is.null(meta)) {
-            sample_id <- base::names(ftl)
-            if (base::is.null(sample_id))
-                sample_id = paste0("s", seq_len(base::length(ftl)))
-        }
-
-        ## make meta for cell populations
-        if (base::is.null(markers))
-            markers <- ftl[[1]]@MarkerNames
-        phen <- NULL
-        try({
-            phen <- purrr::map_chr(ftl[[1]]@PhenoCodes, function(x)
-                flowType::decodePhenotype(x, markers,
-                                          ftl[[1]]@PartitionsPerMarker))
-        }, silent=TRUE)
-        if (base::is.null(phen))
-            try({ phen <- base::rownames(ftl[[1]]@MFIs) }, silent=TRUE)
-        if (base::is.null(phen))
-            stop("no phenotype cell populations labels in Phenotype file.")
-
-        try ({ phenocode <- ftl[[1]]@PhenoCodes }, silent=TRUE)
-
-        ## feature: count (sample x cell population)
-        mc <- as.matrix(base::do.call(rbind,purrr::map(
-            ftl, function(ft) ft@CellFreqs)))
-        if (class(mc[1])=="character"){ # some versions of purrr might give char
-            mc <- as.matrix(mc[,-1])
-            class(mc) <- "numeric"
-        }
-        # if (base::is.null(dim(mc)[1])) mc <- matrix(mc, nrow=1)
-
-        # remove Phenotype list to save memory
-        rm(ftl); gc()
+        stop("input must be a numeric sample x cell population matrix.")
+        # if (is(input_, "Phenotypes"))
+        #     input_ <- base::list(s1=input_)
+        # if (is(input_,"list")) {
+        #     testclass <- purrr::map_lgl(input_, is, "Phenotypes")
+        #     if (!all(testclass)) stop(msg)
+        #     ftl <- input_
+        # } else if (is(input_, "character")) {
+        #     # ftl <- flowGraph_load_ftl(input_)
+        #     no_cores <- flowGraph:::ncores(no_cores)
+        #     if (no_cores>1) future::plan(future::multiprocess)
+        #
+        #     ftl <- furrr::future_map(input_, function(x) base::get(load(x)))
+        #     base::names(ftl) <- purrr::map_chr(stringr::str_split(input_,"/"),
+        #                                        function(x) x[base::length(x)])
+        # } else {
+        #     stop(msg)
+        # }
+        #
+        # # make sample_id
+        # if (base::is.null(meta)) {
+        #     sample_id <- base::names(ftl)
+        #     if (base::is.null(sample_id))
+        #         sample_id = paste0("s", seq_len(base::length(ftl)))
+        # }
+        #
+        # ## make meta for cell populations
+        # if (base::is.null(markers))
+        #     markers <- ftl[[1]]@MarkerNames
+        # phen <- NULL
+        # try({
+        #     phen <- purrr::map_chr(ftl[[1]]@PhenoCodes, function(x)
+        #         flowType::decodePhenotype(x, markers,
+        #                                   ftl[[1]]@PartitionsPerMarker))
+        # }, silent=TRUE)
+        # if (base::is.null(phen))
+        #     try({ phen <- base::rownames(ftl[[1]]@MFIs) }, silent=TRUE)
+        # if (base::is.null(phen))
+        #     stop("no phenotype cell populations labels in Phenotype file.")
+        #
+        # try ({ phenocode <- ftl[[1]]@PhenoCodes }, silent=TRUE)
+        #
+        # ## feature: count (sample x cell population)
+        # mc <- as.matrix(base::do.call(rbind,purrr::map(
+        #     ftl, function(ft) ft@CellFreqs)))
+        # if (is(mc[1],"character")){ # some versions of purrr might give char
+        #     mc <- as.matrix(mc[,-1])
+        #     class(mc) <- "numeric"
+        # }
+        # # if (base::is.null(dim(mc)[1])) mc <- matrix(mc, nrow=1)
+        #
+        # # remove Phenotype list to save memory
+        # rm(ftl); gc()
     }
 
     time_output(start1)
