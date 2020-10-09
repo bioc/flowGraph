@@ -23,6 +23,9 @@ function \code{fg_plot_box}.}
 
 \item{...}{Other parameters for the \code{fg_save_plots} function.}
 }
+\value{
+TRUE if flowGraph object successfully saved.
+}
 \description{
 Saves flowGraph object to a specified path.
 }

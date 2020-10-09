@@ -13,7 +13,7 @@
 #'  function \code{fg_plot_box}.
 #' @param ... Other parameters for the \code{fg_save_plots} function.
 #' @details See generated README.md file.
-#' @value TRUE if flowGraph object successfully saved.
+#' @return TRUE if flowGraph object successfully saved.
 #' @examples
 #'  no_cores <- 1
 #'  data(fg_data_pos15)
