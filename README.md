@@ -2,6 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.1101/837765.svg)](https://doi.org/10.1101/837765)
 
+[Summary blog post](https://aya49.github.io/2020/09/30/flowGraph/)
+
 This repository contains and R flowGraph package used to identify candidate biomarkers for disease diagnosis in flow cytometry data. It does so by identifying driver cell populations whose abundance changes significantly and independently given a disease.
 
 flowGraph takes flowTypeFilter (deprecated: flowType) Phenotypes cell populations as input and outputs SpecEnr values for each cell populations nodes (immunophenotypes), within a flow cytometry sample, based on their expected proportion. In this way, SpecEnr accounts for relations between cell populations to produce cell population quantification whose changes are not induced by neighbouring cell populations but represent real differential abundance behaviour.
