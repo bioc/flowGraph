@@ -1,23 +1,25 @@
 #' @name flowGraph
 #' @title flowGraph object constructor.
-#' @description Initializes a \code{flowGraph} object given the cell counts or
-#'  Phenotypes objects, from the flowType package, for one or more
-#'  flow cytometry sample(s). The flowGraph object returned holds meta data
+#' @description Initializes a \code{flowGraph} object given the cell counts
+#'  for one or more flow cytometry sample(s).
+#'  The flowGraph object returned holds meta data
 #'  for each sample, each cell population node,
 #'  edges representing how each cell population node relate to one another,
 #'  and features for these nodes and edges.
 #' @param input_ Any of the following:
 #' \itemize{
-#'   \item{a \code{Phenotypes} object from the \code{flowType} package.}
-#'   \item{a numeric matrix or vector of the cell counts from a
-#'   \code{Phenotypes} object and its column/names must be the phenotype names.}
-#'   \item{a list of \code{Phenotypes} object(s).}
-#'   \item{a vector of \code{Phenotypes} object full paths.}
+# #'   \item{a \code{Phenotypes} object from the \code{flowType} package.}
+#'   \item{a numeric matrix or vector of the cell counts;
+#'   its column/names must be the phenotype names and its rownames
+#'   must be sample ID's.}
+# #'   \item{a list of \code{Phenotypes} object(s).}
+# #'   \item{a vector of \code{Phenotypes} object full paths.}
 #' }
 #' All input samples should have the same \code{markers} and
-#' \code{partitionsPerMarker}. If given \code{Phenotype} object(s),
-#' the function will look to generate phenotype names from the
-#' \code{Phenotypes@@PhenoCodes} or \code{rownames(Phenotypes@@MFIs)} slots.
+#' \code{partitionsPerMarker}.
+# #' If given \code{Phenotype} object(s),
+# #' the function will look to generate phenotype names from the
+# #' \code{Phenotypes@@PhenoCodes} or \code{rownames(Phenotypes@@MFIs)} slots.
 #' @param meta A data frame with meta data for each \code{Phenotypes} or sample;
 #'  One of its column names should be "id" whose values correspond to
 #'  the name of each \code{Phenotypes} object. We also recommend for it to have

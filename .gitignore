@@ -10,5 +10,6 @@ doc
 Meta
 vignettes/*.html
 vignettes/*.R
+vignettes/flowGraph_.Rmd
 tmp
 

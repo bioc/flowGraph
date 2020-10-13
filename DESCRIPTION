@@ -7,7 +7,7 @@ Date: 2019-11-30
 Authors@R: person("Alice", "Yue", email = "aya43@sfu.ca", role = c("aut", "cre"))
 License: Artistic-3.0
 VignetteBuilder: knitr
-Depends: R (>= 3.5)
+Depends: R (>= 4.0)
 Imports: 
     data.table,
     effsize,
@@ -36,7 +36,6 @@ Imports:
     visNetwork
 Suggests: 
     BiocStyle,
-    flowType, 
     knitr,
     rmarkdown,
     testthat (>= 2.1.0)
