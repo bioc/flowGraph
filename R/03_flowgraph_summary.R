@@ -361,7 +361,7 @@ fg_adjust0_ <- function(m, id1, id2, adjust0_lim=c(-.1, .1)) {
 fg_med0_ <- function(m, id1, id2) {
     m <- as.matrix(m)
     purrr::map_dbl(seq_len(ncol(m)), function(ci)
-        max(abs(c(median(m[id1,ci]), median(m[id2,ci])))))
+        max(abs(c(median(m[id1,ci]), stats::median(m[id2,ci])))))
 }
 
 # calculates effect size statistics cohens d

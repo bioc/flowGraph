@@ -349,6 +349,7 @@ fg_feat_node_specenr <- function(fg,no_cores=1,feature="prop",overwrite=FALSE) {
 #' @importFrom stringr str_extract_all str_extract str_count
 #' @importFrom furrr future_map
 #' @importFrom purrr map
+#' @importFrom stats median
 fg_feat_node_exprop_ <- function(fg, no_cores=1) {
     # prepare parallel backend
     no_cores <- flowGraph:::ncores(no_cores)
@@ -625,7 +626,7 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
                 return(cbind(mpe1p,mpe1e,mpe2p,mpe2e,mpe1))
             })
             acediff <- sapply(allcombexp, function(x)
-                median(abs(x[,5]-mp[,cpop])))
+                stats::median(abs(x[,5]-mp[,cpop])))
             return(allcombexp[[which.min(acediff)]][,5])
 
             allcombexp_par <- sapply(allcombexp, function(x)
