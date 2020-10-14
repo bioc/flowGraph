@@ -55,7 +55,7 @@ Merges two flowGraph objects together.
  no_cores <- 1
  data(fg_data_pos30)
  fg0 <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-                 prop=FALSE, specenr=FALSE, normalize=FALSE,
+                 prop=FALSE, specenr=FALSE,
                  no_cores=no_cores)
 
  fg1 <- fg_extract_samples(fg0, fg_get_meta(fg0)$id[1:5])

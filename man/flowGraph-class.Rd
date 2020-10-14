@@ -147,7 +147,6 @@ Creating objects using \code{new} is discouraged.
    we do not recommend users directly use this method, instead please use
    wrapper functions e.g. \code{\link[flowGraph]{fg_feat_node_prop}},
    \code{\link[flowGraph]{fg_feat_node_specenr}},
-   \code{\link[flowGraph]{fg_feat_node_norm}}.
    See \code{\link[flowGraph]{fg_add_feature}}.}
   \item{\code{fg_rm_feature}: Removes a user specified feature
    from a given flowGraph object.

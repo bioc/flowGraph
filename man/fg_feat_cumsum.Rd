@@ -34,7 +34,7 @@ Converts the cell counts in a flowGraph object into
  no_cores <- 1
  data(fg_data_pos30)
  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-                 prop=FALSE, specenr=FALSE, normalize=FALSE,
+                 prop=FALSE, specenr=FALSE,
                  no_cores=no_cores)
 
  fg <- flowGraph:::fg_feat_cumsum(fg, no_cores=no_cores)

@@ -142,7 +142,7 @@ Calculates feature summary statistics for flowGraph features;
  no_cores <- 1
  data(fg_data_pos30)
  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-                 prop=FALSE, specenr=FALSE, normalize=FALSE,
+                 prop=FALSE, specenr=FALSE,
                  no_cores=no_cores)
  fg_get_summary_desc(fg)
 

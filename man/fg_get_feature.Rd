@@ -30,7 +30,7 @@ Retrieves a feature matrix from a given flowGraph object,
 #'
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=1, cumsumpos=TRUE)
 #'  fg_csp(fg)
 #'
@@ -47,7 +47,7 @@ Returns \code{NULL} if the requested feature does not exist.
 
  data(fg_data_pos30)
  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-                 prop=FALSE, specenr=FALSE, normalize=FALSE,
+                 prop=FALSE, specenr=FALSE,
                  no_cores=1)
 
  feature_matrix <- fg_get_feature(fg, type='node', feature='count')

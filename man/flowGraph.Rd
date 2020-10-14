@@ -23,10 +23,6 @@ flowGraph(
   diminish = TRUE,
   label1 = NULL,
   label2 = NULL,
-  normalize = FALSE,
-  norm_ind = 0,
-  norm_layer = 3,
-  norm_path = NULL,
   save_plots = TRUE,
   ...
 )
@@ -34,16 +30,12 @@ flowGraph(
 \arguments{
 \item{input_}{Any of the following:
 \itemize{
-  \item{a \code{Phenotypes} object from the \code{flowType} package.}
-  \item{a numeric matrix or vector of the cell counts from a
-  \code{Phenotypes} object and its column/names must be the phenotype names.}
-  \item{a list of \code{Phenotypes} object(s).}
-  \item{a vector of \code{Phenotypes} object full paths.}
+  \item{a numeric matrix or vector of the cell counts;
+  its column/names must be the phenotype names and its rownames
+  must be sample ID's.}
 }
 All input samples should have the same \code{markers} and
-\code{partitionsPerMarker}. If given \code{Phenotype} object(s),
-the function will look to generate phenotype names from the
-\code{Phenotypes@PhenoCodes} or \code{rownames(Phenotypes@MFIs)} slots.}
+\code{partitionsPerMarker}.}
 
 \item{meta}{A data frame with meta data for each \code{Phenotypes} or sample;
 One of its column names should be "id" whose values correspond to
@@ -111,16 +103,6 @@ applicable if \code{calculate_summary} is \code{TRUE}.}
 \code{fg_get_meta(fg)[,class]};
 applicable if \code{calculate_summary} is \code{TRUE}.}
 
-\item{normalize}{A logical variable indicating whether or not to
-calculate normalized cell count;
-this can be done later on with \code{fg_feat_node_norm}.}
-
-\item{norm_ind}{See \code{\link[flowGraph]{fg_feat_node_norm}}.}
-
-\item{norm_layer}{See \code{\link[flowGraph]{fg_feat_node_norm}}.}
-
-\item{norm_path}{See \code{\link[flowGraph]{fg_feat_node_norm}}.}
-
 \item{save_plots}{A logical indicating whether or not to save plots.}
 
 \item{...}{Other parameters used in the \code{fg_save_plots} function
@@ -130,9 +112,9 @@ of the \code{edgeR} package. See \code{\link[flowGraph]{tmm}}.}
 flowGraph object
 }
 \description{
-Initializes a \code{flowGraph} object given the cell counts or
- Phenotypes objects, from the flowType package, for one or more
- flow cytometry sample(s). The flowGraph object returned holds meta data
+Initializes a \code{flowGraph} object given the cell counts
+ for one or more flow cytometry sample(s).
+ The flowGraph object returned holds meta data
  for each sample, each cell population node,
  edges representing how each cell population node relate to one another,
  and features for these nodes and edges.

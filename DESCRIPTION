@@ -9,17 +9,13 @@ License: Artistic-3.0
 VignetteBuilder: knitr
 Depends: R (>= 4.0)
 Imports: 
-    data.table,
     effsize,
-    foreach, 
     future, 
     furrr,
     graphics, 
     grDevices, 
-    gridExtra,
     ggrepel, 
     ggplot2,
-    ggiraph,
     htmlwidgets,
     igraph, 
     Matrix, 
@@ -27,8 +23,6 @@ Imports:
     RColorBrewer,
     parallel, 
     purrr,
-    pracma,
-    Rdpack,
     stats,
     stringr,
     stringi,
@@ -37,6 +31,7 @@ Imports:
 Suggests: 
     BiocStyle,
     knitr,
+    Rdpack,
     rmarkdown,
     testthat (>= 2.1.0)
 biocViews: 

@@ -27,7 +27,7 @@ slots of a \code{flowGraph} object.
  no_cores <- 1
  data(fg_data_pos30)
  fg <- flowGraph(fg_data_pos30$count, meta=fg_data_pos30$meta,
-                 prop=FALSE, specenr=FALSE, normalize=FALSE,
+                 prop=FALSE, specenr=FALSE,
                  no_cores=no_cores)
  show(fg)
 

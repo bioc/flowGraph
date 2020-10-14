@@ -36,7 +36,7 @@ Given a flowGraph object, \code{fg_feat_edge_prop} returns the same
  no_cores <- 1
  data(fg_data_pos30)
  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-                 prop=FALSE, specenr=FALSE, normalize=FALSE,
+                 prop=FALSE, specenr=FALSE,
                  no_cores=no_cores)
 
  fg <- fg_feat_edge_prop(fg)
@@ -46,7 +46,6 @@ Given a flowGraph object, \code{fg_feat_edge_prop} returns the same
 \code{\link[flowGraph]{flowGraph-class}}
  \code{\link[flowGraph]{fg_feat_node_prop}}
  \code{\link[flowGraph]{fg_feat_node_specenr}}
- \code{\link[flowGraph]{fg_feat_node_norm}}
  \code{\link[flowGraph]{fg_add_feature}}
  \code{\link[flowGraph]{fg_get_feature}}
  \code{\link[flowGraph]{fg_rm_feature}}
