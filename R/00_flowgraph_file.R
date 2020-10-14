@@ -92,7 +92,6 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
     a <- purrr::map(names(fg@feat$node), function(fn) {
         m <- as.matrix(fg@feat$node[[fn]])
         # if (fn=="count") fn <- "Cell_count"
-        # if (fn=="count_norm") fn <- "Normalized_cell_count"
         # if (fn=="prop") fn <- "Proportion"
         # if (fn=="expect_prop") fn <- "Expected_proportion"
         utils::write.csv(m, file=paste0(fn_dir,"/", fn, ".csv"))

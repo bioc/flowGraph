@@ -126,7 +126,6 @@
 #'    we do not recommend users directly use this method, instead please use
 #'    wrapper functions e.g. \code{\link[flowGraph]{fg_feat_node_prop}},
 #'    \code{\link[flowGraph]{fg_feat_node_specenr}},
-#'    \code{\link[flowGraph]{fg_feat_node_norm}}.
 #'    See \code{\link[flowGraph]{fg_add_feature}}.}
 #'   \item{\code{fg_rm_feature}: Removes a user specified feature
 #'    from a given flowGraph object.
@@ -208,7 +207,7 @@ setClass(
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, meta=fg_data_pos30$meta,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'  show(fg)
 #'

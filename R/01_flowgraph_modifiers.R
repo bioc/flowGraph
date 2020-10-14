@@ -38,7 +38,7 @@
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'  fg_get_feature_desc(fg)
 #'
@@ -50,7 +50,6 @@
 #'  \code{\link[flowGraph]{flowGraph-class}}
 #'  \code{\link[flowGraph]{fg_feat_node_prop}}
 #'  \code{\link[flowGraph]{fg_feat_node_specenr}}
-#'  \code{\link[flowGraph]{fg_feat_node_norm}}
 #'  \code{\link[flowGraph]{fg_get_feature}}
 #'  \code{\link[flowGraph]{fg_rm_feature}}
 #'  \code{\link[flowGraph]{fg_get_feature_desc}}
@@ -287,7 +286,7 @@ fg_add_summary <- function(
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  fg <- fg_summary(fg, no_cores=no_cores, class="class", label1="control",
@@ -358,7 +357,7 @@ fg_clear_features <- function(fg) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores, node_features="count")
 #'  fg_get_summary_desc(fg)
 #'
@@ -422,7 +421,7 @@ fg_extract_raw <- function(fg) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  fg <- fg_gsub_markers(fg, c("Anew", "Bnew", "Cnew", "Dnew"))
@@ -503,7 +502,7 @@ fg_gsub_markers <- function(fg, markers_new, markers_old=NULL) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  fg <- fg_gsub_ids(fg, ids_new=paste0(fg_get_meta(fg)$id, "_new"))
@@ -560,7 +559,7 @@ fg_gsub_ids <- function(fg, ids_new, ids_old=NULL) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg0 <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  fg1 <- fg_extract_samples(fg0, fg_get_meta(fg0)$id[1:5])
@@ -639,7 +638,7 @@ fg_merge_samples <- function(fg1, fg2) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg0 <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'  fg_get_feature_desc(fg0)
 #'
@@ -693,7 +692,7 @@ fg_extract_samples <- function(fg, sample_ids, rm_summary=TRUE) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg0 <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'  fg_get_feature_desc(fg0)
 #'
@@ -803,7 +802,7 @@ fg_extract_phenotypes <- function(fg, phenotypes) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg0 <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  fg1 <- fg_extract_samples(fg0, fg_get_meta(fg0)$id[1:5])
@@ -898,7 +897,7 @@ fg_merge <- function(
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'  head(fg_get_meta(fg))
 #'

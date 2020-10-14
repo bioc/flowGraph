@@ -18,7 +18,7 @@
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  fg <- fg_feat_node_prop(fg)
@@ -26,7 +26,6 @@
 #' @seealso
 #'  \code{\link[flowGraph]{flowGraph-class}}
 #'  \code{\link[flowGraph]{fg_feat_node_specenr}}
-#'  \code{\link[flowGraph]{fg_feat_node_norm}}
 #'  \code{\link[flowGraph]{fg_add_feature}}
 #'  \code{\link[flowGraph]{fg_get_feature}}
 #'  \code{\link[flowGraph]{fg_rm_feature}}
@@ -73,7 +72,7 @@ fg_feat_node_prop_ <- function(fg) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  fg <- fg_feat_edge_prop(fg)
@@ -82,7 +81,6 @@ fg_feat_node_prop_ <- function(fg) {
 #'  \code{\link[flowGraph]{flowGraph-class}}
 #'  \code{\link[flowGraph]{fg_feat_node_prop}}
 #'  \code{\link[flowGraph]{fg_feat_node_specenr}}
-#'  \code{\link[flowGraph]{fg_feat_node_norm}}
 #'  \code{\link[flowGraph]{fg_add_feature}}
 #'  \code{\link[flowGraph]{fg_get_feature}}
 #'  \code{\link[flowGraph]{fg_rm_feature}}
@@ -156,7 +154,7 @@ fg_feat_edge_prop_ <- function(fg, no_cores=1) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  fg <- fg_feat_edge_specenr(fg)
@@ -165,7 +163,6 @@ fg_feat_edge_prop_ <- function(fg, no_cores=1) {
 #'  \code{\link[flowGraph]{flowGraph-class}}
 #'  \code{\link[flowGraph]{fg_feat_node_prop}}
 #'  \code{\link[flowGraph]{fg_feat_node_specenr}}
-#'  \code{\link[flowGraph]{fg_feat_node_norm}}
 #'  \code{\link[flowGraph]{fg_add_feature}}
 #'  \code{\link[flowGraph]{fg_get_feature}}
 #'  \code{\link[flowGraph]{fg_rm_feature}}
@@ -279,7 +276,7 @@ fg_feat_edge_exprop_ <- function(fg, no_cores=1) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  # SpecEnr is by default calculated based on proportions
@@ -293,7 +290,6 @@ fg_feat_edge_exprop_ <- function(fg, no_cores=1) {
 #' @seealso
 #'  \code{\link[flowGraph]{flowGraph-class}}
 #'  \code{\link[flowGraph]{fg_feat_node_prop}}
-#'  \code{\link[flowGraph]{fg_feat_node_norm}}
 #'  \code{\link[flowGraph]{fg_add_feature}}
 #'  \code{\link[flowGraph]{fg_get_feature}}
 #'  \code{\link[flowGraph]{fg_rm_feature}}
@@ -747,387 +743,6 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
 }
 
 
-#' @title Generates normalized count node feature.
-#' @description Generates the normalized count node feature and returns it
-#'  inside the returned flowGraph object. Note this function uses a modified
-#' version of the \code{calcNormFactors} function from the \code{edgeR} package.
-#' @param fg flowGraph object.
-#' @param norm_ind An integer or a string. If \code{normalize=TRUE},
-#'  \code{norm_ind} is the index or \code{rowname} of the reference sample
-#'  used to normalize counts; it can also be one of the following.
-#' \itemize{
-#'   \item{\code{0}: function will define the reference sample as the one with
-#'    the median total cell count; if there is a "class" column in \code{meta}
-#'    containing the "control" string, then it will consider only those samples
-#'    that correspond to this control class.}
-#'   \item{\code{NULL}: don't normalize.}
-#' }
-#' @param norm_layer An integer indiciating which layers'
-#'  cell populations should be used
-#'  to normalize count; set as \code{NULL} to use all cell populations.
-#' @param norm_path The path to which to save plots visualizing
-#'  count normalization for each sample; set as \code{NULL} to not save plots.
-#' @param no_cores An integer indicating how many cores to parallelize on.
-#'  normalized count node feature if it exists.
-#' @param overwrite A logical variable indicating whether to
-#'  overwrite the existing normalized count node feature.
-#' @param ... Other parameters used in the \code{calcNormFactors} function
-#'  of the \code{edgeR} package. See \code{\link[flowGraph]{tmm}}.
-#' @return flowGraph object containing the normalized count node feature.
-#' @details Given a flowGraph object, \code{fg_feat_node_norm} returns the same
-#'  flowGraph object with an additional normalized count \code{count_norm}
-#'  \code{node} feature.
-#'  The normalized count feature is made using the \code{count} \code{node}
-#'  feature.
-#'
-#' @references
-#'  \insertRef{robinson2010scaling}{flowGraph}
-#'
-#' @examples
-#'
-#'  no_cores <- 1
-#'  data(fg_data_pos30)
-#'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
-#'                  no_cores=no_cores)
-#'
-#'  fg <- fg_feat_node_norm(fg)
-#'
-#' @seealso
-#'  \code{\link[flowGraph]{flowGraph-class}}
-#'  \code{\link[flowGraph]{fg_feat_node_prop}}
-#'  \code{\link[flowGraph]{fg_feat_node_specenr}}
-#'  \code{\link[flowGraph]{fg_add_feature}}
-#'  \code{\link[flowGraph]{fg_get_feature}}
-#'  \code{\link[flowGraph]{fg_rm_feature}}
-#'  \code{\link[flowGraph]{fg_get_feature_desc}}
-#' @rdname fg_feat_node_norm
-#' @export
-#' @importFrom stats median
-#' @importFrom purrr map
-#' @importFrom grDevices png dev.off
-#' @importFrom graphics plot lines
-#' @importFrom Rdpack reprompt
-fg_feat_node_norm <- function(
-    fg, norm_ind=0, norm_layer=3, norm_path=NULL,
-    no_cores=1, overwrite=FALSE, ...
-) {
-    start1 <- Sys.time()
-    message("preparing feature(s): normalized count ")
-
-    feature_name <- "count_norm"
-
-    tryCatch ({ mc <- fg_get_feature(fg, "node", "count")
-    }, error=function(e) {
-        fg <- fg_feat_node_prop(fg)
-        mc <- fg_get_feature(fg, "node", "count")
-    })
-
-    fdiff0 <- rep(0,base::nrow(mc))
-    f0 <- rep(1,base::nrow(mc))
-    rooti <- base::which(base::colnames(mc)=="")
-
-    if (base::nrow(mc)==1 | base::is.null(norm_ind) |
-        (!overwrite & feature_name%in%names(fg@feat$node))) {
-        warning("skipped; feature already exists or no need for normalization")
-        return(fg)
-    }
-
-    sample_id <- fg@meta$id
-    meta_cell <- fg@graph$v
-    maxlayer <- max(meta_cell$phenolayer)
-
-    # prepare feat_file_cell_counts
-    x <- x0 <- as.matrix(mc)[,-rooti,drop=FALSE] # take out total cell count
-    maxx <- max(x0[is.finite(x0)])
-    rootc <- mc[,rooti]
-    if (norm_ind==0) {
-        # reference column: median total count out of all control files
-        norm_ind <- base::which.min(abs( rootc-stats::median(rootc) ))
-        if ("class"%in%base::colnames(fg@meta))
-            if ("control"%in%fg@meta$class) {
-                rootcc <- base::which(fg@meta$class=="control")
-                norm_ind <- rootcc[base::which.min(abs(
-                    rootc[rootcc]-stats::median(rootc[rootcc]) ))]
-            }
-    }
-
-    # extract cell populations that would define TMM (layer/count)
-    if (!base::is.null(norm_layer)) {
-        norm_layer[norm_layer>maxlayer] <- maxlayer
-        col_i <- base::colnames(x0) %in%
-            meta_cell$phenotype[meta_cell$phenolayer%in%norm_layer]
-        x <- x[,col_i, drop=FALSE]
-    }
-
-    # prepare paths to plot to
-    pngnames <- NULL
-    if (!base::is.null(norm_path)) {
-        base::dir.create(norm_path, showWarnings=FALSE, recursive=TRUE)
-        pngnames <- paste0(norm_path,"/", sample_id,".png")
-        mains <- paste0("mean count vs. ln fold change over ref sample ",
-                        sample_id[norm_ind], " on layer ",
-                        ifelse(base::is.null(sample_id[1]), "all",
-                               base::paste(norm_layer,collapse="-")))
-    }
-
-    # calculate absolute count TMM
-    fresult <- tmm(x, x0, rootc, norm_ind, cutoff=Inf,
-                   pngnames=pngnames, mains=mains, no_cores=no_cores,
-                   samplesOnCol=FALSE, ...)
-    f0 <- fresult$f
-    fdiff0 <- fresult$fdiff
-
-    mca <- base::do.call(rbind, purrr::map(base::seq_len(base::nrow(mc)),
-                                           function(x) mc[x,]*f0[x]))
-    base::dimnames(mca) <- base::dimnames(mc)
-
-    # plot difference between TMM and peak for all files
-    if (!base::is.null(pngnames[1])) {
-        grDevices::png(paste0(norm_path,"/all.png") , width=700, height=700)
-        graphics::plot(base::sort(abs(fdiff0)), cex=.4, ylim=c(0,3),
-                       main="cell-count-norm-factor_f_diff_from_peak_abs")
-        graphics::lines(base::sort(abs(fdiff0)), col="blue")
-        grDevices::dev.off()
-    }
-
-    fg@etc$count_norm_factor <- f0
-    fg@etc$count_norm_factor_diffpeak <- fdiff0
-    fg <- fg_add_feature(fg, type="node", feature=feature_name,
-                         overwrite=overwrite, m=mca)
-
-    time_output(start1)
-    return(fg)
-}
-
-
-
-## input: x matrix (phenotypes on columns, will convert in function) --
-## x0 is optional, plots according to x0 so if you want to plot more
-## cell populations than those in x
-## output: f <- normalize factors per sample;
-## fidff <- difference between f and peak of count ratio per sample
-#' @title Normalizes inter-row variation.
-#' @description Normalizes inter-row variation given a numeric matrix.
-#'  Note this function uses a modified version of
-#'  the \code{calcNormFactors} function from the \code{edgeR} package.
-#'  This function is only used in \code{\link[flowGraph]{fg_feat_node_norm}}
-#'  and is not recommended for use on its own.
-#' @param x A numeric matrix.
-#' @param x0 A numeric matrix, usually the same as \code{x}, no need to specify.
-#'  This is only for plotting purposes, so if the user wants more or less
-#'  points on the plots than those in \code{x} or those used to conduct
-#'  normalization.
-#' @param lib.size A numeric matrix the same length as the number
-#'  of samples is \code{x}.
-#' @param refColumn An integer indicating which sample in \code{x} should act as
-#'  the reference sample in normalization.
-#' @param cutoff A double indicating a threshold. Given that \code{tmm} finds
-#'  both the trimmed mean and the density peak of inter-sample count ratios,
-#'  it by default sets the normalization factor as the trimmed mean ---
-#'  unless the difference between trimmed mean
-#'  and the peak is more than \code{cutoff},
-#'  then \code{tmm} will use the peak value as the normalization factor instead.
-#' @param pngnames A string vector containing full PNG file paths to where
-#'  \code{tmm} can save plots; set as \code{NULL} to not save plots.
-#' @param mains A string vector cntaining plot titles for plots corresponding to
-#' those saved in \code{pngnames}; set as \code{NULL} if not saving plots.
-#' @param no_cores An integer indicating how many cores to parallelize on.
-#' @param samplesOnCol A logical variable indicating whether samples or the
-#'  dimension user wants to normalize on is on the columns and
-#'  not on the rows in \code{x}.
-#' @param Acutoff An integer or the cutoff on "A" values to use before trimming.
-#' @param doWeighting A logical variable indicating whether to compute
-#'  (asymptotic binomial precision) weights.
-#' @param logratioTrim A double or the amount of trim to use on log-ratios
-#'  ("M" values).
-#' @param sumTrim A double or the amount of trim to use on the
-#'  combined absolute levels ("A" values).
-#' @param minlogR A double or the minimum value of the logged ratio
-#'  used to calculate the normalization factor.
-#' @return A list containing:
-#' \itemize{
-#'   \item{\code{f}: a numeric vector with the normalization factor for
-#'    each sample in matrix \code{x}.}
-#'   \item{\code{fdiff}: a numeric vector indicating the difference between
-#'     the normalization factors for each sample in matrix \code{x}
-#'     and the ratio peak value.}
-#' }
-#' @details This function calculates factors for trimmed mean normalization
-#'  of count data.
-#'
-#' @references
-#'  \insertRef{robinson2010scaling}{flowGraph}
-#'
-#' @examples
-#'
-#'  # NOT EXPORTED
-#'  no_cores <- 1
-#'  data(fg_data_pos30)
-#'  tmm_factors <- flowGraph:::tmm(x=fg_data_pos30$count,
-#'                                 lib.size=fg_data_pos30$count[,1],
-#'                                 refColumn=1, no_cores=no_cores)
-#'
-#' @seealso
-#'  \code{\link[flowGraph]{fg_feat_node_norm}}
-#' @rdname tmm
-#' @importFrom future plan multiprocess
-#' @importFrom foreach foreach %dopar%
-#' @importFrom stats density
-#' @importFrom pracma findpeaks
-#' @importFrom grDevices png dev.off
-#' @importFrom graphics par plot abline
-tmm <- function(
-    x, x0=NULL, lib.size, refColumn, cutoff=Inf,
-    pngnames=NULL, mains=NULL,
-    no_cores=1, samplesOnCol=FALSE,
-    # tmm parameters
-    Acutoff=-10,
-    doWeighting=FALSE,
-    logratioTrim=.3,
-    sumTrim=0.05,
-    minlogR=1e-6 #min value of log2((obs/obsn)/(ref/refn))
-) {
-    no_cores <- flowGraph:::ncores(no_cores)
-    if (no_cores>1) future::plan(future::multiprocess)
-
-    plotimg <- FALSE
-    if(!base::is.null(pngnames)) plotimg <- TRUE
-
-    if (base::is.null(x0)) x0 <- x
-    x0 <- as.matrix(x0)
-    x <- as.matrix(x)
-    # original function wants samples on the column
-    if (!samplesOnCol) { x <- base::t(x); x0 <- base::t(x0) }
-
-    ## Taken from TMM
-    ref <- x[,refColumn]
-    refn <- lib.size[refColumn]
-
-    ff <- suppressWarnings(
-        foreach::foreach(
-            i=base::seq_len(base::ncol(x)), .combine=list,
-            .maxcombine=base::ncol(x), .multicombine=TRUE) %dopar%
-            {
-                #for(i in ncol(x):1) { cat(i," ",sep="")
-                obs <- x[,i]
-                obsn <- lib.size[i]
-                #logR <- log2((obs/obsn)/(ref/refn))
-                #log ratio of expression, accounting for libr size
-                logR <- log2(obs/ref)
-                #absolute expression
-                absE <- (log2(obs/obsn) + log2(ref/refn))/2
-                #estimated asymptotic variance
-                v <- (obsn-obs)/obsn/obs + (refn-ref)/refn/ref
-
-                #remove infinite values, cutoff based on A
-                fin <- is.finite(logR) & is.finite(absE) & (absE > Acutoff)
-                logR <- logR[fin]
-                absE <- absE[fin]
-                v <- v[fin]
-
-                if(max(abs(logR)) < minlogR)
-                    return(base::list(f=1, fdiff=0)) # f[i] <- 1
-
-                #taken from the original mean() function
-                n <- base::length(logR)
-                loL <- floor(n * logratioTrim) + 1
-                hiL <- n + 1 - loL
-                loS <- floor(n * sumTrim) + 1
-                hiS <- n + 1 - loS
-
-                #keep <- (rank(logR) %in% loL:hiL) & (rank(absE) %in% loS:hiS)
-                #a fix from leonardo ivan almonacid cardenas, since rank()
-                #can return
-                #non-integer values when there are a lot of ties
-                keep <- (base::rank(logR)>=loL & base::rank(logR)<=hiL) &
-                    (base::rank(absE)>=loS & base::rank(absE)<=hiS)
-
-                if (doWeighting) {
-                    fi <- sum(logR[keep]/v[keep], na.rm=TRUE) /
-                        sum(1/v[keep], na.rm=TRUE)
-                } else {
-                    fi <- base::mean(logR[keep], na.rm=TRUE)
-                } #f[i] <- mean(logR[keep], na.rm=TRUE) }
-
-                #Results will be missing if the two libraries share no
-                #features with positive counts
-                #In this case, return unity
-                #if(is.na(f[i])) f[i] <- 0
-                if (base::is.na(fi)) fi <- 0
-
-                #check if close to peak; if not, switch to peak
-                d <- stats::density(log2((obs)/ref), na.rm=TRUE)
-                p <- as.matrix(pracma::findpeaks(d$y));
-                if(base::ncol(p)==1) p <- base::t(p)
-                p1 <- d$x[p[base::which.max(p[,1]),2]]
-                #fdiff[i] <- p1-f[i]
-                fdiffi <- p1-fi
-
-                if (plotimg) {
-                    pngname <- pngnames[i]
-                    grDevices::png(file=pngname , width=700, height=1800)
-                    graphics::par(mfrow=c(3,1), mar=(c(5, 5, 4, 2) + 0.1))
-
-                    graphics::plot(
-                        d, main=paste0(
-                            "density of TMM ratios of counts between
-                            current and reference sample ",
-                            base::colnames(x)[refColumn],
-                            "\nblue=density peak, red=TMM value",
-                            "\nfinal TMM value in ",
-                            ifelse(abs(fi-p1)>cutoff, "blue","red")));
-                    graphics::abline(v=fi, col="red")
-                    graphics::abline(v=p1, col="blue")
-
-                    graphics::plot((x0[,i]+x0[,refColumn])/2,
-                                   log(x0[,i]/x0[,refColumn]), cex=.5,
-                                   main=base::paste(mains[i],": f=",fi, sep=""))
-                    #abline(h=f[i], col="red")
-                    graphics::abline(h=fi, col="red")
-                }
-
-                #if f[i] too far from peak
-                #if (abs(f[i]-p1)>cutoff) {
-                if (abs(fi-p1)>cutoff) {
-                    graphics::abline(h=p1, col="blue")
-                    #f[i] <- p1
-                    fi <- p1
-                }
-
-                #f[i] <- 1/2^f[i]
-                fi <- 1/2^fi
-
-                # plot((matrixCount[,i]+matrixCount[,refColumn])/2,
-                #  log2((matrixCount[,i]*f[i])/matrixCount[,refColumn]), cex=.5,
-                #  main=paste("AFTER CHANGE: mean count vs. log2 fold change: ",
-                #  sampleMeta$gene[i]," over refColumn ",
-                #  sampleMeta$gene[refColumn],": f=",f[i], sep=""))
-                if (plotimg) {
-                    graphics::plot(
-                        (x0[,i]+x0[,refColumn])/2,
-                        log((x0[,i]*fi)/x0[,refColumn]),
-                        cex=.5, main=base::paste(mains[i],": f=",fi, sep=""))
-                    graphics::abline(h=0, col="red")
-                    grDevices::dev.off()
-                }
-
-                return(base::list(f=fi, fdiff=fdiffi))
-            })
-    #multiple of 1
-    rm(x)
-
-    f <- rep(NA,base::length(ff))
-    # diff between density peak and value (note: logged)
-    fdiff <- rep(NA,base::length(ff))
-    for (i in base::seq_len(base::length(ff))) {
-        f[i] <- ff[[i]]$f
-        try({ fdiff[i] <- ff[[i]]$fdiff })
-    }
-
-    return(base::list(f=f,fdiff=fdiff))
-}
-
 
 #' @title Converts cell counts into cumulated cell counts.
 #' @description Converts the cell counts in a flowGraph object into
@@ -1149,7 +764,7 @@ tmm <- function(
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  fg <- flowGraph:::fg_feat_cumsum(fg, no_cores=no_cores)
@@ -1283,7 +898,7 @@ fg_feat_cumsum <- function(fg, no_cores) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  fg <- fg_feat_mean_class(fg, class="class", node_features="count",

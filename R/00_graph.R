@@ -233,7 +233,7 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  head(set_layout_graph(fg_get_graph(fg)))
@@ -333,7 +333,7 @@ space_hierarchy <- function(gr_vxy) {
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'
 #'  fg <- fg_set_layout(fg)

@@ -67,7 +67,7 @@ can be easily enumerated manually, we note that `flowType`'s successor,
 no_cores <- 1
 data(fg_data_pos15)
 fg <- flowGraph(fg_data_pos15$count, meta=fg_data_pos15$meta,
-                prop=FALSE, specenr=FALSE, normalize=FALSE, no_cores=no_cores)
+                prop=FALSE, specenr=FALSE,  no_cores=no_cores)
 gr <- fg_get_graph(fg)
 gr <- ggdf(gr)
 gr$v$colour <- ifelse(!grepl("[-]",gr$v$phenotype), 1,0)
@@ -163,18 +163,18 @@ can be used, see `?flowGraph`.
 
 For our example, we will directly use a numeric matrix as provided by our 
 `fg_data_pos15` data set. By default, `flowGraph` will calculate all of the 
-proportion `prop`, SpecEnr `specenr`, and normalized count `normalize` features.
+proportion `prop`, and SpecEnr `specenr`.
 If you do not want any of these to be calculated, set the corresponding 
-parameters to `FALSE` as we did to `normalize` below.
+parameters to `FALSE`.
 
 
 ```{r, message=FALSE}
 # no_cores <- 1 # number of cores to parallelize on.
 data(fg_data_pos15)
 fg <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class, 
-                no_cores=no_cores, normalize=FALSE)
+                no_cores=no_cores)
 # fg <- flowGraph(fg_data_pos15$count, meta=fg_data_pos15$meta, class="class"
-#                 no_cores=no_cores, prop=TRUE, specenr=TRUE, normalize=FALSE)
+#                 no_cores=no_cores, prop=TRUE, specenr=TRUE)
 ```
 
 By default, `calculate_summary` is set to `TRUE` so that a default set of

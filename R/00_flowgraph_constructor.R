@@ -69,12 +69,12 @@
 #' @param label2 A string indicating a class label in
 #'  \code{fg_get_meta(fg)[,class]};
 #'  applicable if \code{calculate_summary} is \code{TRUE}.
-#' @param normalize A logical variable indicating whether or not to
-#'  calculate normalized cell count;
-#'  this can be done later on with \code{fg_feat_node_norm}.
-#' @param norm_ind See \code{\link[flowGraph]{fg_feat_node_norm}}.
-#' @param norm_layer See \code{\link[flowGraph]{fg_feat_node_norm}}.
-#' @param norm_path See \code{\link[flowGraph]{fg_feat_node_norm}}.
+# #' @param normalize A logical variable indicating whether or not to
+# #'  calculate normalized cell count;
+# #'  this can be done later on with \code{fg_feat_node_norm}.
+# #' @param norm_ind See \code{\link[flowGraph]{fg_feat_node_norm}}.
+# #' @param norm_layer See \code{\link[flowGraph]{fg_feat_node_norm}}.
+# #' @param norm_path See \code{\link[flowGraph]{fg_feat_node_norm}}.
 #' @param save_plots A logical indicating whether or not to save plots.
 #' @param ... Other parameters used in the \code{fg_save_plots} function
 #'  of the \code{edgeR} package. See \code{\link[flowGraph]{tmm}}.
@@ -212,9 +212,9 @@ flowGraph <- function(
     test_custom="t",
     diminish=TRUE, label1=NULL, label2=NULL,
 
-    # normalize parameters
-    normalize=FALSE,
-    norm_ind=0, norm_layer=3, norm_path=NULL,
+    # # normalize parameters
+    # normalize=FALSE,
+    # norm_ind=0, norm_layer=3, norm_path=NULL,
 
     # plotting parameters
     save_plots=TRUE, ...
@@ -463,32 +463,32 @@ flowGraph <- function(
             message("flowGraph object not saved; check path and try again with fg_save!")
         })
 
-    if (normalize) {
-        if (is.null(norm_path)) norm_path <- paste0(path,"/Count_normalization")
-        fg <- fg_feat_node_norm(fg, norm_ind=norm_ind, norm_layer=norm_layer,
-                                norm_path=norm_path, no_cores=no_cores)
-
-        if (calculate_summary & ("count_norm"%in%node_features |
-                                 base::is.null(node_features)))
-            fg <- fg_summary(
-                fg, no_cores=no_cores, class=class,
-                label1=label1, label2=label2,
-                node_features="count_norm",
-                edge_features="NONE",
-                overwrite=FALSE,
-                test_custom=test_custom,
-                test_name=test_name,
-                diminish=diminish)
-
-        if (saved) {
-            fn_dir <- paste0(path, "/Features/Nodes")
-            fn <- "count_norm"
-            m <- as.matrix(fg@feat$node[[fn]])
-            write.csv(m, file=paste0(fn_dir,"/", fn, ".csv"))
-            sm <- fg@feat_desc$node
-            write.csv(sm, file=paste0(fn_dir,".csv"), row.names=FALSE)
-        }
-    }
+    # if (normalize) {
+    #     if (is.null(norm_path)) norm_path <- paste0(path,"/Count_normalization")
+    #     fg <- fg_feat_node_norm(fg, norm_ind=norm_ind, norm_layer=norm_layer,
+    #                             norm_path=norm_path, no_cores=no_cores)
+    #
+    #     if (calculate_summary & ("count_norm"%in%node_features |
+    #                              base::is.null(node_features)))
+    #         fg <- fg_summary(
+    #             fg, no_cores=no_cores, class=class,
+    #             label1=label1, label2=label2,
+    #             node_features="count_norm",
+    #             edge_features="NONE",
+    #             overwrite=FALSE,
+    #             test_custom=test_custom,
+    #             test_name=test_name,
+    #             diminish=diminish)
+    #
+    #     if (saved) {
+    #         fn_dir <- paste0(path, "/Features/Nodes")
+    #         fn <- "count_norm"
+    #         m <- as.matrix(fg@feat$node[[fn]])
+    #         write.csv(m, file=paste0(fn_dir,"/", fn, ".csv"))
+    #         sm <- fg@feat_desc$node
+    #         write.csv(sm, file=paste0(fn_dir,".csv"), row.names=FALSE)
+    #     }
+    # }
 
     if (calculate_summary & save_plots & saved)
         fg_save_plots(fg, plot_path=paste0(path, "/plots"), ...)

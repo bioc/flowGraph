@@ -9,7 +9,7 @@
 #' #'
 #' #'  data(fg_data_pos30)
 #' #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#' #'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#' #'                  prop=FALSE, specenr=FALSE,
 #' #'                  no_cores=1, cumsumpos=TRUE)
 #' #'  fg_csp(fg)
 #' #'
@@ -32,7 +32,7 @@
 #'
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=1)
 #'
 #'  feature_matrix <- fg_get_feature(fg, type='node', feature='count')
@@ -526,7 +526,7 @@ fg_get_summary_desc <- function(fg) fg@summary_desc
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'  head(fg_get_meta(fg))
 #'
@@ -575,7 +575,7 @@ fg_get_meta <- function(fg) fg@meta
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'  gr <- fg_get_graph(fg)
 #'  head(gr$v)
@@ -601,7 +601,7 @@ fg_get_graph <- function(fg) fg@graph
 #'  no_cores <- 1
 #'  data(fg_data_pos30)
 #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE, normalize=FALSE,
+#'                  prop=FALSE, specenr=FALSE,
 #'                  no_cores=no_cores)
 #'  fg_get_markers(fg)
 #'
