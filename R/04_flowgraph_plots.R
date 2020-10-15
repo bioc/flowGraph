@@ -381,7 +381,7 @@ ggdf <- function(gr0) {
 #'  \code{show_bgedges} in the \code{show_bgedges} slot of \code{gr};
 #'  otherwise, this defaults to \code{TRUE}.
 #' @param colour_palette A colour palette e.g. the default palette if the user
-#'  sets this to \code{NULL} is \code{rev(RColorBrewer::brewer.pal(10,"RdBu"))}.
+#'  sets this to \code{NULL} is \code{c('blue','cyan','yellow','red')}.
 #' @param label_coloured A logical indicating whether to colour the node
 #'  labels using the same colours as the nodes in the non-interactive plot.
 #' @param shiny_plot A logical indicating whether this plot is made for shiny;
@@ -430,7 +430,6 @@ ggdf <- function(gr0) {
 #'  theme element_blank ggtitle scale_fill_brewer geom_segment geom_point
 #'  scale_colour_gradientn labs
 #' @importFrom ggiraph girafe geom_point_interactive geom_segment_interactive
-#' @importFrom RColorBrewer brewer.pal
 #' @importFrom ggrepel geom_label_repel
 #' @importFrom visNetwork visNetwork visNodes visEdges visOptions visInteraction visHierarchicalLayout visEvents
 #' @importFrom purrr map
@@ -475,7 +474,6 @@ plot_gr <- function(
 
     if(base::is.null(colour_palette))
         colour_palette <- c('blue','cyan','yellow','red')
-    # colour_palette <- rev(RColorBrewer::brewer.pal(7,"RdBu"))
 
     # prepare base plot
     gp <- ggplot2::ggplot(gr_v, ggplot2::aes(x=x, y=y, ...)) +

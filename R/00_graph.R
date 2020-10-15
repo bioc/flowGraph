@@ -112,7 +112,7 @@ get_phen_meta <- function(phen, phenocode=NULL) {
 #' @importFrom purrr map compact map_chr
 #' @importFrom furrr future_map
 get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
-    no_cores <-  flowGraph:::ncores(no_cores)
+    # no_cores <-  flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     if (base::is.null(phen) & base::is.null(meta_cell))

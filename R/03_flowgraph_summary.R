@@ -388,7 +388,7 @@ fg_summary_ <- function(
     test_custom, p_thres, p_rate, save_functions,
     no_cores=1
 ) {
-    no_cores <- flowGraph:::ncores(no_cores)
+    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     # split feature matrix into sample classes

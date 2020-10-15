@@ -102,7 +102,7 @@ fg_feat_edge_prop <- function(fg, no_cores=1, overwrite=FALSE) {
 #' @importFrom furrr future_map
 #' @importFrom purrr map
 fg_feat_edge_prop_ <- function(fg, no_cores=1) {
-    no_cores <- flowGraph:::ncores(no_cores)
+    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     edf <- fg@graph$e
@@ -219,7 +219,7 @@ fg_feat_edge_specenr <- function(fg, no_cores=1, overwrite=FALSE) {
 #' @importFrom furrr future_map
 #' @importFrom purrr map
 fg_feat_edge_exprop_ <- function(fg, no_cores=1) {
-    no_cores <- flowGraph:::ncores(no_cores)
+    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     edf <- fg@graph$e
@@ -352,7 +352,7 @@ fg_feat_node_specenr <- function(fg,no_cores=1,feature="prop",overwrite=FALSE) {
 #' @importFrom stats median
 fg_feat_node_exprop_ <- function(fg, no_cores=1) {
     # prepare parallel backend
-    no_cores <- flowGraph:::ncores(no_cores)
+    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     # meta data for samples
@@ -530,7 +530,7 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
 
 fg_feat_node_exprop_new <- function(fg, no_cores=1) {
     # prepare parallel backend
-    no_cores <- flowGraph:::ncores(no_cores)
+    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     # meta data for samples
@@ -780,7 +780,7 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
 #' @importFrom furrr future_map
 #' @importFrom purrr map
 fg_feat_cumsum <- function(fg, no_cores) {
-    no_cores <- flowGraph:::ncores(no_cores)
+    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     # check if already cumsum
@@ -914,7 +914,7 @@ fg_feat_cumsum <- function(fg, no_cores) {
 fg_feat_mean_class <- function(
     fg, class, no_cores=1, node_features=NULL, edge_features=NULL
 ) {
-    no_cores <- flowGraph:::ncores(no_cores)
+    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     if (!class%in%base::colnames(fg@meta))
