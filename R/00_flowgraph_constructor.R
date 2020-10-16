@@ -8,7 +8,7 @@
 #'  and features for these nodes and edges.
 #' @param input_ Any of the following:
 #' \itemize{
-# #'   \item{a \code{Phenotypes} object from the \code{flowType} package.}
+# #'   \item{a \code{Phenotypes} object from the \code{ftf***} package.}
 #'   \item{a numeric matrix or vector of the cell counts;
 #'   its column/names must be the phenotype names and its rownames
 #'   must be sample ID's.}
@@ -86,9 +86,8 @@
 #'  must contain a \code{id} column corresponding to sample names.
 #' @examples
 #'
-#' ## flowType package has been deprecated,
-#' ## Phenotypes input format will be restored after flowTypeFilter is uploaded.
-#' # library(flowType)
+#' ## Phenotypes input format will be restored after ftf*** is uploaded.
+#' # library(ftf***)
 #' #
 #' # # prepare parallel backend
 #' # no_cores <- 1 #parallel::detectCores()-1
@@ -107,7 +106,7 @@
 #' # thres <- lapply(markers, function(x) p50)
 #' # names(thres) <- markers
 #'
-#' # # generate flowType Phenotypes list
+#' # # generate ftf*** Phenotypes list
 #' # samplen <- 10
 #' # # ftl <- furrr::future_map(1:samplen, function(i) {
 #' # ftl <- lapply(1:samplen, function(i) {
@@ -130,8 +129,8 @@
 #' #                          f@exprs[sample(which(ap & bp & cp),tm),])
 #' #     }
 #' #
-#' #     # make flowType Phenotypes
-#' #     flowType(Frame=f, PropMarkers=ci, MarkerNames=colnames(f@exprs),
+#' #     # make Phenotypes
+#' #     ftf***(Frame=f, PropMarkers=ci, MarkerNames=colnames(f@exprs),
 #' #              MaxMarkersPerPop=markern, PartitionsPerMarker=2,
 #' #              Thresholds=thres,
 #' #              Methods='Thresholds', verbose=FALSE, MemLimit=60)
@@ -148,8 +147,7 @@
 #'
 #' data(fg_data_pos30)
 #'
-#' ## flowType package is deprecated,
-#' ## Phenotypes input format will be restored after flowTypeFilter is uploaded.
+#' ## Phenotypes input format will be restored after ftf is uploaded.
 #' # # input: Phenotype object
 #' # fg <- flowGraph(ftl[[1]], no_cores=no_cores)
 #'
@@ -193,7 +191,7 @@
 #' @importFrom future plan multiprocess
 #' @importFrom furrr future_map
 #' @importFrom purrr map_lgl map_chr map_dfr map compact map_int
-# #' @importFrom flowType decodePhenotype
+# #' @importFrom ftf*** decodePhenotype
 #' @importFrom Matrix Matrix
 #' @importFrom methods new
 #' @importFrom igraph layout.reingold.tilford
@@ -295,7 +293,7 @@ flowGraph <- function(
         # phen <- NULL
         # try({
         #     phen <- purrr::map_chr(ftl[[1]]@PhenoCodes, function(x)
-        #         flowType::decodePhenotype(x, markers,
+        #         ftf***::decodePhenotype(x, markers,
         #                                   ftl[[1]]@PartitionsPerMarker))
         # }, silent=TRUE)
         # if (base::is.null(phen))
@@ -519,7 +517,7 @@ flowGraph <- function(
 #'     return(mc)
 #' }
 #'
-#' ## input_ processing: loading flowtypes from paths
+#' ## input_ processing: loading from paths
 #' #' @title Loads Phenotypes objects from vector of paths.
 #' #' @description Loads Phenotypes objects from vector of paths.
 #' #' @param input_ A string vector of \code{load()}-able Phenotypes

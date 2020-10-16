@@ -58,10 +58,6 @@ contain a subset of markers. For example, if the markers used in an experiment
 is $A$, $B$, $C$, $D$, then $A^-$ and $A^+$ would represent the cell population 
 with cells that does/not contain marker $A$ (e.g. Figure \ref{fig:ch}).
 
-During the creation of this package, we used the deprecated `flowType` package 
-to enumerate the cell counts for each cell population. While these cell counts 
-can be easily enumerated manually, we note that `flowType`'s successor,
-`flowTypeFilter` will be available soon on Bioconductor.
 
 ```{r, message=FALSE}
 no_cores <- 1

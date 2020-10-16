@@ -1,5 +1,5 @@
 library(flowGraph)
-# library(flowType)
+# library(ftf***)
 library(testthat)
 
 # prepare parallel backend
@@ -21,7 +21,7 @@ data(fg_data_pos30)
 # thres <- furrr::future_map(markers, function(x) p50)
 # names(thres) <- markers
 #
-# # generate flowType Phenotypes list
+# # generate Phenotypes list
 # samplen <- 10
 # ftl <- furrr::future_map(1:samplen, function(i) {
 #     # make flow frame
@@ -42,8 +42,8 @@ data(fg_data_pos30)
 #         f@exprs <- rbind(f@exprs, f@exprs[sample(which(ap & bp & cp),tm),])
 #     }
 #
-#     # make flowType Phenotypes
-#     flowType(Frame=f, PropMarkers=ci, MarkerNames=colnames(f@exprs),
+#     # make Phenotypes
+#     ftf***(Frame=f, PropMarkers=ci, MarkerNames=colnames(f@exprs),
 #              MaxMarkersPerPop=markern, PartitionsPerMarker=2, Thresholds=thres,
 #              Methods='Thresholds', verbose=FALSE, MemLimit=60)#@CellFreqs
 # })
