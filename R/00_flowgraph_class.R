@@ -216,6 +216,7 @@ setClass(
 #' @describeIn flowGraph show method
 #' @param object A flowGraph object.
 #' @exportMethod show
+#' @return a description of the \code{flowGraph} object.
 setMethod(
     "show", "flowGraph",
     function(object) {

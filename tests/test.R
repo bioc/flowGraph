@@ -55,6 +55,7 @@ meta_file <- data.frame(
 )
 
 
+
 ## 00 helpers ----------------------------------
 
 # context("00_helpers")
@@ -144,6 +145,8 @@ test_that("cumsumpos", {
 context("03_flowGraph_summary")
 
 # fg <- flowGraph(ftl, meta=meta_file, no_cores=no_cores)
+
+fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class, no_cores=no_cores)
 
 fg <- fg_summary(fg, no_cores=no_cores, class="class", label1="control",
                 overwrite=FALSE, test_name="wilcox", diminish=FALSE)
