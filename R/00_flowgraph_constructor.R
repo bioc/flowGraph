@@ -76,8 +76,8 @@
 # #' @param norm_layer See \code{\link[flowGraph]{fg_feat_node_norm}}.
 # #' @param norm_path See \code{\link[flowGraph]{fg_feat_node_norm}}.
 #' @param save_plots A logical indicating whether or not to save plots.
-#' @param ... Other parameters used in the \code{fg_save_plots} function
-#'  of the \code{edgeR} package. See \code{\link[flowGraph]{tmm}}.
+# #' @param ... Other parameters used in the \code{fg_save_plots} function
+# #'  of the \code{edgeR} package. See \code{\link[flowGraph]{tmm}}.
 #' @return flowGraph object
 #' @details \code{flowGraph} is the constructor for the \code{flowGraph} object.
 #'  The user can choose to input as \code{input_} a vector, a \code{Phenotypes}
@@ -215,7 +215,7 @@ flowGraph <- function(
     # norm_ind=0, norm_layer=3, norm_path=NULL,
 
     # plotting parameters
-    save_plots=TRUE, ...
+    save_plots=TRUE
 
 ) {
     options(stringsAsFactors=FALSE)

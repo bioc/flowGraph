@@ -22,7 +22,7 @@ data(fg_data_pos30)
 # names(thres) <- markers
 #
 # # generate Phenotypes list
-# samplen <- 10
+samplen <- 10
 # ftl <- furrr::future_map(1:samplen, function(i) {
 #     # make flow frame
 #     f <- new("flowFrame")
