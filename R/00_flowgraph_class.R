@@ -165,6 +165,7 @@
 #'    \item{\code{fg_plot}: Plots cell hierarchies in the flowGraph object.
 #'    See \code{\link[flowGraph]{fg_plot}}.}
 #' }
+#' @return a flowGraph object.
 #' @examples
 #'
 #'  showClass("flowGraph")
