@@ -7,14 +7,25 @@ Date: 2019-11-30
 Authors@R: person("Alice", "Yue", email = "aya43@sfu.ca", role = c("aut", "cre"))
 License: Artistic-3.0
 VignetteBuilder: knitr
-Depends: R (>= 4.0)
+Depends: R (>= 3.5)
 Imports: 
     effsize,
-    furrr, future, purrr,
-    ggiraph, ggrepel, ggplot2,
-    igraph, Matrix, stats, utils,
-    visNetwork, htmlwidgets, grDevices, methods,
-    stringr, stringi,
+    furrr, 
+    future, 
+    purrr,
+    ggiraph, 
+    ggrepel, 
+    ggplot2,
+    igraph, 
+    Matrix, 
+    stats, 
+    utils,
+    visNetwork, 
+    htmlwidgets, 
+    grDevices, 
+    methods,
+    stringr, 
+    stringi,
     Rdpack,
     data.table,
     gridExtra,
