@@ -23,8 +23,7 @@ flowGraph(
   diminish = TRUE,
   label1 = NULL,
   label2 = NULL,
-  save_plots = TRUE,
-  ...
+  save_plots = TRUE
 )
 }
 \arguments{
@@ -104,9 +103,6 @@ applicable if \code{calculate_summary} is \code{TRUE}.}
 applicable if \code{calculate_summary} is \code{TRUE}.}
 
 \item{save_plots}{A logical indicating whether or not to save plots.}
-
-\item{...}{Other parameters used in the \code{fg_save_plots} function
-of the \code{edgeR} package. See \code{\link[flowGraph]{tmm}}.}
 }
 \value{
 flowGraph object

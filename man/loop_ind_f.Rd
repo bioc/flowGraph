@@ -23,11 +23,11 @@ list of \code{n} vectors with elements from \code{x}.
 
  old_loop_inds <- 1:10
  no_cores <- 5
- future::plan(future::multiprocess)
 
  new_loop_inds <- flowGraph:::loop_ind_f(old_loop_inds, no_cores)
- example_indices <- furrr::future_map(new_loop_inds, function(ii) {
-     purrr::map(ii, function(i) i )
- })
+ # future::plan(future::multiprocess)
+ # example_indices <- furrr::future_map(new_loop_inds, function(ii) {
+ #     purrr::map(ii, function(i) i )
+ # s})
 
 }
