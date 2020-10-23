@@ -31,7 +31,7 @@ in the background. If this is \code{NULL}, the function will look for a
 otherwise, this defaults to \code{TRUE}.}
 
 \item{colour_palette}{A colour palette e.g. the default palette if the user
-sets this to \code{NULL} is \code{rev(RColorBrewer::brewer.pal(10,"RdBu"))}.}
+sets this to \code{NULL} is \code{c('blue','cyan','yellow','red')}.}
 
 \item{label_coloured}{A logical indicating whether to colour the node
 labels using the same colours as the nodes in the non-interactive plot.}
