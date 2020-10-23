@@ -455,17 +455,17 @@ fg_get_summary_tables <- function(fg, type="node") {
 #'  \code{\link[flowGraph]{fg_get_summary_desc}}
 #' @rdname fg_get_feature_desc
 #' @export
-#' @importFrom purrr map_dfr
 fg_get_feature_desc <- function(fg, re_calc=FALSE) {
     if (re_calc) {
-        result1 <- purrr::map_dfr(base::names(fg@feat$node), function(x)
-            summary_table(fg@feat$node[[x]], x))
+        result1 <- as.data.frame(sapply(base::names(fg@feat$node), function(x)
+            summary_table(fg@feat$node[[x]], x)))
 
         result2 <- NULL
         if (base::length(fg@feat$edge) >
             0) {
-            result2 <- purrr::map_dfr(base::names(fg@feat$edge), function(x)
-                summary_table(fg@feat$edge[[x]], x))
+            result2 <- as.data.frame(sapply(
+                base::names(fg@feat$edge), function(x)
+                    summary_table(fg@feat$edge[[x]], x)))
         }
         fg@feat_desc <- list(node=result1, edge=result2)
     }
