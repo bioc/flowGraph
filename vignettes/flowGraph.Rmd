@@ -50,6 +50,8 @@ flowGraph defines cell populations, we introduce the cell hierarchy model below.
 This model will serve as the basis for the analysis done in the 
 _**flowGraph**_ package.
 
+## Cell population naming convention
+
 A **cell hierarchy** is a directed acyclic graph that maps out all possible 
 cell populations. In this graph, each cell population is a node while relations 
 between cell populations are represented by edges. Each node is labelled by 
@@ -57,6 +59,18 @@ whether or not its corresponding cell population contains cells that does/not
 contain a subset of markers. For example, if the markers used in an experiment 
 is $A$, $B$, $C$, $D$, then $A^-$ and $A^+$ would represent the cell population 
 with cells that does/not contain marker $A$ (e.g. Figure \ref{fig:ch}).
+
+If you are using threshold gates, $A^+$/$A^-$ is the count of cells with a 
+fluorescent intensity (FI) value higher/lower than the threshold. If you have 
+multiple thresholds, for example 3 thresholds, for $A$, then you would have
+$A^-$, $A^+$, $A^++$, $A^+++$ with thresholds in between.
+
+If you are using polygon gates, then $A$ would be the name of your polygon gate
+on any two dimension and $A^-$ would be the cells inside the gate and $A^+$ 
+would be the cells outside the gate.
+
+We also accept cell population names where marker conditions are separated by an
+underscore e.g. $A^+\_B^+$.
 
 
 ```{r, message=FALSE}

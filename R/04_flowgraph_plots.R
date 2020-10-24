@@ -58,7 +58,7 @@
 #' @param node_labels A string vector indicating which node feature(s)
 #'  should be used to label a node.
 #'  We recommend keeping the length of this vector to below 2.
-#'  Set to "NONE"/NULL if no p-value labels are needed.
+#'  Set to "NONE" if no p-value labels are needed.
 #' @param summary_fun A function that takes in a matrix and outputs a
 #'  vector the same length as the number of columns this matrix has;
 #'  see \code{\link[flowGraph]{fg_summary}}.
@@ -1597,6 +1597,7 @@ fg_plot_pVSdiff <- function(
 #'  equal to, to be significant -- see \code{filter_btwn_tpthres}.
 #' @param overwrite A logical variable indicating whether or not to replace
 #'  old plots if they exist under the same folder name.
+#' @param node_labels Parameter for the \code{fg_plot} function
 #' @param ... Other parameters for the \code{fg_plot} function.
 #' @return No return; plots are saved to file.
 #' @details The interactive plots are made using the \code{ggiraph} package.
@@ -1627,7 +1628,8 @@ fg_save_plots <- function(
     adjust_custom="byLayer",
     label_max=10, box_no=20, paired=FALSE, logged=FALSE,
     filter_adjust0=1, filter_es=0,
-    filter_btwn_tpthres=1, filter_btwn_es=0, overwrite=TRUE, ...
+    filter_btwn_tpthres=1, filter_btwn_es=0, overwrite=TRUE,
+    node_labels="NONE", ...
 ) {
     for (type in plot_types) {
         if (base::is.null(fg@summary[[type]])) next
@@ -1719,7 +1721,32 @@ fg_save_plots <- function(
                         fg, type="node", index=index,
                         adjust_custom=adjust_custom,
                         path=base::paste0(plot_path_,"/cell_hierarchy.png"),
-                        label_max=label_max, interactive=interactive, ...)
+                        label_max=label_max, interactive=interactive,
+                        node_labels=node_labels, ...)
+
+                    feat_index <- fg@summary_desc$node$feat[[index]]
+                    if (grepl("SpecEnr",feat_index)) {
+                        gp <- plot_gr(gr, label_coloured=FALSE)
+                        feats <- flowGraph:::se_feats(feat_index)
+
+                        m1 <- fg_get_feature_means(
+                            fg, "node", feats[2],
+                            class=fg@summary_desc$node$class[[index]],
+                            label=fg@summary_desc$node$label1[[index]])
+                        m2 <- fg_get_feature_means(
+                            fg, "node", feats[2],
+                            class=fg@summary_desc$node$class[[index]],
+                            label=fg@summary_desc$node$label2[[index]])
+
+                        gr$v$v_ind[(m2>m1 & gr$v$colour<0) | (m2<m1 & gr$v$colour>0)] <- F
+                        gr$v$colour <- m2-m1#[gr$v$v_ind]
+                        gr$main <- paste0(gr$main,"\n- colour: mean ",feats[2]," diff")
+                        gp <- plot_gr(gr, label_coloured=FALSE)
+                        ggplot2::ggsave(
+                            paste0(plot_path_,"/cell_hierarchy_",
+                                   feats[2],"_colours.png"),
+                            plot=gp)#, dpi=600)
+                    }
 
                 })
         }

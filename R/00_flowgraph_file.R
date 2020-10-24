@@ -75,6 +75,7 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
                base::nrow(fg@graph$e), " edges on ",
                max(fg@graph$v$phenolayer), " layers."),
         "",
+        "Cell hierarchy plots: By default, for SpecEnr features, we generate two cell_hierarchy plots. The original one is where the colours represent difference between mean SpecEnr values across sample classes. We also add one where the colours represent difference betwee mean original values across sample classes. Original here is usually proportion: the feature used to create SpecEnr. Note that if a node is coloured lightly on the second plot, then the difference is very small, meaning the SpecEnr value may become sporadic. Therefore, when analyzing the plots, for most cases we recommend looking at most important cell populations as the ones with large difference in both plots.",
         ""), fc)
 
     close(fc)
