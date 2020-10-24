@@ -169,7 +169,7 @@
 #' @examples
 #'
 #'  showClass("flowGraph")
-#'
+#' @importFrom methods setClass
 #' @export
 setClass(
     "flowGraph",
@@ -217,10 +217,10 @@ setClass(
 #' @describeIn flowGraph show method
 #' @param object A flowGraph object.
 #' @exportMethod show
-#' @return a description of the \code{flowGraph} object.
+#' @importFrom methods setMethod
+# #' @return a description of the \code{flowGraph} object.
 setMethod(
-    "show", "flowGraph",
-    function(object) {
+    "show", "flowGraph", function(object) {
         cat("flowGraph object with ", base::length(object@feat$node), "/",
             base::length(object@summary$node)," node and ",
             base::length(object@feat$edge), "/",
