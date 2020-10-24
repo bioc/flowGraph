@@ -14,8 +14,6 @@
 }
 \value{
 a flowGraph object.
-
-a description of the \code{flowGraph} object.
 }
 \description{
 'flowGraph': A class for storing cell count feature values
@@ -236,5 +234,4 @@ Creating objects using \code{new} is discouraged.
 \examples{
 
  showClass("flowGraph")
-
 }
