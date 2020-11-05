@@ -56,7 +56,7 @@ test adjustment method to use.
 statistic p value.}
 
 \item{p_thres}{A double indicating a summary statistic threshold
-e.g. if we are plotting a T test summary statistic, we can set the threshold
+e.g. if we are plotting a T-test summary statistic, we can set the threshold
 to .05; nodes with a p-value greater than .05 will not be plotted.}
 
 \item{filter_adjust0}{A numeric variable indicating what percentage of

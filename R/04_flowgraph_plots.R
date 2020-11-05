@@ -734,7 +734,7 @@ noTOcol <- function(
 #' @param logged A logical indicating whether or not to log the  summary
 #'  statistic p value.
 #' @param p_thres A double indicating a summary statistic threshold
-#'  e.g. if we are plotting a T test summary statistic, we can set the threshold
+#'  e.g. if we are plotting a T-test summary statistic, we can set the threshold
 #'  to .05; nodes with a p-value greater than .05 will not be plotted.
 #' @param filter_adjust0 A numeric variable indicating what percentage of
 #'  SpecEnr values compared (minimum) should be not close to 0.
@@ -1597,7 +1597,7 @@ fg_plot_pVSdiff <- function(
 #'  equal to, to be significant -- see \code{filter_btwn_tpthres}.
 #' @param overwrite A logical variable indicating whether or not to replace
 #'  old plots if they exist under the same folder name.
-#' @param node_labels Parameter for the \code{fg_plot} function
+#' @param node_labels Parameter for the \code{fg_plot} function.
 #' @param ... Other parameters for the \code{fg_plot} function.
 #' @return No return; plots are saved to file.
 #' @details The interactive plots are made using the \code{ggiraph} package.

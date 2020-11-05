@@ -98,7 +98,7 @@ equal to, to be significant -- see \code{filter_btwn_tpthres}.}
 \item{node_labels}{A string vector indicating which node feature(s)
 should be used to label a node.
 We recommend keeping the length of this vector to below 2.
-Set to "NONE"/NULL if no p-value labels are needed.}
+Set to "NONE" if no p-value labels are needed.}
 
 \item{summary_fun}{A function that takes in a matrix and outputs a
 vector the same length as the number of columns this matrix has;

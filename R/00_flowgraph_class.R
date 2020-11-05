@@ -171,7 +171,7 @@
 #'  showClass("flowGraph")
 #' @importFrom methods setClass
 #' @export
-setClass(
+methods::setClass(
     "flowGraph",
     slots <- list(
         feat="list",
@@ -217,9 +217,10 @@ setClass(
 #' @describeIn flowGraph show method
 #' @param object A flowGraph object.
 #' @exportMethod show
-#' @importFrom methods setMethod
+#' @export
+#' @importFrom methods setMethod show
 # #' @return a description of the \code{flowGraph} object.
-setMethod(
+methods::setMethod(
     "show", "flowGraph", function(object) {
         cat("flowGraph object with ", base::length(object@feat$node), "/",
             base::length(object@summary$node)," node and ",

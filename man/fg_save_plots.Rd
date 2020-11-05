@@ -19,6 +19,7 @@ fg_save_plots(
   filter_btwn_tpthres = 1,
   filter_btwn_es = 0,
   overwrite = TRUE,
+  node_labels = "NONE",
   ...
 )
 }
@@ -86,6 +87,8 @@ equal to, to be significant -- see \code{filter_btwn_tpthres}.}
 
 \item{overwrite}{A logical variable indicating whether or not to replace
 old plots if they exist under the same folder name.}
+
+\item{node_labels}{Parameter for the \code{fg_plot} function.}
 
 \item{...}{Other parameters for the \code{fg_plot} function.}
 }
