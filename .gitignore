@@ -1,5 +1,6 @@
 build_pkg.R
-R/_unexported_functions.R
+R/_*.R
+R/*_.R
 flowGraph.Rproj
 .Rproj.user
 .Rhistory
