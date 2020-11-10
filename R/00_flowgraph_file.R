@@ -155,8 +155,7 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
     saveRDS(etc, file=paste0(fo_dir, "/etc.rds"))
 
     if (save_plots)
-        fg_save_plots(fg, plot_path=paste0(folder_path,"/plots"),
-                      paired=paired, ...)
+        fg_save_plots(fg, plot_path=paste0(folder_path,"/plots"), paired=paired)
 
     return(TRUE)
 }

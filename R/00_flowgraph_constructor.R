@@ -408,7 +408,7 @@ flowGraph <- function(
         })
 
     if (calculate_summary & save_plots & saved)
-        fg_save_plots(fg, plot_path=paste0(path, "/plots"), ...)
+      fg_save_plots(fg, plot_path=paste0(path, "/plots"))
 
     time_output(start, "total time used")
     return(fg)
