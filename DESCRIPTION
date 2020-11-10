@@ -7,7 +7,7 @@ Date: 2019-11-30
 Authors@R: person("Alice", "Yue", email = "aya43@sfu.ca", role = c("aut", "cre"))
 License: Artistic-3
 VignetteBuilder: knitr
-Depends: R (>= 3.5)
+Depends: R (>= 4.1)
 Imports: 
     effsize,
     furrr, 

@@ -65,9 +65,3 @@
 #' }
 "fg_data_pos30"
 
-
-# # load data
-# .onLoad <- function(libname, pkgname) {
-#     data("fg_data_fca", "fg_data_pos15", "fg_data_pos30",
-#          package=pkgname, envir=paresave(nt.env(environment()))
-# }

@@ -423,23 +423,6 @@ parameter to `TRUE` using the `ggiraph` package.
 plot_gr(gr, interactive=TRUE)
 ```
 
-The user can also manually specify how the plot should look. The columns 
-needed for plotting in `plot_gr` can be attached onto the `graph` slot of the 
-`fg` the `flowGraph` object using the `ggdf` function. For more information on 
-these columns, see `?ggdf`.
-
-```{r}
-gr <- fg_get_graph(fg)
-gr <- ggdf(gr)
-
-gr$v$colour <- ifelse(!grepl("[-]",gr$v$phenotype), 1, 0)
-                     # "nodes with only marker conditions", "other nodes")
-gr$v$label <- gr$v$phenotype
-gr$v$v_ind <- gr$v$label_ind <- TRUE
-gr$e$e_ind <- !grepl("[-]",gr$e$from) & !grepl("[-]",gr$e$to)
-
-plot_gr(gr, main="Example cell hierarchy with markers A, B, C, D")
-```
 
 
 # Appendix
@@ -487,6 +470,26 @@ fg_plot_pVSdiff(fg, type="node", summary_meta=NULL, index=1)
 
 # interactive version
 fg_plot_pVSdiff(fg, type="node", summary_meta=NULL, index=1, interactive=TRUE)
+```
+
+### Customizing the cell hierarchy plot
+
+The user can also manually specify how the cell hierarchy plot should look. The columns 
+needed for plotting in `plot_gr` can be attached onto the `graph` slot of the 
+`fg` the `flowGraph` object using the `ggdf` function. For more information on 
+these columns, see `?ggdf`.
+
+```{r}
+gr <- fg_get_graph(fg)
+gr <- ggdf(gr)
+
+gr$v$colour <- ifelse(!grepl("[-]",gr$v$phenotype), 1, 0)
+                     # "nodes with only marker conditions", "other nodes")
+gr$v$label <- gr$v$phenotype
+gr$v$v_ind <- gr$v$label_ind <- TRUE
+gr$e$e_ind <- !grepl("[-]",gr$e$from) & !grepl("[-]",gr$e$to)
+
+plot_gr(gr, main="Example cell hierarchy with markers A, B, C, D")
 ```
 
 

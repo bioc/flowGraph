@@ -1,5 +1,3 @@
-## FG MODIFIERS ----------------------------------------------------------------
-
 #' @title Adds a feature.
 #' @description Adds a feature created using \code{feat_fun} from \code{fg} OR
 #'  \code{m} into a given flowGraph object. Only use this function if
@@ -214,7 +212,7 @@ fg_rm_feature <- function(fg, type="node", feature=NULL) {
 #' @importFrom purrr map_lgl compact
 fg_add_summary <- function(
     fg, type="node", summary_meta=NULL,
-    p=NULL, summ_fun=NULL, overwrite=TRUE, ...
+    p=NULL, summ_fun=NULL, overwrite=FALSE, ...
 ) {
     type <- match.arg(type, c("node", "edge"))
     options(stringsAsFactors=FALSE)
@@ -231,7 +229,6 @@ fg_add_summary <- function(
     if (base::is.null(p)) {
         if (base::is.null(summ_fun))
             stop("provide summary statistic values or a function to create one")
-        # m <- as.matrix(fg_get_feature(fg, type, summary_meta$feature))
         p <- summ_fun(fg, type=type, ...)  # list(values, test, adjust)
     }
 
@@ -241,8 +238,8 @@ fg_add_summary <- function(
     p <- purrr::compact(p)
 
     sm <- data.frame(matrix(summary_meta, nrow=1))
-    colnames(sm) <- c("feat", "test_name","class","label1", "label2") # names(summary_meta)
-    if (base::length(fg@summary_desc[[type]])==0) {#base::is.null(fg@summary_desc[[type]])) {
+    colnames(sm) <- c("feat", "test_name","class","label1", "label2")
+    if (base::length(fg@summary_desc[[type]])==0) {
         fg@summary_desc[[type]] <- sm
     } else {
         fg@summary_desc[[type]] <- rbind(fg@summary_desc[[type]], sm)
@@ -314,7 +311,6 @@ fg_rm_summary <- function(fg, type="node", index=NULL, summary_meta=NULL) {
     fg@summary[[type]][[index]] <- NULL
     # don't need the drop part, but just in case.
     fg@summary_desc[[type]] <- fg@summary_desc[[type]][-index,, drop=FALSE]
-    # rownames(fg@summary_desc[[type]]) <- NULL
     return(fg)
 }
 

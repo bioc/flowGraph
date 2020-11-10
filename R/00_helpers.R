@@ -1,28 +1,3 @@
-## HELPERS ---------------------------------------------------------------------
-
-
-
-#' #' @title Prepares number of cores for parallel backend.
-#' #' @description Prepares number of cores needed for parallel backend.
-#' #' @param no_cores An integer indicating how many cores to parallelize on.
-#' #' @return An integer indicating how many cores to parallelize on.
-#' #' @details Given the number of cores a user wishes to parallelize processes on
-#' #'  \code{no_cores}, \code{ncores} ensures this value does not
-#' #'  exceed the actual number of cores the user's computer contains.
-#' #' @examples
-#' #'
-#' #'  # NOT EXPORTED
-#' #'  no_cores <- 100
-#' #'  flowGraph:::ncores(no_cores)
-#' #'
-#' #' @seealso
-#' #'  \code{\link[parallel]{detectCores}}
-#' #' @rdname ncores
-#' #' @importFrom parallel detectCores
-#' ncores <- function(no_cores=1)
-#'     max(1, min(no_cores, parallel::detectCores()-1))
-
-
 #' @title Formats time into string.
 #' @description Formats time into a string HH:MM:SS given time zone.
 #' @param time A time variable of class \code{POSIXct}, \code{POSIXt}.
@@ -48,7 +23,6 @@ tstr <- function(time) format(.POSIXct(time), "%H:%M:%S")
 #'  flowGraph:::time_output(start,'start - now > time elapsed')
 #'
 #' @rdname time_output
-# #' @export
 time_output <- function(start, msg="") {
     start <- as.POSIXct(start)
     end <- Sys.time()
@@ -77,7 +51,6 @@ time_output <- function(start, msg="") {
 #'  # s})
 #'
 #' @rdname loop_ind_f
-# #' @export
 loop_ind_f <- function(x, n) {
     if (n == 1) return(base::list(x))
     return(base::split(x, ceiling(seq_along(x)/ceiling(base::length(x)/n))))
@@ -128,7 +101,6 @@ summary_table <- function(m, feat_type="") {
 #' @seealso
 #'  \code{\link[flowGraph]{fg_feat_mean_class}}
 #' @rdname meandiff
-# #' @export
 #' @importFrom purrr map
 mean_diff <- function(m0, classes) {
     m <- m0

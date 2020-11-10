@@ -1,5 +1,3 @@
-## FG SUMMARY ------------------------------------------------------------------
-
 #' @title Calculates feature summary statistics.
 #' @description Calculates feature summary statistics for flowGraph features;
 #'  users can choose from a list of statistical significance tests/adjustments
@@ -157,7 +155,6 @@ fg_summary <- function(
 
     # test functions
     if (!is.function(test_custom)) {
-        # test_custom <- match.arg(c("t","wilcox","ks","var","chisq"))
         if (test_custom=="t") {
             test_custom <- function(x,y)
                 tryCatch(stats::t.test(x,y)$p.value, error=function(e) 1)
@@ -239,8 +236,6 @@ fg_summary <- function(
                 if (btwn & grepl("SpecEnr", feature)) {
                     # test functions
                     if (!is.function(btwn_test_custom)) {
-                        # btwn_test_custom <-
-                        #    match.arg(c("t","wilcox","ks","var","chisq"))
                         if (btwn_test_custom=="t") {
                             btwn_test_custom <- function(x,y)
                                 tryCatch(stats::t.test(x,y)$p.value,
@@ -416,18 +411,6 @@ fg_summary_ <- function(
                 test_custom(m1[,i], m2[,i]))
 
         }
-        # p[is.nan(p)] <- 1
-
-        # # adjust p values
-        # if (is.function(adjust_custom)) {
-        #     p <- adjust_custom(p)
-        # } else if (adjust_custom=="byLayer") {
-        #     for (l in layers) {
-        #         lind <- layers_==l
-        #         p[lind] <- p[lind] * sum(lind) * base::length(layers)
-        #     }
-        # }
-        # p[p>1] <- 1
 
     } else {
         # pparen <- fg@edge_list$parent
@@ -463,17 +446,8 @@ fg_summary_ <- function(
                 pl <- purrr::map_dbl(which(testi), function(i)
                         pt <- test_custom(m1[,i], m2[,i]))
             }
-            # pl[base::is.na(pl)] <- 1
-
-            # # do the first part of adjustment if adjust is byLayer
-            # if (!is.function(adjust_custom)) {
-            #     pl <- pl * length(pl) #sum(!base::is.na(pl) & !base::is.nan(pl))
-            #     pl[pl>1] <- 1
-            # }
             p[testi] <- pl
 
-            # # get cell populations to test for the next layer
-            # pl_cpops <- mnames[testi]
             pl_cpops <- pl < p_thress[p_thress_i]
             pl_cpops_ <- mnames[which(testi)[pl_cpops]]
             p_thress_i <- p_thress_i + 1
@@ -485,20 +459,10 @@ fg_summary_ <- function(
             }
             testis <- testis | testi
         }
-
-        # adjust p values
-        # pnna <- !base::is.na(p)
-        # if (is.function(adjust_custom)) {
-        #     p[pnna] <- adjust_custom(p[pnna])
-        # } else {
-        #     p[pnna] <- p[pnna] * (p_thress_i - 1)
-        # }
-        # p[!pnna] <- 1
-        # p[p>1] <- 1
     }
 
     base::names(p) <- mnames
-    p_ <- list(values=p)#, adjust_fun=adjust_custom)
+    p_ <- list(values=p)
     if (save_functions)
         p_$test_fun <- test_custom
 

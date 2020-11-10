@@ -1,5 +1,3 @@
-## FG FEATURES ----------------------------------------------------------------
-
 #' @title Generates the proportion node feature.
 #' @description Generates the proportion node feature and returns it
 #'  inside the returned flowGraph object.
@@ -102,7 +100,6 @@ fg_feat_edge_prop <- function(fg, no_cores=1, overwrite=FALSE) {
 #' @importFrom furrr future_map
 #' @importFrom purrr map
 fg_feat_edge_prop_ <- function(fg, no_cores=1) {
-    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     edf <- fg@graph$e
@@ -219,7 +216,6 @@ fg_feat_edge_specenr <- function(fg, no_cores=1, overwrite=FALSE) {
 #' @importFrom furrr future_map
 #' @importFrom purrr map
 fg_feat_edge_exprop_ <- function(fg, no_cores=1) {
-    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     edf <- fg@graph$e
@@ -345,6 +341,9 @@ fg_feat_node_specenr <- function(fg,no_cores=1,feature="prop",overwrite=FALSE) {
     return(fg)
 }
 
+# expected proportion: this is the version currently used.
+# this version is the same as the new version, but the new
+# version is easier to experiment on and calculates everything at once.
 #' @importFrom future plan multiprocess
 #' @importFrom stringr str_extract_all str_extract str_count
 #' @importFrom furrr future_map
@@ -414,7 +413,7 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
     # cpind <- seq_len(base::length(cells))
     cpind <- base::which(!base::grepl("[-]",cells))
     loop_ind <- loop_ind_f(cpind,no_cores) # prepares loop indices
-    # loop_ind <- loop_ind_f(1:base::length(cells),no_cores)
+    # all: loop_ind <- loop_ind_f(1:base::length(cells),no_cores)
     expecp <- base::do.call(cbind, furrr::future_map(loop_ind, function(ii) {
         base::do.call(cbind, purrr::map(ii, function(ic) {
             # cell population name e.g. A+B+C+
@@ -453,12 +452,8 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
     if (csp) {
         # replaces whatever pattern only once; e.g. gsubfn("_", p, "A_B_C_")
         # "count" is a variable given by gsubfn
-        # p <- proto::proto(i=1, j=1, function(this, x)
-        #     if (count>=i && count<=j) "+" else x)
         p <- function(x) gsub('(.*?)-(.*)', '\\1+\\2', x)
     } else {
-        # p <- proto::proto(i=1, j=1, function(this, x)
-        #     if (count>=i && count<=j) "[+]+" else x)
         p <- function(x) gsub('(.*?)-(.*)', '\\1[+]+\\2', x)
     }
 
@@ -473,7 +468,6 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
             if (csp) {
                 expecn <- base::do.call(
                     cbind, furrr::future_map(cpops, function(cpop) {
-                        # sib <- gsubfn::gsubfn("[-]", p, cpop)
                         sib <- gsub('(.*?)-(.*)', '\\1+\\2', cpop)
                         if (!sib%in%base::colnames(expec)) {
                             pari <- which(purrr::map_lgl(
@@ -491,7 +485,6 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
                 expecn <- base::do.call(
                     cbind, furrr::future_map(cpops, function(cpop) {
                         cpopgsub <- base::gsub("[+]","[+]", cpop)
-                        # cpopgsub <- gsubfn::gsubfn("[-]", p, cpopgsub)
                         cpopgsub <- gsub('(.*?)-(.*)', '\\1[+]+\\2',
                                          cpopgsub)
                         cpopgsub <- base::gsub("[-]","[-]", cpopgsub)
@@ -519,10 +512,10 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
 
     exp1 <- base::cbind(expe1,expec[,base::match(cells,base::colnames(expec)),
                                     drop=FALSE])
-    # exp1 <- cbind(expe1,expecp[,match(cells,colnames(expecp)),drop=FALSE])
+    # some: exp1 <- cbind(expe1,expecp[,match(cells,colnames(expecp)),drop=FALSE])
 
     exp1[as.matrix(exp1)<0] <- 0
-    # exp1 <- cbind(expe1,expecp[,match(cells,colnames(expecp)),drop=FALSE])
+    # some: exp1 <- cbind(expe1,expecp[,match(cells,colnames(expecp)),drop=FALSE])
     return(exp1) ### EXPECTED PROPORTION
     # mp/exp1 ### SPECENR
 }
@@ -530,7 +523,6 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
 
 fg_feat_node_exprop_new <- function(fg, no_cores=1) {
     # prepare parallel backend
-    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     # meta data for samples
@@ -578,7 +570,7 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
     ## calc expected props for cell pops w/ positive marker conds only ---------
     # this reduces computation time e.g. A+B+C+, not A+B+C-
     cpind <- seq_len(base::length(cells))
-    # cpind <- base::which(!base::grepl("[-]",cells))
+    # all: cpind <- base::which(!base::grepl("[-]",cells))
 
     # get all pairs of marker condition indices
     markers <- fg@markers
@@ -591,7 +583,7 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
 
 
     cells_ <- stringr::str_extract_all(cells, "[a-zA-Z0-9]+[+-]+")
-    # loop_ind <- loop_ind_f(1:base::length(cells),no_cores)
+    # some: loop_ind <- loop_ind_f(1:base::length(cells),no_cores)
     loop_ind <- loop_ind_f(cpind,no_cores) # prepares loop indices
     expecp <- base::do.call(cbind, furrr::future_map(loop_ind, function(ii) {
         base::do.call(cbind, purrr::map(ii, function(ic) {
@@ -606,7 +598,7 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
             if (length(cmarkers)==2) return(apply(parent,1,prod))
 
 
-            # try all combinations, just because
+            # try all combinations, because...
             mpi <- mp[,cpop]
             mlcombi <- mlcomb[[length(cmarkers)-1]]
             allcombexp <- purrr::map(seq_len(ncol(mlcombi)),function(yi) {
@@ -622,7 +614,6 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
                 mpe2e <- ep[,paste0(gsub(cmarkers[y[1]],"",par1,fixed=TRUE),
                                     "_",gsub(cmarkers[y[1]],"",cpop,fixed=TRUE))]
                 mpe2 <- mpe2p*mpe2e # mpe1 and mpe are the same
-                # return(mpe1)
                 return(cbind(mpe1p,mpe1e,mpe2p,mpe2e,mpe1))
             })
             acediff <- sapply(allcombexp, function(x)
@@ -641,12 +632,12 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
 
             # # edge proportion values extracted from ep for edges between
             # # cpop's parents and grandparents.
-            # pes <- ep[,paste0(pparen[[cpop]], "_", cpop),drop=FALSE]
+            # some: pes <- ep[,paste0(pparen[[cpop]], "_", cpop),drop=FALSE]
             pedges <- ep_[,pnames,drop=FALSE]
 
             # # using the above, get expected proportion; see formula in
             # # https://www.biorxiv.org/content/10.1101/837765v2
-            # expect1 <- base::apply(pedges,1,min) * base::apply(parent,1,max)
+            # some: expect1 <- base::apply(pedges,1,min) * base::apply(parent,1,max)
             return(expect1)
         }))
     }))
@@ -780,7 +771,6 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
 #' @importFrom furrr future_map
 #' @importFrom purrr map
 fg_feat_cumsum <- function(fg, no_cores) {
-    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     # check if already cumsum
@@ -789,40 +779,16 @@ fg_feat_cumsum <- function(fg, no_cores) {
     # check if do-able (there exists multple ++)
     if (!any(base::grepl("3",fg@graph$v$phenocode))) return(fg)
 
-    # phenotype=c("","A+","A++","A-","B-","B+","B++","A-B-","A-B+","A-B++",
-    # "A+B-","A+B+","A+B++","A++B-","A++B+","A++B++")
-    # mc=matrix(c(90,30,30,30,30,30,30,10,10,10,10,10,10,10,10,10),nrow=1)
-    # colnames(mc)=phenotype
-    # meta_cell <- getPhen(phenotype)
-    # pparen <- getPhenCP(meta_cell=meta_cell)$pparen
-
     mc <- as.matrix(fg@feat$node$count)
-    # pparen <- fg@edge_list$parent
-    # pchild <- fg@edge_list$child
     meta_cell <- fg@graph$v
     meta_cell_grid <-
         base::do.call(rbind, stringr::str_split(meta_cell$phenocode,""))
-    # pl <- meta_cell$phenolayer
     meta_cell_grid <- base::apply(meta_cell_grid, 2, as.numeric)
-    # meta_cell_grid <- Matrix::Matrix(meta_cell_grid,sparse=TRUE)
-
-    # same dimensions as grid, logical, which row needs change
-    # (meta_cell_gridTF_rany)
-    # meta_cell_grid_cmax <- base::apply(meta_cell_grid,2, function(x) max(x) )
-    # meta_cell_grid_TF <- base::apply(meta_cell_grid,2, function(x) {
-    #     xmax <- max(x)
-    #     if (xmax==2) return(rep(FALSE,base::length(x)))
-    #     x>0 & x<xmax
-    # })
     meta_cell_grid_TF1 <- base::apply(meta_cell_grid,2, function(x) {
         xmax <- max(x)
         if (xmax==2) return(rep(FALSE,base::length(x)))
         x>1 & x<xmax
     })
-    # rsum1 <- base::apply(meta_cell_grid_TF1,1,sum)
-    # rsum <- base::apply(meta_cell_grid_TF,1,sum)
-    # rany1 <- rsum1>0
-    # rany <- rsum>0
     cany1 <- base::which(base::apply(meta_cell_grid_TF1, 2, any))
     for (marker in cany1) {
         coldo <- base::which(meta_cell_grid_TF1[,marker])
@@ -914,7 +880,6 @@ fg_feat_cumsum <- function(fg, no_cores) {
 fg_feat_mean_class <- function(
     fg, class, no_cores=1, node_features=NULL, edge_features=NULL
 ) {
-    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     if (!class%in%base::colnames(fg@meta))

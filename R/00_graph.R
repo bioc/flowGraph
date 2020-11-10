@@ -112,7 +112,6 @@ get_phen_meta <- function(phen, phenocode=NULL) {
 #' @importFrom purrr map compact map_chr
 #' @importFrom furrr future_map
 get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
-    # no_cores <-  flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     if (base::is.null(phen) & base::is.null(meta_cell))
@@ -244,8 +243,7 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
 #' @importFrom igraph graph_from_data_frame layout.reingold.tilford V
 #' @importFrom purrr map_int
 set_layout_graph <- function(gr, layout_fun="layout.reingold.tilford") {
-    # layout.circle NULL <-
-    # layout.reingold.tilford FUN is a layout
+    # layout.circle, layout.reingold.tilford FUN is a layout
     # function from the igraph package assume
     # graph is connected, used internally
 
@@ -284,13 +282,6 @@ set_layout_graph <- function(gr, layout_fun="layout.reingold.tilford") {
     e_match2 <- base::match(gr_e$to, gr_v$phenotype)
     gr_e$to.x <- gr_v$x[e_match2]
     gr_e$to.y <- gr_v$y[e_match2]
-
-    # gr$v$x <- gr_v$x
-    # gr$v$y <- gr_v$y
-    # gr$e$from.x <- gr_e$from.x
-    # gr$e$from.y <- gr_e$from.y
-    # gr$e$to.x <- gr_e$to.x
-    # gr$e$to.y <- gr_e$to.y
 
     return(base::list(v=gr_v, e=gr_e))
 }

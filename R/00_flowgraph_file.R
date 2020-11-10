@@ -35,9 +35,9 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
 
     # check folder path
     if (base::is.null(folder_path)) {
-        if (base::is.null(fg@etc$save$path))
-            stop("please provide valid folder path")
         folder_path <- fg@etc$save$path
+        if (base::is.null(folder_path))
+            stop("please provide valid folder path")
     }
     if (!dir.exists(folder_path))
         dir.create(folder_path, recursive=TRUE, showWarnings=FALSE)
@@ -54,6 +54,7 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
     }
 
     # create readme file
+    fg_graph <- fg_get_graph(fg)
     fc <- file(paste0(folder_path,"/README.md"))
     writeLines(c(
         "PLEASE DO NOT MAKE CHANGES TO THIS FILE.",
@@ -67,13 +68,13 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
         "The Summary_statistics folder contains p-values obtained from features associated with each immunophenotype or/ relation between immunophenotypes. The plots folder contains plots to help interpret those p-values.",
         "",
         "The Features folder contains features for:",
-        paste0("- ", nrow(fg@meta), " flow cytometry samples."),
-        paste0("- ", length(fg@markers), " markers: ",
-               paste0(fg@markers, collapse=", ")),
-        paste0("- ", base::nrow(fg@graph$v),
+        paste0("- ", nrow(fg_get_meta(fg)), " flow cytometry samples."),
+        paste0("- ", length(fg_get_markers(fg)), " markers: ",
+               paste0(fg_get_markers(fg), collapse=", ")),
+        paste0("- ", base::nrow(fg_graph$v),
                " cell population nodes (nodes for short) and ",
-               base::nrow(fg@graph$e), " edges on ",
-               max(fg@graph$v$phenolayer), " layers."),
+               base::nrow(fg_graph$e), " edges on ",
+               max(fg_get_graph(fg)$v$phenolayer), " layers."),
         "",
         "Cell hierarchy plots: By default, for SpecEnr features, we generate two cell_hierarchy plots. The original one is where the colours represent difference between mean SpecEnr values across sample classes. We also add one where the colours represent difference betwee mean original values across sample classes. Original here is usually proportion: the feature used to create SpecEnr. Note that if a node is coloured lightly on the second plot, then the difference is very small, meaning the SpecEnr value may become sporadic. Therefore, when analyzing the plots, for most cases we recommend looking at most important cell populations as the ones with large difference in both plots.",
         ""), fc)
@@ -82,54 +83,55 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
 
 
     # save sample meta data and markers
-    meta <- fg@meta
+    meta <- fg_get_meta(fg)
     utils::write.csv(meta, file=paste0(folder_path, "/sample_meta.csv"),
               row.names=FALSE)
 
 
     # save features
+    fg_feat <- fg@feat
+    fg_feat_desc <- fg_get_feature_desc(fg)
     fn_dir <- paste0(folder_path, "/features/nodes")
     dir.create(fn_dir, recursive=TRUE, showWarnings=FALSE)
-    a <- purrr::map(names(fg@feat$node), function(fn) {
-        m <- as.matrix(fg@feat$node[[fn]])
-        # if (fn=="count") fn <- "Cell_count"
-        # if (fn=="prop") fn <- "Proportion"
-        # if (fn=="expect_prop") fn <- "Expected_proportion"
+    a <- purrr::map(names(fg_feat$node), function(fn) {
+        m <- as.matrix(fg_feat$node[[fn]])
         utils::write.csv(m, file=paste0(fn_dir,"/", fn, ".csv"))
     })
-    sm <- fg@feat_desc$node
+    sm <- fg_feat_desc$node
     utils::write.csv(as.matrix(sm), file=paste0(fn_dir,".csv"), row.names=FALSE)
 
-    if (!base::is.null(fg@feat$edge)) {
+    if (!base::is.null(fg_feat$edge)) {
         fe_dir <- paste0(folder_path, "/features/edges")
         dir.create(fe_dir, recursive=TRUE, showWarnings=FALSE)
-        a <- purrr::map(names(fg@feat$edge), function(fe) {
-            m <- as.matrix(fg@feat$edge[[fe]])
+        a <- purrr::map(names(fg_feat$edge), function(fe) {
+            m <- as.matrix(fg_feat$edge[[fe]])
             # if (fe=="prop") fn <- "Proportion"
             utils::write.csv(m, file=paste0(fe_dir,"/", fe, ".csv"))
         })
-        sm <- fg@feat_desc$edge
+        sm <- fg_feat_desc$edge
         utils::write.csv(sm, file=paste0(fe_dir,".csv"), row.names=FALSE)
     }
 
 
     # save summaries
-    if (!base::is.null(fg@summary$node)) {
+    fg_summary_desc <- fg_get_summary_desc(fg)
+    fg_summary <- fg@summary
+    if (!base::is.null(fg_summary$node)) {
         sn_dir <- paste0(folder_path, "/summary_statistics/nodes")
         dir.create(sn_dir, recursive=TRUE, showWarnings=FALSE)
         tb <- fg_get_summary_tables(fg)
         utils::write.csv(tb, file=paste0(sn_dir, "/pvalues.csv"))
-        sm <- fg@summary_desc$node
+        sm <- fg_summary_desc$node
         data.table::fwrite(sm, file=paste0(sn_dir,".csv"), sep=",",
                            row.names=FALSE, col.names=TRUE)
     }
 
-    if (!base::is.null(fg@summary$edge)) {
+    if (!base::is.null(fg_summary$edge)) {
         se_dir <- paste0(folder_path, "/summary_statistics/edges")
         dir.create(se_dir, recursive=TRUE, showWarnings=FALSE)
         tb <- fg_get_summary_tables(fg, type="edge")
         utils::write.csv(tb, file=paste0(se_dir, "/pvalues.csv"))
-        sm <- as.matrix(fg@summary_desc$edge)
+        sm <- as.matrix(fg_summary_desc$edge)
         data.table::fwrite(sm, file=paste0(sn_dir,".csv"), sep=",",
                            row.names=FALSE, col.names=TRUE)
     }
@@ -138,12 +140,12 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
     fo_dir <- paste0(folder_path,"/etc")
     dir.create(fo_dir, showWarnings=FALSE)
 
-    gr <- fg@graph
+    gr <- fg_graph
     saveRDS(gr, file=paste0(fo_dir, "/graph.rds"))
     el <- fg@edge_list
     saveRDS(el, file=paste0(fo_dir, "/edge_list.rds"))
 
-    ls <- fg@summary
+    ls <- fg_summary
     saveRDS(ls, file=paste0(fo_dir, "/summary.rds"))
     markers <- fg@markers
     saveRDS(markers, file=paste0(fo_dir, "/markers.rds"))
@@ -153,7 +155,8 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
     saveRDS(etc, file=paste0(fo_dir, "/etc.rds"))
 
     if (save_plots)
-        fg_save_plots(fg, plot_path=paste0(folder_path,"/plots"), paired=paired, ...)
+        fg_save_plots(fg, plot_path=paste0(folder_path,"/plots"),
+                      paired=paired, ...)
 
     return(TRUE)
 }

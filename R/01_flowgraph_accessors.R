@@ -1,25 +1,3 @@
-## FG ACCESSORS ----------------------------------------------------------------
-
-#' #' @title Indicates whether a flowGraph has cumsumpos features.
-#' #' @description Indicates whether a flowGraph has cumsumpos features; see
-#' #'  \code{\link[flowGraph]{flowGraph}} for examples of cumsumpos features.
-#' #' @param fg flowGraph object.
-#' #' @return A logical variable.
-#' #' @examples
-#' #'
-#' #'  data(fg_data_pos30)
-#' #'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#' #'                  prop=FALSE, specenr=FALSE,
-#' #'                  no_cores=1, cumsumpos=TRUE)
-#' #'  fg_csp(fg)
-#' #'
-#' #' @seealso
-#' #'  \code{\link[flowGraph]{flowGraph-class}}
-#' #'  \code{\link[flowGraph]{flowGraph}}
-#' #' @rdname fg_csp
-#' #' @export
-#' fg_csp <- function(fg) fg@etc$cumsumpos
-
 #' @title Retrieves a feature matrix.
 #' @description Retrieves a feature matrix from a given flowGraph object,
 #'  the feature type, and feature name.
@@ -347,11 +325,9 @@ fg_get_summary <- function(
         sl0 <- sl$values
         if (filter_btwn_es>0 | filter_btwn_tpthres<1) {
 
-            sig1 <- #df_ps$tpv1_paired<filter_btwn_tpthres &
-                df_ps$tpv1<filter_btwn_tpthres# & abs(df_ps$cd1)>=filter_btwn_es
-            sig2 <- #df_ps$tpv2_paired<filter_btwn_tpthres &
-                df_ps$tpv2<filter_btwn_tpthres# & abs(df_ps$cd2)>=filter_btwn_es
-            sig3 <- df_ps$btp<filter_btwn_tpthres# & abs(df_ps$bcd)>=filter_btwn_es# | df_ps$bwp>p_t1 # difference between two classes are different between expect and actual
+            sig1 <- df_ps$tpv1<filter_btwn_tpthres
+            sig2 <- df_ps$tpv2<filter_btwn_tpthres
+            sig3 <- df_ps$btp<filter_btwn_tpthres
             sigcands <- (sig1 | sig2) & sig3
 
             sl$values_original <- sl0
@@ -535,31 +511,6 @@ fg_get_summary_desc <- function(fg) fg@summary_desc
 fg_get_meta <- function(fg) fg@meta
 
 
-# setReplaceMethod(
-#     "fg_meta", signature=signature(object="flowGraph", value="matrix"),
-#     definition=function(object, value) {
-#         value <- as.data.frame(value, stringsAsFactors=FALSE)
-#         fg_meta(object) <- value
-#         return(object)
-#     })
-#
-# setReplaceMethod(
-#     "fg_meta", signature=signature(object="flowGraph", value="data.frame"),
-#     definition=function(object, value) {
-#         if (!"id"%in%colnames(value) |
-#             nrow(value)!=nrow(fg_get_feature(object, "node", "count")))
-#             stop("meta must have an id column and
-#                  a row for each sample in the flowGraph object")
-#         fg_meta(object) <- value
-#         object <- fg_gsub_ids(object, value$id)
-#         return(object)
-#     })
-#
-# setReplaceMethod(
-#     "fg_meta", signature=c("flowGraph", "ANY"),
-#     definition=function(object, value)
-#         stop("please insert a data frame as meta data", call.=FALSE))
-
 
 ## get graph
 
@@ -610,20 +561,6 @@ fg_get_graph <- function(fg) fg@graph
 #' @rdname fg_get_markers
 #' @export
 fg_get_markers <- function(fg) fg@markers
-
-# setReplaceMethod(
-#     "fg_graph",
-#     signature=signature(object="flowGraph", value="list"),
-#     definition=function(object, value) {
-#         fg_graph(object) <- value
-#         return(object)
-#     })
-#
-# setReplaceMethod(
-#     "fg_graph", signature=c("flowGraph", "ANY"),
-#     definition=function(object, value)
-#         stop("please insert a list with graph elements
-#         v (nodes) and e (edges)", call.=FALSE))
 
 #' @title Retrieves feature summaries.
 #' @description Retrieves a feature summary (e.g. \code{colMeans}) for samples

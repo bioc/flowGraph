@@ -512,7 +512,7 @@ plot_gr <- function(
             if (colour_edges) {
                 gp <- gp +
                     ggplot2::geom_segment(
-                        data=gr_e[gr_e$e_ind,],
+                        data=gr_e[gr_e$e_ind,], # colour="grey50",
                         ggplot2::aes(x=from.x, xend=to.x, y=from.y, yend=to.y,
                                      colour=colour))
             } else {
@@ -559,7 +559,7 @@ plot_gr <- function(
             if (colour_edges) {
                 gp <- gp +
                     ggplot2::geom_segment(
-                        data=gr_e[gr_e$e_ind,],
+                        data=gr_e[gr_e$e_ind,], # colour="grey50",
                         ggplot2::aes(x=from.x, xend=to.x, y=from.y, yend=to.y,
                                      colour=colour))
             } else {
@@ -583,6 +583,41 @@ plot_gr <- function(
         }
 
         if (!shiny_plot & interactive) gp <- ggiraph::girafe(ggobj=gp)
+
+
+
+        # warning("interactive plotting is currently in beta")
+        # vx <- gr_v$x[gr_v$v_ind]
+        # vy <- gr_v$y[gr_v$v_ind]
+        # gp <- plotly::plot_ly(x=~vx, y=~vy, mode="markers", opacity=1,
+        #                       color=gr_v$colour[gr_v$v_ind],
+        #                       colorscale="YlGnBu",
+        #                       size=gr_v$size[gr_v$v_ind],
+        #                       text=gr_v$label_long[gr_v$v_ind],
+        #                       hoverinfo="text", ...)
+        #
+        # # gr_e$colour_new <- gr_e$colour
+        # # gr_e$colour_new[gr_e$colour<0] <- "turquoise"
+        # # gr_e$colour_new[gr_e$colour>0] <- "cherry"
+        # # gr_e$colour_new[gr_e$colour==0] <- "grey50"
+        # if (!show_bgedges) {
+        #     el <- purrr::map(which(gr_e$e_ind), function(j) {
+        #         list(type="line", line=list(color=gr_e$colour[j], width=.5),
+        #              x0=gr_e$from.x[j], x1=gr_e$to.x[j],
+        #              y0=gr_e$from.y[j], y1=gr_e$to.y[j])
+        #     })
+        # } else {
+        #     el <- purrr::map(seq_len(nrow(gr_e)), function(j) {
+        #         list(type="line", line=list(color=gr_e$colour[j], width=.5),
+        #              x0=gr_e$from.x[j], x1=gr_e$to.x[j],
+        #              y0=gr_e$from.y[j], y1=gr_e$to.y[j])
+        #     })
+        # }
+        #
+        # axis <- list(title="", showgrid=FALSE, showticklabels=FALSE,
+        #              zeroline=FALSE)
+        #
+        # gp <- plotly::layout(gp, title=main, shapes=el, xaxis=axis, yaxis=axis)
     }
     else { # visNet
         v_ind <- gr$v$v_ind
@@ -625,6 +660,7 @@ plot_gr <- function(
             visNetwork::visEdges(arrows="to") %>%
             visNetwork::visOptions(highlightNearest=TRUE, nodesIdSelection=TRUE) %>%
             visNetwork::visInteraction(hover=TRUE, multiselect=!shiny_plot) %>%
+            # visIgraphLayout(layout="layout_as_tree") %>% # "layout_in_circle"
             visNetwork::visHierarchicalLayout(
                 parentCentralization=TRUE,
                 treeSpacing=50,
@@ -780,6 +816,7 @@ fg_plot_qq <- function(
             "\n- comparing ", summary_meta["class"], ", labels: ", summary_meta["label1"], " & ", summary_meta["label2"], ".")
 
     qo <- base::order(qvals)
+    # m1 <- fg_get_feature_means(fg, type=type, feature="prop", id=qvals_$id1)
 
     uni <- seq_len(base::length(qvals))/(base::length(qvals)+1)
 
@@ -1133,6 +1170,14 @@ fg_plot_box_set <- function(
         ggplot2::theme(legend.position="none") +
         ggplot2::facet_grid(cols=ggplot2::vars(feature))
 
+    # gpe <- ggplot2::ggplot(dta[dta$feature==features[3],],
+    #                         ggplot2::aes(x=class, y=val, fill=class)) +
+    #     ggplot2::ggtitle(paste0("feature: ", features[3])) +
+    #     ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA)) +
+    #     ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3) +
+    #     ggplot2::theme(legend.position="none",
+    #                    axis.title.y=ggplot2::element_blank())
+
     # class 1/2 actual vs expected
     gp12 <- ggplot2::ggplot(dta[dta$feature!=feature,],
                            ggplot2::aes(x=feature, y=val))+
@@ -1145,6 +1190,16 @@ fg_plot_box_set <- function(
         ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3) +
         ggplot2::theme(legend.position="none") +
         ggplot2::facet_grid(cols=ggplot2::vars(class))
+
+    # gp2 <- ggplot2::ggplot(dta[dta$feature!=feature & dta$class==classes[2],],
+    #                        ggplot2::aes(x=feature, y=val))+
+    #     ggplot2::ggtitle(paste0("class label: ", classes[2],
+    #                             " (p=",signif(dfb$tpv2[node_edge],3),")")) +
+    #     ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA)) +
+    #     ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3) +
+    #     ggplot2::ggtitle(paste0("class label: ", classes[2])) +
+    #     ggplot2::theme(legend.position="none",
+    #                    axis.title.y=ggplot2::element_blank())
 
     if (paired) {
         gp <- gp + ggplot2::geom_line(
@@ -1160,9 +1215,15 @@ fg_plot_box_set <- function(
         gpae <- gpae + ggplot2::geom_dotplot(
             binaxis='y', stackdir='center',
             position=ggplot2::position_dodge(1), dotsize=.3)
+        # gpe <- gpe + ggplot2::geom_dotplot(
+        #     binaxis='y', stackdir='center',
+        #     position=ggplot2::position_dodge(1), dotsize=.3)
         gp12 <- gp12 + ggplot2::geom_dotplot(
             binaxis='y', stackdir='center',
             position=ggplot2::position_dodge(1), dotsize=.3)
+        # gp2 <- gp2 + ggplot2::geom_dotplot(
+        #     binaxis='y', stackdir='center',
+        #     position=ggplot2::position_dodge(1), dotsize=.3)
     }
 
     if (!outlier) {
@@ -1177,6 +1238,10 @@ fg_plot_box_set <- function(
         gpae <- gpae + ggplot2::coord_cartesian(
             ylim=c(min(ylim1[1],ylim2[1],ylim1_[1],ylim2_[1]),
                    max(ylim1[2],ylim2[2],ylim1_[2],ylim2_[2])))
+        # ylim1 = grDevices::boxplot.stats(b1)$stats[c(1,5)]
+        # ylim2 = grDevices::boxplot.stats(b2)$stats[c(1,5)]
+        # gpe <- gpe + ggplot2::coord_cartesian(
+        #     ylim=c(min(ylim1[1],ylim2[1]), max(ylim1[2],ylim2[2])))
         ylim1 = grDevices::boxplot.stats(a1)$stats[c(1,5)]
         ylim2 = grDevices::boxplot.stats(b1)$stats[c(1,5)]
         ylim1_ = grDevices::boxplot.stats(a2)$stats[c(1,5)]
@@ -1184,13 +1249,32 @@ fg_plot_box_set <- function(
         gp12 <- gp12 + ggplot2::coord_cartesian(
             ylim=c(min(ylim1[1],ylim2[1],ylim1_[1],ylim2_[1]),
                    max(ylim1[2],ylim2[2],ylim1_[2],ylim2_[2])))
+        # ylim1 = grDevices::boxplot.stats(a2)$stats[c(1,5)]
+        # ylim2 = grDevices::boxplot.stats(b2)$stats[c(1,5)]
+        # gp2 <- gp2 + ggplot2::coord_cartesian(
+        #     ylim=c(min(ylim1[1],ylim2[1]), max(ylim1[2],ylim2[2])))
     }
 
     gp_grid <- gridExtra::arrangeGrob(
         gp, gpae, gp12,# gp1, gp2,
         layout_matrix=cbind(c(1,1,2,3),c(1,1,2,3)))
 
+    # # histogram
+    # gp <- ggplot2::ggplot() + ggplot2::ggtitle(main) +
+    #     ggplot2::geom_density(ggplot2::aes(x=x), colour="red",
+    #                           data=data.frame(x=a)) +
+    #     ggplot2::geom_density(ggplot2::aes(x=x), colour="blue",
+    #                           data=data.frame(x=b))
+
+    # if (interactive & !shiny_plot)
+    #     gp <- ggiraph::girafe(ggobj=gp)
+
     if (!base::is.null(path)) {
+        # if (interactive & !shiny_plot) {
+        #     htmlwidgets::saveWidget(
+        #         gp, ifelse(grepl("[.]html$",path, ignore.case=TRUE),
+        #                    path, paste0(path, ".html")))
+        # } else if (!interactive) {
         suppressMessages({
             ggplot2::ggsave(ifelse(base::grepl(
                 "[.]png$",path, ignore.case=TRUE),
@@ -1198,6 +1282,7 @@ fg_plot_box_set <- function(
                 plot=gp_grid, scale=1, width=5, height=10,
                 units="in", dpi=500, limitsize=TRUE)
         })
+        # }
     }
     gp_grid
 }
@@ -1381,6 +1466,7 @@ fg_plot_pVSdiff <- function(
                     path, base::paste0(path, ".png")), plot=gp)
             })
     } else {
+        # i was trying out the speed of different interactive plots here, don't mind teh comments.
         dta$phenotype <- base::names(p)
         dta$phenogroup <- fg@graph$v$phenogroup
         if (shiny_plot & nodes_max!=Inf) {
@@ -1393,6 +1479,7 @@ fg_plot_pVSdiff <- function(
             dta <- dta[node_ind,]
         }
 
+        # if (gg) {
         start1 <- Sys.time()
         gp <- ggplot2::ggplot(
             dta, ggplot2::aes(x=log_p_value,y=difference,color=cohensd_size)) +
@@ -1412,6 +1499,26 @@ fg_plot_pVSdiff <- function(
             gp <- ggiraph::girafe(ggobj=gp)
         }
         gp
+    #     flowGraph:::time_output(start1)
+    # } else {
+    #     start1 <- Sys.time()
+    #     gp <- highcharter::hchart(
+    #         dta, "scatter",
+    #         highcharter::hcaes(x=log_p_value, y=difference,
+    #                            group=phenogroup, size=avg_count,
+    #                            color=cohensd_size))
+    #     gp
+    #     flowGraph:::time_output(start1)
+    # }
+    # start1 <- Sys.time()
+    # gp <- plotly::plot_ly(
+    #     dta, x = ~log_p_value, y = ~difference,
+    #     # Hover text:
+    #     text = ~phenotype_,
+    #     color = ~cohensd_size, size = ~avg_count, group=~fg@graph$v$phenogroup
+    # )
+    # gp
+    # flowGraph:::time_output(start1)
 
         if (!base::is.null(path))
             htmlwidgets::saveWidget(
@@ -1581,10 +1688,24 @@ fg_save_plots <- function(
                     path=base::paste0(plot_path_,"/qq.png"),
                     interactive=interactive, logged=logged)
             })
+#
+#             try ({
+#                 ## ecdf plot
+#                 p <- fg_get_summary(fg, type=type, index=index)$values
+#                 fun_ecdf <- ecdf(sort(p)); py <- fun_ecdf(sort(p))
+#                 # df <- data.frame(y=sort(p),x=py)
+#                 # a <- elbow(df)
+#                 png(paste0(plot_path_,"/eCDF.png"))
+#                 plot.ecdf(p, main=paste0("p-value eCDF plot"),
+#                           xlab="p-values")
+#                 # abline(v=a[1])
+#                 dev.off()
+#             })
 
             if (type=="node")
                 try ({
                     ## cell hierarchy plot
+                    # p <- fg_get_summary(fg, type=type, index=index)$values
                     gr <- fg_plot(
                         fg, type="node", index=index,
                         adjust_custom=adjust_custom,
@@ -1607,13 +1728,13 @@ fg_save_plots <- function(
                             label=fg@summary_desc$node$label2[[index]])
 
                         gr$v$v_ind[(m2>m1 & gr$v$colour<0) | (m2<m1 & gr$v$colour>0)] <- F
-                        gr$v$colour <- m2-m1
+                        gr$v$colour <- m2-m1#[gr$v$v_ind]
                         gr$main <- paste0(gr$main,"\n- colour: mean ",feats[2]," diff")
                         gp <- plot_gr(gr, label_coloured=FALSE)
                         ggplot2::ggsave(
                             paste0(plot_path_,"/cell_hierarchy_",
                                    feats[2],"_colours.png"),
-                            plot=gp)
+                            plot=gp)#, dpi=600)
                     }
 
                 })

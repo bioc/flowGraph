@@ -161,14 +161,10 @@
 #' # input: matrix + vector of class corresponding to samples
 #' fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
 #'                 no_cores=no_cores)
-#' # - save to file directly
-#' # fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                 no_cores=no_cores, path="path_to_folder)
 #'
 #' # input: matrix + meta data frame
 #' # fg <- flowGraph(fg_data_pos30$count, meta=fg_data_pos30$meta,
 #' #                 no_cores=no_cores)
-#'
 #'
 #' @seealso
 #'  \code{\link[flowGraph]{flowGraph-class}}
@@ -195,6 +191,7 @@
 #' @importFrom future plan multiprocess
 #' @importFrom furrr future_map
 #' @importFrom purrr map_lgl map_chr map_dfr map compact map_int
+# #' @importFrom ftf*** decodePhenotype
 #' @importFrom Matrix Matrix
 #' @importFrom methods new
 #' @importFrom igraph layout.reingold.tilford
@@ -214,7 +211,7 @@ flowGraph <- function(
     diminish=TRUE, label1=NULL, label2=NULL,
 
     # plotting parameters
-    save_plots=FALSE
+    save_plots=TRUE
 
 ) {
     options(stringsAsFactors=FALSE)
@@ -233,6 +230,7 @@ flowGraph <- function(
     if (any(class(input_)%in%c("integer","numeric")) |
         grepl("matrix",class(input_), ignore.case=TRUE)) {
         ## feature: count (sample x cell population)
+        # mc <- flowGraph_matrix(input_)
         if (base::is.null(base::dim(input_))) {
             mc <- mc0 <- base::matrix(input_,nrow=1)
             base::colnames(mc) <- base::names(input_)
@@ -260,6 +258,58 @@ flowGraph <- function(
 
     } else {
         stop("input must be a numeric sample x cell population matrix.")
+        # if (is(input_, "Phenotypes"))
+        #     input_ <- base::list(s1=input_)
+        # if (is(input_,"list")) {
+        #     testclass <- purrr::map_lgl(input_, is, "Phenotypes")
+        #     if (!all(testclass)) stop(msg)
+        #     ftl <- input_
+        # } else if (is(input_, "character")) {
+        #     # ftl <- flowGraph_load_ftl(input_)
+        #     no_cores <- flowGraph:::ncores(no_cores)
+        #     if (no_cores>1) future::plan(future::multiprocess)
+        #
+        #     ftl <- furrr::future_map(input_, function(x) base::get(load(x)))
+        #     base::names(ftl) <- purrr::map_chr(stringr::str_split(input_,"/"),
+        #                                        function(x) x[base::length(x)])
+        # } else {
+        #     stop(msg)
+        # }
+        #
+        # # make sample_id
+        # if (base::is.null(meta)) {
+        #     sample_id <- base::names(ftl)
+        #     if (base::is.null(sample_id))
+        #         sample_id = paste0("s", seq_len(base::length(ftl)))
+        # }
+        #
+        # ## make meta for cell populations
+        # if (base::is.null(markers))
+        #     markers <- ftl[[1]]@MarkerNames
+        # phen <- NULL
+        # try({
+        #     phen <- purrr::map_chr(ftl[[1]]@PhenoCodes, function(x)
+        #         ftf***::decodePhenotype(x, markers,
+        #                                   ftl[[1]]@PartitionsPerMarker))
+        # }, silent=TRUE)
+        # if (base::is.null(phen))
+        #     try({ phen <- base::rownames(ftl[[1]]@MFIs) }, silent=TRUE)
+        # if (base::is.null(phen))
+        #     stop("no phenotype cell populations labels in Phenotype file.")
+        #
+        # try ({ phenocode <- ftl[[1]]@PhenoCodes }, silent=TRUE)
+        #
+        # ## feature: count (sample x cell population)
+        # mc <- as.matrix(base::do.call(rbind,purrr::map(
+        #     ftl, function(ft) ft@CellFreqs)))
+        # if (is(mc[1],"character")){ # some versions of purrr might give char
+        #     mc <- as.matrix(mc[,-1])
+        #     class(mc) <- "numeric"
+        # }
+        # # if (base::is.null(dim(mc)[1])) mc <- matrix(mc, nrow=1)
+        #
+        # # remove Phenotype list to save memory
+        # rm(ftl); gc()
     }
 
     time_output(start1)
@@ -407,9 +457,77 @@ flowGraph <- function(
             message("flowGraph object not saved; check path and try again with fg_save!")
         })
 
+    # if (normalize) {
+    #     if (is.null(norm_path)) norm_path <- paste0(path,"/Count_normalization")
+    #     fg <- fg_feat_node_norm(fg, norm_ind=norm_ind, norm_layer=norm_layer,
+    #                             norm_path=norm_path, no_cores=no_cores)
+    #
+    #     if (calculate_summary & ("count_norm"%in%node_features |
+    #                              base::is.null(node_features)))
+    #         fg <- fg_summary(
+    #             fg, no_cores=no_cores, class=class,
+    #             label1=label1, label2=label2,
+    #             node_features="count_norm",
+    #             edge_features="NONE",
+    #             overwrite=FALSE,
+    #             test_custom=test_custom,
+    #             test_name=test_name,
+    #             diminish=diminish)
+    #
+    #     if (saved) {
+    #         fn_dir <- paste0(path, "/Features/Nodes")
+    #         fn <- "count_norm"
+    #         m <- as.matrix(fg@feat$node[[fn]])
+    #         write.csv(m, file=paste0(fn_dir,"/", fn, ".csv"))
+    #         sm <- fg@feat_desc$node
+    #         write.csv(sm, file=paste0(fn_dir,".csv"), row.names=FALSE)
+    #     }
+    # }
+
     if (calculate_summary & save_plots & saved)
         fg_save_plots(fg, plot_path=paste0(path, "/plots"), ...)
 
     time_output(start, "total time used")
     return(fg)
 }
+
+
+#' ## input_ processing: matrix
+#' #' @title Cleans input cell count matrix.
+#' #' @description Cleans input cell count matrix.
+#' #' @param input_ A numeric matrix.
+#' #' @return A numeric matrix
+#' #' @rdname flowGraph_matrix
+#' flowGraph_matrix <- function(input_) {
+#'     if (base::is.null(base::dim(input_))) {
+#'         mc <- mc0 <- base::matrix(input_,nrow=1)
+#'         base::colnames(mc) <- base::names(input_)
+#'         base::rownames(mc) <- "s1"
+#'     } else {
+#'         mc <- mc0 <- input_
+#'         if (base::is.null(base::rownames(input_)))
+#'             base::rownames(input_) <-
+#'                 paste0("s",base::seq_len(nrow(input_)))
+#'         base::rownames(mc) <- base::rownames(input_)
+#'     }
+#'     return(mc)
+#' }
+#'
+#' ## input_ processing: loading from paths
+#' #' @title Loads Phenotypes objects from vector of paths.
+#' #' @description Loads Phenotypes objects from vector of paths.
+#' #' @param input_ A string vector of \code{load()}-able Phenotypes
+#' #' object paths.
+#' #' @param no_cores An integer indicating number of cores to parallelize on.
+#' #' @return A list of Phenotypes objects.
+#' #' @rdname flowGraph_load_ftl
+#' #' @importFrom future plan multiprocess
+#' #' @importFrom furrr future_map
+#' flowGraph_load_ftl <- function(input_, no_cores=1) {
+#'     no_cores <- flowGraph:::ncores(no_cores)
+#'     if (no_cores>1) future::plan(future::multiprocess)
+#'
+#'     ftl <- furrr::future_map(input_, function(x) base::get(load(x)))
+#'
+#'     return(ftl)
+#' }
