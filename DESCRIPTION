@@ -1,0 +1,48 @@
+Package: flowGraph
+Type: Package
+Title: Identifying differential cell populations in flow cytometry data accounting for marker frequency
+Version: 0.99.8
+Description: Identifies maximal differential cell populations in flow cytometry data taking into account dependencies between cell populations; flowGraph calculates and plots SpecEnr abundance scores given cell population cell counts.
+Date: 2019-11-30
+Authors@R: person("Alice", "Yue", email = "aya43@sfu.ca", role = c("aut", "cre"))
+License: Artistic-2.0
+VignetteBuilder: knitr
+Depends: R (>= 4.0)
+Imports: 
+    effsize,
+    furrr, 
+    future, 
+    purrr,
+    ggiraph, 
+    ggrepel, 
+    ggplot2,
+    igraph, 
+    Matrix, 
+    stats, 
+    utils,
+    visNetwork, 
+    htmlwidgets, 
+    grDevices, 
+    methods,
+    stringr, 
+    stringi,
+    Rdpack,
+    data.table,
+    gridExtra,
+Suggests: 
+    BiocStyle,
+    knitr,
+    rmarkdown,
+    testthat (>= 2.1.0)
+biocViews: 
+    FlowCytometry, 
+    StatisticalMethod, 
+    ImmunoOncology, 
+    Software, 
+    CellBasedAssays, 
+    Visualization
+BugReports: https://github.com/aya49/flowGraph/issues
+URL: https://github.com/aya49/flowGraph
+RoxygenNote: 7.1.1
+RdMacros: Rdpack
+LazyData: no
