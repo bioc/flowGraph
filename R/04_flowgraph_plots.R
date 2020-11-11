@@ -136,7 +136,7 @@ fg_plot <- function(
     filter_btwn_tpthres=1, filter_btwn_es=0,
     # show_nodes_edges: a vector of true false, length equals to number of nodes
     node_labels=c("prop", "expect_prop"),
-    summary_fun=base::colMeans, layout_fun=NULL,
+    summary_fun=colMeans, layout_fun=NULL,
     show_bgedges=TRUE,
     # mod_layout=FALSE,
     main=NULL, interactive=FALSE, visNet_plot=TRUE,
@@ -145,20 +145,20 @@ fg_plot <- function(
     # width in inches feat must be list with names node and edge
     # cellhierarchy plots p values
 
-    type <- base::match.arg(type, c("node", "edge"))
+    type <- match.arg(type, c("node", "edge"))
 
-    gr <- ggdf(fg@graph)
+    gr <- ggdf(fg_get_graph(fg))
 
     # change layout if needed
-    if (!base::is.null(layout_fun)) {
-        if (layout_fun!=fg@plot_layout)
+    if (!is.null(layout_fun)) {
+        if (layout_fun!=fg_get_plot_layout(fg))
             gr <- set_layout_graph(gr, layout_fun) # layout cell hierarchy
     }
 
     # get summary statistics
-    summary_meta <- base::unlist(fg@summary_desc[[type]][
+    summary_meta <- unlist(fg_get_summary_desc(fg)[[type]][
         flowGraph:::fg_get_summary_index(fg, type, index, summary_meta),])
-    if (!base::grepl("SpecEnr",base::unlist(summary_meta["feat"])))
+    if (!grepl("SpecEnr",unlist(summary_meta["feat"])))
         filter_adjust0 <- 1
     pms <- fg_get_summary(
         fg, type, index, summary_meta, adjust_custom=adjust_custom,
@@ -174,12 +174,12 @@ fg_plot <- function(
 
     # show_nodes_edges: which nodes/edges to show
     sn_ <- p < p_thres
-    if (!base::is.null(show_nodes_edges))
-        if (base::length(show_nodes_edges)==base::length(m1) &
-            base::all(show_nodes_edges%in%c(TRUE,FALSE)) |
-            base::length(show_nodes_edges)>1)
+    if (!is.null(show_nodes_edges))
+        if (length(show_nodes_edges)==length(m1) &
+            all(show_nodes_edges%in%c(TRUE,FALSE)) |
+            length(show_nodes_edges)>1)
             sn_ <- show_nodes_edges
-    if (base::sum(sn_)==0) {
+    if (sum(sn_)==0) {
         warning("no significant nodes found, maybe increase p_thres?")
         return(NULL)
     }
@@ -188,19 +188,19 @@ fg_plot <- function(
         gr$v$v_ind <- gr$v$label_ind <- sn_
         gr$e$e_ind <- gr$e$from%in%gr$v$phenotype[sn_] &
             gr$e$to%in%gr$v$phenotype[sn_]
-        if (base::sum(sn_)>label_max) {
+        if (sum(sn_)>label_max) {
             gr$v$label_ind <- FALSE
-            gr$v$label_ind[utils::head(base::order(p), label_max)] <- TRUE
+            gr$v$label_ind[utils::head(order(p), label_max)] <- TRUE
         }
     } else {
         gr$e$e_ind <- sn_
         gr$v$v_ind <- gr$v$label_ind <-
-            gr$v$phenotype%in%base::unlist(gr$e[sn_,c("to","from")])
-        if (base::sum(gr$v$v_ind)>label_max) {
+            gr$v$phenotype%in%unlist(gr$e[sn_,c("to","from")])
+        if (sum(gr$v$v_ind)>label_max) {
             gr$v$label_ind <- FALSE
-            po <- base::order(p); po <- po[po %in% base::which(sn_)]
-            while (base::sum(gr$v$label_ind) < label_max |
-                   base::length(po)==0) {
+            po <- order(p); po <- po[po %in% which(sn_)]
+            while (sum(gr$v$label_ind) < label_max |
+                   length(po)==0) {
                 po1 <- gr$v$phenotype%in%gr$e[po[1],c("to","from")]
                 gr$v$label_ind[po1] <- TRUE
                 po <- po[-1]
@@ -209,8 +209,8 @@ fg_plot <- function(
     }
 
     # plot title
-    if (base::is.null(main))
-        main <- base::paste0(
+    if (is.null(main))
+        main <- paste0(
             "cell hierarchy plot.\n",
             "- ", type, " feature: ", summary_meta["feat"], ".\n",
             "- p-value: ", summary_meta["test_name"],
@@ -222,40 +222,40 @@ fg_plot <- function(
         gr$v$label <- gr$v$label_long <- gr$v$phenotype
         if (node_labels[1]!="NONE")
             gr$v$label <- gr$v$label_long <-
-                base::paste0(gr$v$label, " (",base::signif(p,3),")")
+                paste0(gr$v$label, " (",signif(p,3),")")
         if (!"NONE"%in%node_labels) {
             node_labels <-
-                node_labels[node_labels%in%base::names(fg@feat[[type]])]
-            if (base::length(node_labels)==0) node_labels <- NULL
+                node_labels[node_labels%in%names(fg_get_feature_all(fg)[[type]])]
+            if (length(node_labels)==0) node_labels <- NULL
             if (type=="node") node_labels <-
-                    base::append(summary_meta["feat"], node_labels)
-            if (!base::is.null(node_labels))
-                node_labels <- node_labels[!base::is.null(node_labels)]
-            if (!base::is.null(node_labels))
-                node_labels <- node_labels[!base::duplicated(node_labels)]
-            if (!base::is.null(node_labels))
+                    append(summary_meta["feat"], node_labels)
+            if (!is.null(node_labels))
+                node_labels <- node_labels[!is.null(node_labels)]
+            if (!is.null(node_labels))
+                node_labels <- node_labels[!duplicated(node_labels)]
+            if (!is.null(node_labels))
                 for (label in node_labels) {
-                    vls <- base::list(
+                    vls <- list(
                         m1=fg_get_feature_means(fg, "node", label, id=id1),
                         m2=fg_get_feature_means(fg, "node", label, id=id2))
-                    vl <- base::paste0(base::round(vls$m1,3), "/",
-                                       base::round(vls$m2,3))
+                    vl <- paste0(round(vls$m1,3), "/",
+                                       round(vls$m2,3))
                     gr$v$label_long <-
-                        base::paste0(gr$v$label_long, "\n", label, ": ", vl)
-                    gr$v$label <- base::paste0(gr$v$label, " ", vl)
+                        paste0(gr$v$label_long, "\n", label, ": ", vl)
+                    gr$v$label <- paste0(gr$v$label, " ", vl)
                 }
         }
     } else {
-        gr$v$label <- gr$v$label_long <- base::paste0(gr$v$phenotype)
+        gr$v$label <- gr$v$label_long <- paste0(gr$v$phenotype)
     }
 
     # node colour, size
     if (type=="node") {
         gr$v$colour <- m2-m1
         gr$v$size <- -log(p)
-        gr$v$size[!base::is.finite(gr$v$size)] <-
-            base::max(gr$v$size[base::is.finite(gr$v$size)])
-        gr$v$size[base::is.nan(gr$v$size)] <- 0
+        gr$v$size[!is.finite(gr$v$size)] <-
+            max(gr$v$size[is.finite(gr$v$size)])
+        gr$v$size[is.nan(gr$v$size)] <- 0
         ew1 <- fg_get_feature_means(fg, type="edge", feature="prop", id=pms$id1)
         ew2 <- fg_get_feature_means(fg, type="edge", feature="prop", id=pms$id2)
         gr$e$colour <- ew1 - ew2
@@ -264,9 +264,9 @@ fg_plot <- function(
     } else {
         gr$e$colour <- m2-m1
         gr$e$size <- -log(p)
-        gr$e$size[!base::is.finite(gr$e$size)] <-
-            base::max(gr$e$size[base::is.finite(gr$e$size)])
-        gr$e$size[base::is.nan(gr$e$size)] <- 0
+        gr$e$size[!is.finite(gr$e$size)] <-
+            max(gr$e$size[is.finite(gr$e$size)])
+        gr$e$size[is.nan(gr$e$size)] <- 0
     }
 
     # optionally space out nodes again if no background edges
@@ -277,23 +277,23 @@ fg_plot <- function(
                   interactive=interactive,
                   visNet_plot=visNet_plot)
     suppressMessages({
-        if (!base::is.null(path) & !interactive)
-            ggplot2::ggsave(base::ifelse(
-                base::grepl("[.]png$",path, ignore.case=TRUE),
-                path, base::paste0(path, ".png")),
+        if (!is.null(path) & !interactive)
+            ggplot2::ggsave(ifelse(
+                grepl("[.]png$",path, ignore.case=TRUE),
+                path, paste0(path, ".png")),
                             plot=gp, scale=1, width=width, height=height,
                             units="in", dpi=600, limitsize=TRUE)
-        if (!base::is.null(path) & interactive & !visNet_plot)
+        if (!is.null(path) & interactive & !visNet_plot)
             htmlwidgets::saveWidget(
-                gp, base::ifelse(base::grepl("[.]html$",path, ignore.case=TRUE),
-                       path, base::paste0(path, ".html")))
-        if (!base::is.null(path) & interactive & visNet_plot)
+                gp, ifelse(grepl("[.]html$",path, ignore.case=TRUE),
+                       path, paste0(path, ".html")))
+        if (!is.null(path) & interactive & visNet_plot)
             visNetwork::visSave(
-                gp, file=ifelse(base::grepl("[.]html$",path, ignore.case=TRUE),
-                                path, base::paste0(path, ".html")),
+                gp, file=ifelse(grepl("[.]html$",path, ignore.case=TRUE),
+                                path, paste0(path, ".html")),
                 background="white")
     })
-    if (base::is.null(path)) message("use function plot_gr to plot fg_plot output")
+    if (is.null(path)) message("use function plot_gr to plot fg_plot output")
     gr$main <- main
     gr$show_bgedges <- show_bgedges
     gr$visNet_plot <- visNet_plot
@@ -356,8 +356,8 @@ fg_plot <- function(
 #' @rdname ggdf
 #' @export
 ggdf <- function(gr0) {
-    base::list(e=base::data.frame(gr0$e, colour=0, size=1, e_ind=FALSE),
-               v=base::data.frame(gr0$v,
+    list(e=data.frame(gr0$e, colour=0, size=1, e_ind=FALSE),
+               v=data.frame(gr0$v,
                                   size=1, colour=0,
                                   #sizeb=1, colourb="", fill="",
                                   label=gr0$v$phenotype,
@@ -443,21 +443,21 @@ plot_gr <- function(
     gr_v <- gr$v
     gr_e <- gr$e
 
-    if (base::is.null(main))
-        if (base::is.null(gr$main)) {
+    if (is.null(main))
+        if (is.null(gr$main)) {
             main <- ""
         } else {
-            main <- base::paste0("(",base::sum(gr_v$v_ind),"/",
-                                 base::nrow(gr_v),") ", gr$main)
+            main <- paste0("(",sum(gr_v$v_ind),"/",
+                                 nrow(gr_v),") ", gr$main)
         }
-    if (!base::is.null(gr$show_bgedges)) show_bgedges <- gr$show_bgedges
-    if (!base::is.null(gr$interactive)) interactive <- gr$interactive
-    if (!base::is.null(gr$visNet_plot)) show_bgedges <- gr$show_bgedges
+    if (!is.null(gr$show_bgedges)) show_bgedges <- gr$show_bgedges
+    if (!is.null(gr$interactive)) interactive <- gr$interactive
+    if (!is.null(gr$visNet_plot)) show_bgedges <- gr$show_bgedges
 
     if (shiny_plot) {
         interactive <- TRUE
         if (!visNet_plot) {
-            max_x <- base::max(gr$v$x)
+            max_x <- max(gr$v$x)
             gr_v$x <- gr$v$y
             gr_v$y <- max_x-gr$v$x
             gr_e$from.x <- gr$e$from.y
@@ -467,7 +467,7 @@ plot_gr <- function(
         }
     }
 
-    if(base::is.null(colour_palette))
+    if(is.null(colour_palette))
         colour_palette <- c('blue','cyan','yellow','red')
 
     # prepare base plot
@@ -498,8 +498,8 @@ plot_gr <- function(
             ggplot2::aes(x=from.x,xend=to.x, y=from.y,yend=to.y))
 
     if (!interactive) {
-        if (!base::all(gr_e$colour==gr_e$colour[1]) &
-            !base::all(gr_e$size==gr_e$size[1])) {
+        if (!all(gr_e$colour==gr_e$colour[1]) &
+            !all(gr_e$size==gr_e$size[1])) {
             gp <- gp +
                 ggplot2::geom_segment(
                     data=gr_e[gr_e$e_ind,],
@@ -544,14 +544,14 @@ plot_gr <- function(
         }
     }
     else if (!visNet_plot) {
-        if (!base::all(gr_e$colour==gr_e$colour[1]) &
-            !base::all(gr_e$size==gr_e$size[1])) {
+        if (!all(gr_e$colour==gr_e$colour[1]) &
+            !all(gr_e$size==gr_e$size[1])) {
             gp <- gp +
                 ggplot2::geom_segment(
                     data=gr_e[gr_e$e_ind,],
                     ggplot2::aes(x=from.x, xend=to.x, y=from.y, yend=to.y,
                                  color=colour, size=size,
-                                 tooltip=base::paste0(from, " > ", to))) +
+                                 tooltip=paste0(from, " > ", to))) +
                 ggplot2::geom_point(
                     data=gr_v[gr_v$v_ind,], colour="grey50",
                     ggplot2::aes(x=x,y=y))
@@ -588,8 +588,8 @@ plot_gr <- function(
         v_ind <- gr$v$v_ind
         v_label <- purrr::map_chr(
             stringr::str_split(gr$v$label[v_ind]," "),
-            function(x) base::paste0(x[1:2], collapse=" "))
-        nodes <- base::data.frame(
+            function(x) paste0(x[1:2], collapse=" "))
+        nodes <- data.frame(
             id=gr$v$phenotype[v_ind],
             # get only phenotype and p
             label=v_label,
@@ -603,20 +603,20 @@ plot_gr <- function(
 
         e_ind <- gr$e$from%in%gr$v$phenotype[v_ind] &
             gr$e$to%in%gr$v$phenotype[v_ind]
-        if (base::sum(e_ind)==0) {
-            edges <- base::data.frame(from=gr$e$from[1], to=gr$e$to[1],
+        if (sum(e_ind)==0) {
+            edges <- data.frame(from=gr$e$from[1], to=gr$e$to[1],
                                       hidden=TRUE)
         } else {
-            edges <- base::data.frame(
+            edges <- data.frame(
                 from=gr$e$from[e_ind],
                 to=gr$e$to[e_ind],
                 width=gr$e$size[e_ind],
                 label=gr$e$marker[e_ind],
                 stringsAsFactors=FALSE)
             if (!is.null(gr$e$size1)) {
-                edges$title=base::paste0(
-                    base::signif(gr$e$size1,3), " vs ",
-                    base::signif(gr$e$size2,3))[e_ind] # tooltip
+                edges$title=paste0(
+                    signif(gr$e$size1,3), " vs ",
+                    signif(gr$e$size2,3))[e_ind] # tooltip
             }
         }
 
@@ -645,15 +645,15 @@ noTOcol <- function(
     values, colourp=c('blue','cyan','yellow','red'), col_names=NULL,
     colour_n=1000) {
     colorFunc <- grDevices::colorRampPalette(colourp)
-    z <- base::pretty(c(min(values), max(values))) # colour breakpoints
-    colinds <- base::unlist(
-        base::lapply(seq_len(base::length(values)), function(i)
-            base::max(1, base::ceiling(
+    z <- pretty(c(min(values), max(values))) # colour breakpoints
+    colinds <- unlist(
+        lapply(seq_len(length(values)), function(i)
+            max(1, ceiling(
                 (values-min(z))*1000/(max(z)-min(z)))[i]) ))
     cols=colorFunc(colour_n)[colinds]
-    if (base::is.null(col_names) & !base::is.null(base::names(values)))
-        col_names <- base::names(values)
-    base::names(cols) <- col_names
+    if (is.null(col_names) & !is.null(names(values)))
+        col_names <- names(values)
+    names(cols) <- col_names
     return(cols)
 }
 
@@ -754,14 +754,14 @@ fg_plot_qq <- function(
     shiny_plot=FALSE,
     main=NULL, interactive=FALSE, path=NULL
 ) {
-    type <- base::match.arg(type, c("node", "edge"))
+    type <- match.arg(type, c("node", "edge"))
 
     if (shiny_plot) interactive <- TRUE
 
     index <- flowGraph:::fg_get_summary_index(
         fg,type=type, index, summary_meta)
-    summary_meta <- base::unlist(fg@summary_desc[[type]][index,])
-    if (!base::grepl("SpecEnr",base::unlist(summary_meta["feat"])))
+    summary_meta <- unlist(fg_get_summary_desc(fg)[[type]][index,])
+    if (!grepl("SpecEnr",unlist(summary_meta["feat"])))
         filter_adjust0 <- 1
     qvals_ <- fg_get_summary(
         fg, type, index, summary_meta, default_p_thres=p_thres,
@@ -771,17 +771,17 @@ fg_plot_qq <- function(
     )
     qvals <- qvals_$values
 
-    if (base::is.null(main))
-        main <- base::paste0(
-            "(", sum(qvals<p_thres), "/", base::length(qvals), ") ",
-            base::ifelse(logged,"logged ",""), "qq plot.\n",
+    if (is.null(main))
+        main <- paste0(
+            "(", sum(qvals<p_thres), "/", length(qvals), ") ",
+            ifelse(logged,"logged ",""), "qq plot.\n",
             "- ", type, " feature: ", summary_meta["feat"], ".\n",
             "- p-value: ", summary_meta["test_name"],
             "\n- comparing ", summary_meta["class"], ", labels: ", summary_meta["label1"], " & ", summary_meta["label2"], ".")
 
-    qo <- base::order(qvals)
+    qo <- order(qvals)
 
-    uni <- seq_len(base::length(qvals))/(base::length(qvals)+1)
+    uni <- seq_len(length(qvals))/(length(qvals)+1)
 
     p_thres_ <- p_thres
     if (logged) {
@@ -797,9 +797,9 @@ fg_plot_qq <- function(
 
 
     df <- data.frame(y=qvals, cohensd_size=qvals_$cohensd_size,
-                     phenotype=base::names(qvals),
-                     phenogroup=fg@graph$v$phenogroup,
-                     d_size=colMeans(as.matrix(fg@feat$node$count)))
+                     phenotype=names(qvals),
+                     phenogroup=fg_get_graph(fg)$v$phenogroup,
+                     d_size=colMeans(fg_get_feature(fg, "node", "count")))
     df <- df[qo,]
     df$x <- uni
     qp <- ggplot2::ggplot(df, ggplot2::aes(
@@ -820,18 +820,18 @@ fg_plot_qq <- function(
         }
         if (!shiny_plot) {
             qp <- ggiraph::girafe(ggobj=qp)
-            if (!base::is.null(path))
+            if (!is.null(path))
                 htmlwidgets::saveWidget(
-                    qp, ifelse(base::grepl("[.]html$",path, ignore.case=TRUE),
-                               path, base::paste0(path, ".html")))
+                    qp, ifelse(grepl("[.]html$",path, ignore.case=TRUE),
+                               path, paste0(path, ".html")))
         }
     } else {
         qp <- qp + ggplot2::geom_point(shape=1, ggplot2::aes(size=d_size))
-        if (!base::is.null(path))
+        if (!is.null(path))
             suppressMessages({
                 ggplot2::ggsave(
-                    ifelse(base::grepl("[.]png$",path, ignore.case=TRUE),
-                           path, base::paste0(path, ".png")),
+                    ifelse(grepl("[.]png$",path, ignore.case=TRUE),
+                           path, paste0(path, ".png")),
                     plot=qp, scale=1, width=5, height=5,
                     units="in", dpi=500, limitsize=TRUE)
             })
@@ -939,53 +939,54 @@ fg_plot_box <- function(
     paired=FALSE, dotplot=TRUE, outlier=TRUE, all_labels=FALSE,
     main=NULL, path=NULL
 ) {
-    type <- base::match.arg(type, c("node", "edge"))
+    type <- match.arg(type, c("node", "edge"))
 
     index <- fg_get_summary_index(fg,type="node",index,summary_meta)
-    summary_meta <- base::unlist(fg@summary_desc[[type]][index,])
+    summary_meta <- unlist(fg_get_summary_desc(fg)[[type]][index,])
     pp  <- fg_get_summary(
         fg, type, index, summary_meta, default_p_thres=p_thres,
         filter_adjust0=filter_adjust0, filter_es=filter_es,
         filter_btwn_tpthres=filter_btwn_tpthres, filter_btwn_es=filter_btwn_es,
         adjust_custom=adjust_custom
     )
-    p = pp$values
+    p <- pp$values
     node_edge <-
-        ifelse(base::is.character(node_edge),
-               base::which(base::names(p)==node_edge), node_edge)
+        ifelse(is.character(node_edge),
+               which(names(p)==node_edge), node_edge)
 
     feature <- summary_meta["feat"]
     features <- se_feats(feature)
+    fg_meta <- fg_get_meta(fg)
     if (all_labels) {
-        id_ord <- base::order(fg@meta[,summary_meta["class"]])
-        class_ <- fg@meta[id_ord,summary_meta["class"]]
+        id_ord <- order(fg_meta[,summary_meta["class"]])
+        class_ <- fg_meta[id_ord,summary_meta["class"]]
         dta <- data.frame(
-            val=fg@feat[[type]][[feature]][id_ord,node_edge],
+            val=fg_get_feature(fg, type, feature)[id_ord,node_edge],
             class=class_,
-            ID=base::unlist(purrr::map(unique(class_), function(x)
-                base::seq_len(sum(class_==x))))) # paired assum ordered!
+            ID=unlist(purrr::map(unique(class_), function(x)
+                seq_len(sum(class_==x))))) # paired assum ordered!
 
     } else {
-        a = fg@feat[[type]][[feature]][pp$id1,node_edge]
-        b = fg@feat[[type]][[feature]][pp$id2,node_edge]
+        a = fg_get_feature(fg, type, feature)[pp$id1,node_edge]
+        b = fg_get_feature(fg, type, feature)[pp$id2,node_edge]
 
         classes <- c(summary_meta["label1"], summary_meta["label2"])
-        class_ <- base::append(base::rep(classes[1], base::length(a)),
-                               base::rep(classes[2], base::length(b)))
+        class_ <- append(rep(classes[1], length(a)),
+                               rep(classes[2], length(b)))
         dta <- data.frame(
-            val=base::append(a,b),
+            val=append(a,b),
             class=class_,
-            ID=base::append(base::seq_len(base::length(a)),
-                            base::seq_len(base::length(b)))) # paired
+            ID=append(seq_len(length(a)),
+                            seq_len(length(b)))) # paired
     }
 
-    if (base::is.null(main))
-        main <- base::paste0(
+    if (is.null(main))
+        main <- paste0(
             "boxplot (",
-            ifelse(base::is.numeric(node_edge),
-                   base::names(p)[node_edge], node_edge),").\n",
+            ifelse(is.numeric(node_edge),
+                   names(p)[node_edge], node_edge),").\n",
             "- ", type, " feature: ", feature ," (",summary_meta["feat"],").\n",
-            "- p-value (p=", base::round(p[node_edge],3),"): ",
+            "- p-value (p=", round(p[node_edge],3),"): ",
             summary_meta["test_name"], "\n- comparing ",
             summary_meta["class"], ", labels: ",
             "\n    ", summary_meta["label1"], " (mean=",
@@ -995,10 +996,10 @@ fg_plot_box <- function(
     # plot
     gp <- ggplot2::ggplot(
         dta, ggplot2::aes(x=class, y=val, fill=class)) +
-        ggplot2::labs(y=base::paste0(
+        ggplot2::labs(y=paste0(
             type, " feature values (",ifelse(
-                base::is.numeric(node_edge),
-                base::names(p)[node_edge], node_edge),")"))
+                is.numeric(node_edge),
+                names(p)[node_edge], node_edge),")"))
 
     gp <- gp + ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA))
 
@@ -1016,7 +1017,7 @@ fg_plot_box <- function(
         ggplot2::ggtitle(main)
 
     if (!outlier) {
-        bstats <- purrr::map(base::unique(class_), function(x)
+        bstats <- purrr::map(unique(class_), function(x)
             grDevices::boxplot.stats(dta$val[class_==x])$stats)
         ymax <- max(purrr::map_dbl(bstats, utils::tail, 1))
         ymin <- min(purrr::map_dbl(bstats, utils::head, 1))
@@ -1024,11 +1025,11 @@ fg_plot_box <- function(
         gp <- gp + ggplot2::ylim(ymin, ymax)
     }
 
-    if (!base::is.null(path)) {
-        base::suppressMessages({
+    if (!is.null(path)) {
+        suppressMessages({
             ggplot2::ggsave(
-                ifelse(base::grepl("[.]png$",path, ignore.case=TRUE),
-                       path, base::paste0(path, ".png")),
+                ifelse(grepl("[.]png$",path, ignore.case=TRUE),
+                       path, paste0(path, ".png")),
                 plot=gp, scale=1, width=5, height=5,
                 units="in", dpi=500, limitsize=TRUE)
             })
@@ -1051,9 +1052,9 @@ fg_plot_box_set <- function(
     type <- match.arg(type, c("node", "edge"))
 
     index <- fg_get_summary_index(fg,type="node",index,summary_meta)
-    summary_meta <- base::unlist(fg@summary_desc[[type]][index,])
+    summary_meta <- unlist(fg_get_summary_desc(fg)[[type]][index,])
     feature <- summary_meta["feat"]
-    if (!base::grepl("SpecEnr",feature)) {
+    if (!grepl("SpecEnr",feature)) {
         fg_plot_box(
             fg, type=type, index=index, summary_meta=summary_meta,
             adjust_custom=adjust_custom, node_edge=node_edge,
@@ -1065,8 +1066,9 @@ fg_plot_box_set <- function(
         )
     }
     node_edge <- ifelse(is.character(node_edge),
-                        base::which(fg@graph$v$phenotype==node_edge), node_edge)
-    if (base::length(node_edge)==0) {
+                        which(fg_get_graph(fg)$v$phenotype==node_edge),
+                        node_edge)
+    if (length(node_edge)==0) {
         warning("node/edge not found")
         return(NULL)
     }
@@ -1076,58 +1078,58 @@ fg_plot_box_set <- function(
         filter_btwn_tpthres=filter_btwn_tpthres, filter_btwn_es=filter_btwn_es)
     p <- pp$values
     dfb <- pp$btwn
-    base::rownames(dfb) <- dfb$phenotype
+    rownames(dfb) <- dfb$phenotype
 
     features <- flowGraph:::se_feats(feature)
-        a1 <- fg@feat[[type]][[features[2]]][pp$id1,node_edge]
-        a2 <- fg@feat[[type]][[features[2]]][pp$id2,node_edge]
-        b1 <- fg@feat[[type]][[features[3]]][pp$id1,node_edge]
-        b2 <- fg@feat[[type]][[features[3]]][pp$id2,node_edge]
+        a1 <- fg_get_feature(fg, type, features[2])[pp$id1,node_edge]
+        a2 <- fg_get_feature(fg, type, features[2])[pp$id2,node_edge]
+        b1 <- fg_get_feature(fg, type, features[3])[pp$id1,node_edge]
+        b2 <- fg_get_feature(fg, type, features[3])[pp$id2,node_edge]
 
-    a = fg@feat[[type]][[feature]][pp$id1,node_edge]
-    b = fg@feat[[type]][[feature]][pp$id2,node_edge]
-    al <- base::length(a)
-    bl <- base::length(b)
+    a = fg_get_feature(fg, type, feature)[pp$id1,node_edge]
+    b = fg_get_feature(fg, type, feature)[pp$id2,node_edge]
+    al <- length(a)
+    bl <- length(b)
 
     classes <- c(summary_meta["label1"], summary_meta["label2"])
     dta <- data.frame(
         val=c(a,b, a1,a2, b1,b2),
-        feature=base::rep(features, each=al+bl),
-        class=base::rep(append(rep(classes[1],length(a)),
+        feature=rep(features, each=al+bl),
+        class=rep(append(rep(classes[1],length(a)),
                                rep(classes[2],length(b))),3),
-        ID=base::rep(base::append(base::seq_len(base::length(a)),
-                                  base::seq_len(base::length(b))),3) # paired
+        ID=rep(append(seq_len(length(a)),
+                                  seq_len(length(b))),3) # paired
     )
 
 
-    if (base::is.null(main))
-        main <- base::paste0(
+    if (is.null(main))
+        main <- paste0(
             "boxplot (",
-            ifelse(base::is.numeric(node_edge),
-                   base::names(p)[node_edge], node_edge),").\n",
+            ifelse(is.numeric(node_edge),
+                   names(p)[node_edge], node_edge),").\n",
             "- ", type, " feature: ", feature ," (",summary_meta["feat"],").\n",
-            "- p-value (p=", base::round(p[node_edge],3),"): ",
+            "- p-value (p=", round(p[node_edge],3),"): ",
             summary_meta["test_name"], "\n- comparing ",
             summary_meta["class"], ", labels: ",
             "\n    ", summary_meta["label1"], " (mean=",
-            base::round(pp$m1[node_edge],3),") & ",
+            round(pp$m1[node_edge],3),") & ",
             summary_meta["label2"], " (mean=",
-            base::round(pp$m2[node_edge],3),").")
+            round(pp$m2[node_edge],3),").")
 
     # specenr/actual/expect class 1 vs class 2
     gp <- ggplot2::ggplot(dta[dta$feature==feature,],
                             ggplot2::aes(x=class, y=val, fill=class)) +
-        ggplot2::labs(y=base::paste0(type, " SpecEnr feature value")) +
+        ggplot2::labs(y=paste0(type, " SpecEnr feature value")) +
         ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA)) +
         ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3) +
-        ggplot2::ggtitle(base::paste0(
-            "(",classes[2],"-",base::length(a)," vs ",
-            classes[2],"-",base::length(b),")\n",main))
+        ggplot2::ggtitle(paste0(
+            "(",classes[2],"-",length(a)," vs ",
+            classes[2],"-",length(b),")\n",main))
 
     gpae <- ggplot2::ggplot(dta[dta$feature!=features[1],],
                                 ggplot2::aes(x=class, y=val, fill=class)) +
-        ggplot2::labs(y=base::paste0(type, " raw feature values")) +
-        ggplot2::ggtitle(base::paste0("feature: ", features[2])) +
+        ggplot2::labs(y=paste0(type, " raw feature values")) +
+        ggplot2::ggtitle(paste0("feature: ", features[2])) +
         ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA)) +
         ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3) +
         ggplot2::theme(legend.position="none") +
@@ -1136,10 +1138,10 @@ fg_plot_box_set <- function(
     # class 1/2 actual vs expected
     gp12 <- ggplot2::ggplot(dta[dta$feature!=feature,],
                            ggplot2::aes(x=feature, y=val))+
-        ggplot2::labs(y=base::paste0(type, " raw feature values")) +
-        ggplot2::ggtitle(base::paste0(
+        ggplot2::labs(y=paste0(type, " raw feature values")) +
+        ggplot2::ggtitle(paste0(
             "diff btwn diff (p=",
-            base::signif(dfb$btp[node_edge],3),
+            signif(dfb$btp[node_edge],3),
             ", CohenD=",signif(dfb$bcd[node_edge],3),")")) +
         ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA)) +
         ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3) +
@@ -1190,11 +1192,11 @@ fg_plot_box_set <- function(
         gp, gpae, gp12,# gp1, gp2,
         layout_matrix=cbind(c(1,1,2,3),c(1,1,2,3)))
 
-    if (!base::is.null(path)) {
+    if (!is.null(path)) {
         suppressMessages({
-            ggplot2::ggsave(ifelse(base::grepl(
+            ggplot2::ggsave(ifelse(grepl(
                 "[.]png$",path, ignore.case=TRUE),
-                path, base::paste0(path, ".png")),
+                path, paste0(path, ".png")),
                 plot=gp_grid, scale=1, width=5, height=10,
                 units="in", dpi=500, limitsize=TRUE)
         })
@@ -1311,8 +1313,8 @@ fg_plot_pVSdiff <- function(
     if (shiny_plot) interactive <- TRUE
 
     index <- flowGraph:::fg_get_summary_index(fg, type, index, summary_meta)
-    summary_meta <- base::unlist(fg@summary_desc[[type]][index,])
-    if (!base::grepl("SpecEnr",base::unlist(summary_meta["feat"])))
+    summary_meta <- unlist(fg_get_summary_desc(fg)[[type]][index,])
+    if (!grepl("SpecEnr",unlist(summary_meta["feat"])))
         filter_adjust0 <- 1
     pp <- fg_get_summary(
         fg, type="node", index, summary_meta, default_p_thres=p_thres,
@@ -1332,13 +1334,13 @@ fg_plot_pVSdiff <- function(
     }
     dta <- data.frame(log_p_value=p_, difference=mse_,
                       cohensd_size=pp$cohensd_size)
-    dta <- cbind(dta, fg@graph$v)
-    dta$phenotype_ <- base::names(p)
-    dta$avg_count <- base::colMeans(base::as.matrix(fg@feat$node$count))
+    dta <- cbind(dta, fg_get_graph(fg)$v)
+    dta$phenotype_ <- names(p)
+    dta$avg_count <- colMeans(fg_get_feature(fg, "node", "count"))
 
-    if (base::is.null(main))
-        main <- base::paste0(
-            "(",base::sum(p<p_thres),"/",base::length(p),") ",
+    if (is.null(main))
+        main <- paste0(
+            "(",sum(p<p_thres),"/",length(p),") ",
             "-ln(p-value) vs feature difference plot.\n",
             "- ", type, " feature: ", summary_meta["feat"], ".\n",
             "- p-value: ", summary_meta["test_name"],
@@ -1349,13 +1351,13 @@ fg_plot_pVSdiff <- function(
 
     if (!interactive) {
         label_ind <- p<p_thres &
-            (base::names(p) %in%
-                 base::names(utils::head(base::sort(p),label_max)) |
-            base::names(p) %in%
-                 base::names(utils::tail(
-                     base::sort(base::abs(mse_)),label_max)))
+            (names(p) %in%
+                 names(utils::head(sort(p),label_max)) |
+            names(p) %in%
+                 names(utils::tail(
+                     sort(abs(mse_)),label_max)))
 
-        dta$phenotype <- ifelse(label_ind, base::names(p), "")
+        dta$phenotype <- ifelse(label_ind, names(p), "")
 
         gp <- ggplot2::ggplot(
             dta, ggplot2::aes(x=log_p_value, y=difference,
@@ -1374,21 +1376,21 @@ fg_plot_pVSdiff <- function(
                 hjust        = 1,
                 segment.size = 0.2
             )
-        if (!base::is.null(path))
+        if (!is.null(path))
             suppressMessages({
-                ggplot2::ggsave(ifelse(base::grepl(
+                ggplot2::ggsave(ifelse(grepl(
                     "[.]png$",path, ignore.case=TRUE),
-                    path, base::paste0(path, ".png")), plot=gp)
+                    path, paste0(path, ".png")), plot=gp)
             })
     } else {
-        dta$phenotype <- base::names(p)
-        dta$phenogroup <- fg@graph$v$phenogroup
+        dta$phenotype <- names(p)
+        dta$phenogroup <- fg_get_graph(fg)$v$phenogroup
         if (shiny_plot & nodes_max!=Inf) {
             node_ind <-
-                (base::names(p) %in%
-                     base::names(utils::head(base::sort(p),nodes_max)) |
-                     base::names(p) %in%
-                     base::names(utils::tail(base::sort(abs(mse_)),nodes_max)))
+                (names(p) %in%
+                     names(utils::head(sort(p),nodes_max)) |
+                     names(p) %in%
+                     names(utils::tail(sort(abs(mse_)),nodes_max)))
             if (sum(node_ind)==0) return(NULL)
             dta <- dta[node_ind,]
         }
@@ -1413,10 +1415,10 @@ fg_plot_pVSdiff <- function(
         }
         gp
 
-        if (!base::is.null(path))
+        if (!is.null(path))
             htmlwidgets::saveWidget(
-                gp, ifelse(base::grepl("[.]html$", path, ignore.case=TRUE),
-                       path, base::paste0(path, ".html")))
+                gp, ifelse(grepl("[.]html$", path, ignore.case=TRUE),
+                       path, paste0(path, ".html")))
     }
     return(gp)
 
@@ -1514,15 +1516,19 @@ fg_save_plots <- function(
     node_labels="NONE", ...
 ) {
     for (type in plot_types) {
-        if (base::is.null(fg@summary[[type]])) next
-        for (index in base::seq_len(base::length(fg@summary[[type]]))) {
-            sm <- unlist(fg@summary_desc[[type]][index,])
-            sm[2] <- base::paste0(sm[2], "-", ifelse(
+        fg_summary <- fg_get_summary_all(fg)
+
+        if (is.null(fg_summary[[type]])) next
+        fg_summary_desc <- fg_get_summary_desc(fg)
+
+        for (index in seq_len(length(fg_summary[[type]]))) {
+            sm <- unlist(fg_summary_desc[[type]][index,])
+            sm[2] <- paste0(sm[2], "-", ifelse(
                     is.function(adjust_custom),"adjusted",adjust_custom))
-            plot_path_ <- base::paste0(
-                plot_path, "/", type, "/", base::paste0(sm, collapse="_"))
+            plot_path_ <- paste0(
+                plot_path, "/", type, "/", paste0(sm, collapse="_"))
             while (dir.exists(plot_path_) & !overwrite)
-                plot_path_ <- base::paste0(plot_path_,"_")
+                plot_path_ <- paste0(plot_path_,"_")
             dir.create(plot_path_, recursive=TRUE, showWarnings=FALSE)
 
             try ({
@@ -1534,7 +1540,7 @@ fg_save_plots <- function(
                     filter_btwn_tpthres=filter_btwn_tpthres,
                     filter_btwn_es=filter_btwn_es,
                     label_max=label_max, interactive=interactive,
-                    path=base::paste0(plot_path_, "/pVSdifference.png"))
+                    path=paste0(plot_path_, "/pVSdifference.png"))
             })
 
             try ({
@@ -1548,16 +1554,16 @@ fg_save_plots <- function(
                 seda = abs(pp$m1 - pp$m2)
                 p = pp$values
                 node_edges = union(
-                    base::names(utils::head(base::sort(p),box_no)),
-                    base::names(utils::tail(base::sort(seda),box_no)))
-                rdir_ <- base::paste0(plot_path_, "/boxplots")
+                    names(utils::head(sort(p),box_no)),
+                    names(utils::tail(sort(seda),box_no)))
+                rdir_ <- paste0(plot_path_, "/boxplots")
                 dir.create(rdir_, recursive=TRUE, showWarnings=FALSE)
-                for (node_edgei in base::seq_len(base::length(node_edges))) {
+                for (node_edgei in seq_len(length(node_edges))) {
                     node_edge = node_edges[node_edgei]
                     if (node_edge=="") next
                     # if (p[node_edge]==1) next
                     # node_edge = "A+B+C+"
-                    path <- base::paste0(
+                    path <- paste0(
                         rdir_,"/",stringr::str_pad(node_edgei,width=3,pad="0"),
                         "_",node_edge,".png")
                     gp <- fg_plot_box_set(
@@ -1578,7 +1584,7 @@ fg_save_plots <- function(
                     filter_adjust0=filter_adjust0, filter_es=filter_es,
                     filter_btwn_tpthres=filter_btwn_tpthres,
                     filter_btwn_es=filter_btwn_es,
-                    path=base::paste0(plot_path_,"/qq.png"),
+                    path=paste0(plot_path_,"/qq.png"),
                     interactive=interactive, logged=logged)
             })
 
@@ -1588,23 +1594,23 @@ fg_save_plots <- function(
                     gr <- fg_plot(
                         fg, type="node", index=index,
                         adjust_custom=adjust_custom,
-                        path=base::paste0(plot_path_,"/cell_hierarchy.png"),
+                        path=paste0(plot_path_,"/cell_hierarchy.png"),
                         label_max=label_max, interactive=interactive,
                         node_labels=node_labels, ...)
 
-                    feat_index <- fg@summary_desc$node$feat[[index]]
+                    feat_index <- fg_summary_desc$node$feat[[index]]
                     if (grepl("SpecEnr",feat_index)) {
                         gp <- plot_gr(gr, label_coloured=FALSE)
                         feats <- flowGraph:::se_feats(feat_index)
 
                         m1 <- fg_get_feature_means(
                             fg, "node", feats[2],
-                            class=fg@summary_desc$node$class[[index]],
-                            label=fg@summary_desc$node$label1[[index]])
+                            class=fg_summary_desc$node$class[[index]],
+                            label=fg_summary_desc$node$label1[[index]])
                         m2 <- fg_get_feature_means(
                             fg, "node", feats[2],
-                            class=fg@summary_desc$node$class[[index]],
-                            label=fg@summary_desc$node$label2[[index]])
+                            class=fg_summary_desc$node$class[[index]],
+                            label=fg_summary_desc$node$label2[[index]])
 
                         gr$v$v_ind[(m2>m1 & gr$v$colour<0) | (m2<m1 & gr$v$colour>0)] <- F
                         gr$v$colour <- m2-m1

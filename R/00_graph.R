@@ -52,29 +52,29 @@ cell_type_layers <- function(phen)
 #' @importFrom stringr str_split str_extract_all str_count
 #' @importFrom purrr map_chr map_int map
 get_phen_meta <- function(phen, phenocode=NULL) {
-    pm <- base::data.frame(phenotype=phen)
-    markers <- base::unique(base::unlist(stringr::str_split(phen, "[-+]")))
+    pm <- data.frame(phenotype=phen)
+    markers <- unique(unlist(stringr::str_split(phen, "[-+]")))
     markers <- gsub("_","",markers)
     markers <- markers[markers != ""]
-    if (base::is.null(phenocode)) {
+    if (is.null(phenocode)) {
         pm$phenocode <- purrr::map_chr(phen, function(x) {
             if (x == "")
-                return(paste0(rep(0, base::length(markers)), collapse=""))
+                return(paste0(rep(0, length(markers)), collapse=""))
             b <- stringr::str_split(x, "[+-]+")[[1]]
-            b <- b[-base::length(b)]
-            bo <- base::match(markers, b)
+            b <- b[-length(b)]
+            bo <- match(markers, b)
             phec <- purrr::map_int(
-                base::unlist(stringr::str_extract_all(x, "[+-]+")), function(y)
+                unlist(stringr::str_extract_all(x, "[+-]+")), function(y)
                     stringr::str_count(y, "[+]")) + 1
             c <- phec[bo]
-            c[base::is.na(c)] <- 0
+            c[is.na(c)] <- 0
             paste0(c, collapse="")
         })
     } else {
         pm$phenocode <- phenocode
     }
     pm$phenolayer <- cell_type_layers(phen)
-    pm$phenotype <- base::as.character(pm$phenotype)
+    pm$phenotype <- as.character(pm$phenotype)
     pm$phenogroup <- gsub("[+-]+", "_", pm$phenotype)
 
     return(pm)
@@ -114,37 +114,37 @@ get_phen_meta <- function(phen, phenocode=NULL) {
 get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
     if (no_cores>1) future::plan(future::multiprocess)
 
-    if (base::is.null(phen) & base::is.null(meta_cell))
+    if (is.null(phen) & is.null(meta_cell))
         stop("give me something!")
-    if (base::is.null(meta_cell))
+    if (is.null(meta_cell))
         meta_cell <- get_phen_meta(phen)
 
-    meta_cell_grid <- base::do.call(rbind,
+    meta_cell_grid <- do.call(rbind,
                                     stringr::str_split(meta_cell$phenocode, ""))
     meta_cell_grid <- Matrix::Matrix(
-        base::apply(meta_cell_grid, 2, as.numeric), sparse=TRUE)
-    allcolu <- purrr::map(base::seq_len(base::ncol(meta_cell_grid)),
-                          function(j) base::unique(meta_cell_grid[, j]))
-    allcol <- purrr::map(base::seq_len(base::length(allcolu)),
+        apply(meta_cell_grid, 2, as.numeric), sparse=TRUE)
+    allcolu <- purrr::map(seq_len(ncol(meta_cell_grid)),
+                          function(j) unique(meta_cell_grid[, j]))
+    allcol <- purrr::map(seq_len(length(allcolu)),
                          function(ci) {
                              a <- purrr::map(allcolu[[ci]], function(ui)
                                  meta_cell_grid[, ci] == ui)
-                             base::names(a) <- allcolu[[ci]]
+                             names(a) <- allcolu[[ci]]
                              a
                          })
 
-    pchild <- base::list(meta_cell$phenotype[meta_cell$phenolayer == 1])
-    base::names(pchild) <- ""
-    pparen <- purrr::map(base::seq_len(base::length(pchild[[1]])),
+    pchild <- list(meta_cell$phenotype[meta_cell$phenolayer == 1])
+    names(pchild) <- ""
+    pparen <- purrr::map(seq_len(length(pchild[[1]])),
                          function(x) "")
-    base::names(pparen) <- pchild[[1]]
+    names(pparen) <- pchild[[1]]
 
-    jjl <- base::sort(base::unique(meta_cell$phenolayer))
-    if (base::length(jjl) > 2) {
+    jjl <- sort(unique(meta_cell$phenolayer))
+    if (length(jjl) > 2) {
         jjl <- jjl[jjl > 0]
         jj_inds <- purrr::map(jjl, function(l)
-            base::which(meta_cell$phenolayer == as.numeric(l)))
-        for (jjli in 2:base::length(jj_inds)) {
+            which(meta_cell$phenolayer == as.numeric(l)))
+        for (jjli in 2:length(jj_inds)) {
             start1 <- Sys.time()
 
             meta_cell_ <- meta_cell[jj_inds[[jjli - 1]],, drop=FALSE]
@@ -152,7 +152,7 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
             meta_cell_grid_ <- meta_cell_grid[jj_inds[[jjli - 1]],, drop=FALSE]
             meta_cell_grid__ <- meta_cell_grid[jj_inds[[jjli]],, drop=FALSE]
 
-            message("- ", base::nrow(meta_cell_), " pops @ layer ", jjli - 1)
+            message("- ", nrow(meta_cell_), " pops @ layer ", jjli - 1)
             allcol__ <- purrr::map(allcol, function(x)
                 purrr::map(x, function(y)
                     y[jj_inds[[jjli]]] ))
@@ -161,48 +161,48 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
                     y[jj_inds[[jjli - 1]]]))
 
             # child
-            loop_ind <- loop_ind_f(base::seq_len(base::nrow(meta_cell_)),
+            loop_ind <- loop_ind_f(seq_len(nrow(meta_cell_)),
                                    no_cores)
             pchildl <- furrr::future_map(loop_ind, function(jj)
                 purrr::map(jj, function(j) {
-                    colj1 <- base::which(meta_cell_grid_[j, ] > 0)
+                    colj1 <- which(meta_cell_grid_[j, ] > 0)
                     mcgrow <- meta_cell_grid_[j, ]
-                    chi <- base::Reduce("&", purrr::map(colj1, function(coli)
-                        allcol__[[coli]][[base::as.character(mcgrow[coli])]]))
+                    chi <- Reduce("&", purrr::map(colj1, function(coli)
+                        allcol__[[coli]][[as.character(mcgrow[coli])]]))
                     meta_cell__$phenotype[chi]
                 }))
-            pchildl <- base::unlist(pchildl, recursive=FALSE)
-            base::names(pchildl) <- meta_cell_$phenotype
+            pchildl <- unlist(pchildl, recursive=FALSE)
+            names(pchildl) <- meta_cell_$phenotype
             pchildl <- purrr::compact(pchildl)
-            pchild <- base::append(pchild, pchildl)
+            pchild <- append(pchild, pchildl)
 
             # paren
-            loop_ind <- loop_ind_f(base::seq_len(base::nrow(meta_cell__)),
+            loop_ind <- loop_ind_f(seq_len(nrow(meta_cell__)),
                                    no_cores)
             pparenl <- furrr::future_map(loop_ind, function(jj)
                 purrr::map(jj, function(j) {
-                    colj1 <- base::which(meta_cell_grid__[j, ] > 0)
+                    colj1 <- which(meta_cell_grid__[j, ] > 0)
                     mcgrow <- meta_cell_grid__[j, ]
-                    chidf <- base::do.call(
+                    chidf <- do.call(
                         cbind, purrr::map(colj1, function(coli)
-                            allcol_[[coli]][[base::as.character(mcgrow[coli])]]
+                            allcol_[[coli]][[as.character(mcgrow[coli])]]
                         ))
-                    chi <- base::apply(chidf, 1, function(x) sum(!x) == 1)
+                    chi <- apply(chidf, 1, function(x) sum(!x) == 1)
                     meta_cell_$phenotype[chi]
                 })
             )
-            pparenl <- base::unlist(pparenl, recursive=FALSE)
-            base::names(pparenl) <- meta_cell__$phenotype
+            pparenl <- unlist(pparenl, recursive=FALSE)
+            names(pparenl) <- meta_cell__$phenotype
             pchildl <- purrr::compact(pparenl)
-            pparen <- base::append(pparen, pparenl)
+            pparen <- append(pparen, pparenl)
 
             time_output(start1)
         }
     }
-    edf <- base::do.call(
+    edf <- do.call(
         rbind, purrr::map(
-            base::seq_len(base::length(pchild)), function(x)
-                base::data.frame(from=base::names(pchild)[x], to=pchild[[x]])))
+            seq_len(length(pchild)), function(x)
+                data.frame(from=names(pchild)[x], to=pchild[[x]])))
 
     temp_se <- function(x)
         stringr::str_extract_all(x, "[a-zA-Z0-9]+[+-]+")
@@ -212,7 +212,7 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
         setdiff(to_[[x]], from_[[x]]))
 
 
-    return(base::list(pchild=pchild, pparen=pparen, edf=edf))
+    return(list(pchild=pchild, pparen=pparen, edf=edf))
 }
 
 
@@ -255,10 +255,10 @@ set_layout_graph <- function(gr, layout_fun="layout.reingold.tilford") {
     if (layout_fun!="layout.reingold.tilford") {
         layout_fun <- get(layout_fun)
         gr_vxy_ <- layout_fun(gr0)
-        gr_vxy <- base::as.data.frame(gr_vxy_)
+        gr_vxy <- as.data.frame(gr_vxy_)
     } else {
         gr_vxy_ <- igraph::layout.reingold.tilford(gr0)
-        gr_vxy <- base::as.data.frame(gr_vxy_)
+        gr_vxy <- as.data.frame(gr_vxy_)
 
         ## edit layout manually
         gr_vxy <- space_hierarchy(gr_vxy)
@@ -270,34 +270,34 @@ set_layout_graph <- function(gr, layout_fun="layout.reingold.tilford") {
     }
 
     # get node
-    base::colnames(gr_vxy) <- c("x", "y")
-    gr_v_xy <- gr_vxy[base::match(gr_v$phenotype, names(igraph::V(gr0)[[]])), ]
+    colnames(gr_vxy) <- c("x", "y")
+    gr_v_xy <- gr_vxy[match(gr_v$phenotype, names(igraph::V(gr0)[[]])), ]
     gr_v$x <- gr_v_xy$x
     gr_v$y <- gr_v_xy$y
 
     # get edge
-    e_match <- base::match(gr_e$from, gr_v$phenotype)
+    e_match <- match(gr_e$from, gr_v$phenotype)
     gr_e$from.x <- gr_v$x[e_match]
     gr_e$from.y <- gr_v$y[e_match]
-    e_match2 <- base::match(gr_e$to, gr_v$phenotype)
+    e_match2 <- match(gr_e$to, gr_v$phenotype)
     gr_e$to.x <- gr_v$x[e_match2]
     gr_e$to.y <- gr_v$y[e_match2]
 
-    return(base::list(v=gr_v, e=gr_e))
+    return(list(v=gr_v, e=gr_e))
 }
 
 space_hierarchy <- function(gr_vxy) {
-    gys <- base::sort(base::unique(gr_vxy[, 2]))
+    gys <- sort(unique(gr_vxy[, 2]))
     gxns <- purrr::map_int(gys, function(y) sum(gr_vxy[, 2] == y))
     maxlayern <- max(gxns)
-    maxlayer <- gys[base::which.max(gxns)]
+    maxlayer <- gys[which.max(gxns)]
     maxlayertf <- gr_vxy[, 2] == maxlayer
-    gr_vxy[maxlayertf, 1] <- base::rank(gr_vxy[maxlayertf, 1]) - 1
+    gr_vxy[maxlayertf, 1] <- rank(gr_vxy[maxlayertf, 1]) - 1
     for (gy in gys) {
         if (gy == maxlayer)
             next()
         layertf <- gr_vxy[, 2] == gy
-        gr_vxy[layertf, 1]=base::rank(gr_vxy[layertf, 1]) - 1 +
+        gr_vxy[layertf, 1]=rank(gr_vxy[layertf, 1]) - 1 +
             floor((maxlayern - sum(layertf))/2)
     }
     return(gr_vxy)
@@ -334,6 +334,6 @@ space_hierarchy <- function(gr_vxy) {
 #' @export
 fg_set_layout <- function(fg, layout_fun="layout.reingold.tilford") {
     fg@plot_layout <- layout_fun
-    fg@graph <- set_layout_graph(fg@graph, layout_fun)
+    fg@graph <- set_layout_graph(fg_get_graph(fg), layout_fun)
     return(fg)
 }

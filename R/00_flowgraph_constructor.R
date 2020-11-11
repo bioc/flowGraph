@@ -219,8 +219,8 @@ flowGraph <- function(
 ) {
     options(stringsAsFactors=FALSE)
 
-    if (!base::is.null(meta))
-        if (!"id"%in%base::colnames(meta))
+    if (!is.null(meta))
+        if (!"id"%in%colnames(meta))
             stop("meta must have a column named \"id\" containing sample ID's")
 
     start <- start1 <- Sys.time()
@@ -233,28 +233,28 @@ flowGraph <- function(
     if (any(class(input_)%in%c("integer","numeric")) |
         grepl("matrix",class(input_), ignore.case=TRUE)) {
         ## feature: count (sample x cell population)
-        if (base::is.null(base::dim(input_))) {
-            mc <- mc0 <- base::matrix(input_,nrow=1)
-            base::colnames(mc) <- base::names(input_)
-            base::rownames(mc) <- "s1"
+        if (is.null(dim(input_))) {
+            mc <- mc0 <- matrix(input_,nrow=1)
+            colnames(mc) <- names(input_)
+            rownames(mc) <- "s1"
         } else {
             mc <- mc0 <- input_
-            if (base::is.null(base::rownames(input_)))
-                base::rownames(input_) <-
-                    paste0("s",base::seq_len(nrow(input_)))
-            base::rownames(mc) <- base::rownames(input_)
+            if (is.null(rownames(input_)))
+                rownames(input_) <-
+                    paste0("s",seq_len(nrow(input_)))
+            rownames(mc) <- rownames(input_)
         }
 
         ## make meta for samples
-        if (base::is.null(meta)) sample_id <- base::rownames(mc)
+        if (is.null(meta)) sample_id <- rownames(mc)
 
         ## make meta for cell populations
-        if (!any(base::grepl("[+-]",base::colnames(mc)))) stop(msg)
+        if (!any(grepl("[+-]",colnames(mc)))) stop(msg)
 
-        phen <- base::colnames(mc)
-        if (base::is.null(markers)) {
+        phen <- colnames(mc)
+        if (is.null(markers)) {
             markers <-
-                base::unique(base::unlist(stringr::str_split(phen,"[-+]+")))
+                unique(unlist(stringr::str_split(phen,"[-+]+")))
             markers <- markers[markers!=""]
         }
 
@@ -265,10 +265,10 @@ flowGraph <- function(
     time_output(start1)
 
     # prepare sample meta ----------------------------------
-    if (!base::is.null(meta)) {
-        if (base::nrow(meta)!= base::nrow(mc))
+    if (!is.null(meta)) {
+        if (nrow(meta)!= nrow(mc))
             stop("meta data and cell count matrix have different row counts")
-        if (!"id"%in%base::colnames(meta))
+        if (!"id"%in%colnames(meta))
             stop("meta must have an \'id\' column, id,
                  whose values corresponding with sample names")
         meta <- as.data.frame(meta)
@@ -280,7 +280,7 @@ flowGraph <- function(
     }
     # insert class if there is one
     if (!identical(class, "class")) {
-        if (base::length(class)==base::length(sample_id)) {
+        if (length(class)==length(sample_id)) {
             if ("class"%in%colnames(meta)) {
                 meta$class_ <- class
             } else {
@@ -293,13 +293,13 @@ flowGraph <- function(
     start1 <- Sys.time()
     message("preparing feature(s): mapping out cell population relations")
 
-    keepinds <- base::apply(mc, 2, function(x) any(x>0))
-    keepinds <- base::apply(mc, 2, function(x) any(x>0))
+    keepinds <- apply(mc, 2, function(x) any(x>0))
+    keepinds <- apply(mc, 2, function(x) any(x>0))
     mc <- mc[,keepinds,drop=FALSE]
-    base::colnames(mc) <- phen[keepinds]
-    base::rownames(mc) <- meta$id
+    colnames(mc) <- phen[keepinds]
+    rownames(mc) <- meta$id
     mc <- Matrix::Matrix(mc, sparse=TRUE) # rm all 0 cols
-    if (!base::is.null(phenocode)) phenocode <- phenocode[keepinds]
+    if (!is.null(phenocode)) phenocode <- phenocode[keepinds]
 
     ## make meta for cell populations FINAL -----------------
     meta_cell <- get_phen_meta(phen[keepinds],phenocode)
@@ -313,31 +313,31 @@ flowGraph <- function(
     # extract cell populations that have parents to calculate
     # expected proportions for; just to be safe
     cells1 <- meta_cell$phenotype[meta_cell$phenolayer==1]
-    cells1 <- base::append("",cells1[cells1%in%base::names(pparen)])
+    cells1 <- append("",cells1[cells1%in%names(pparen)])
     cells <- meta_cell$phenotype[meta_cell$phenolayer>1]
-    cells <- cells[cells%in%base::names(pparen)]
-    cells_ <- base::append(cells1,cells)
+    cells <- cells[cells%in%names(pparen)]
+    cells_ <- append(cells1,cells)
 
-    meta_cell <- meta_cell[base::match(cells_,meta_cell$phenotype),]
-    rooti <- base::which(meta_cell$phenolayer==0)
+    meta_cell <- meta_cell[match(cells_,meta_cell$phenotype),]
+    rooti <- which(meta_cell$phenolayer==0)
 
-    mc <- mc[,base::match(cells_, base::colnames(mc)),drop=FALSE] # final cpops
+    mc <- mc[,match(cells_, colnames(mc)),drop=FALSE] # final cpops
 
     # trim/order list of parents and children
-    pparen_ <- pparen[base::names(pparen)%in%cells_]
+    pparen_ <- pparen[names(pparen)%in%cells_]
     pparen_[cells] <- purrr::map(pparen_[cells], function(x) {
         a <- x[x%in%cells_]
-        if (base::length(a)==0) return(NULL)
+        if (length(a)==0) return(NULL)
         a
     })
     pparen_ <- purrr::compact(pparen_)
 
-    pchild_ <- pchild[base::names(pchild)%in%cells_]
+    pchild_ <- pchild[names(pchild)%in%cells_]
     pchild_ <- purrr::map(pchild_, function(x) {
         a <- x
-        for (i in base::seq_len(base::length(a)))
+        for (i in seq_len(length(a)))
             a[[i]] <- x[[i]][x[[i]]%in%cells_]
-        if (all(purrr::map_int(a, base::length)==0)) return(NULL)
+        if (all(purrr::map_int(a, length)==0)) return(NULL)
         a
     })
     pchild_ <- purrr::compact(pchild_)
@@ -348,25 +348,25 @@ flowGraph <- function(
 
 
     ## list of outputs
-    gr <- base::list(e=edf, v=meta_cell)
+    gr <- list(e=edf, v=meta_cell)
     gr <- set_layout_graph(gr, layout_fun) # layout cell hierarchy
 
-    if (base::is.null(meta)) meta <- base::data.frame(id=sample_id)
+    if (is.null(meta)) meta <- data.frame(id=sample_id)
 
     desc <- summary_table(mc,"count")
 
     fg <- methods::new(
         "flowGraph",
-        feat=base::list(node=base::list(count=mc), edge=base::list()),
-        feat_desc=base::list(node=desc),
+        feat=list(node=list(count=mc), edge=list()),
+        feat_desc=list(node=desc),
         markers=markers,
-        graph=gr, edge_list=base::list(child=pchild_,parent=pparen_),
-        meta=meta, plot_layout=base::as.character(substitute(layout_fun)),
-        etc=base::list(cumsumpos=FALSE, class_mean_normalized=FALSE)
+        graph=gr, edge_list=list(child=pchild_,parent=pparen_),
+        meta=meta, plot_layout=as.character(substitute(layout_fun)),
+        etc=list(cumsumpos=FALSE, class_mean_normalized=FALSE)
     )
 
     ## features ----------------------------
-    cumsumpos <- cumsumpos & any(base::grepl("3",meta_cell$phenocode))
+    cumsumpos <- cumsumpos & any(grepl("3",meta_cell$phenocode))
     if (cumsumpos)
         fg <- fg_feat_cumsum(fg, no_cores=no_cores)
 
@@ -380,12 +380,12 @@ flowGraph <- function(
     }
     try({
         if (calculate_summary &
-            ifelse(base::length(class)==1, class%in%colnames(meta), TRUE) &
+            ifelse(length(class)==1, class%in%colnames(meta), TRUE) &
             all(node_features%in%c(names(fg@feat$node), "NONE")) &
             all(edge_features%in%c(names(fg@feat$edge), "NONE"))) {
             fg <- fg_summary(
                 fg, no_cores=no_cores,
-                class=ifelse(base::length(class)==1, class, "class"),
+                class=ifelse(length(class)==1, class, "class"),
                 label1=label1, label2=label2,
                 node_features=node_features,
                 edge_features=edge_features,
@@ -396,13 +396,10 @@ flowGraph <- function(
         }
     })
 
-    fg@etc$save <- list(id=stringi::stri_rand_strings(1,5))
     saved <- FALSE
-    if (!base::is.null(path))
+    if (!is.null(path))
         tryCatch({
-            fg_save(fg, path, save_plots=FALSE)
-            saved <- TRUE
-            fg@etc$save$path <- path
+            saved <- fg_save(fg, path, save_plots=FALSE)
         }, error=function(e) {
             message("flowGraph object not saved; check path and try again with fg_save!")
         })

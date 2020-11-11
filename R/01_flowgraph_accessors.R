@@ -1,3 +1,244 @@
+#' @title Saves flowGraph object to a specified path.
+#' @description Saves flowGraph object to a specified path.
+#' @param fg flowGraph object to save.
+#' @param folder_path A string indicating the folder path to where the flowGraph
+#'  object should save its elements; if this is the first time the object is
+#'  being saved, this folder should be empty or if it is
+#'  not yet created, the function will create it. If the object has previously
+#'  been saved before and this parameter is set to \code{NULL}, the function
+#'  will save the object into the save folder it was previously saved in.
+#' @param save_plots A logical indicating whether or not to save plots.
+#' @param paired A logical indicating whether the summary is paired; used in
+#'  function \code{fg_plot_box}.
+#' @param ... Other parameters for the \code{fg_save_plots} function.
+#' @details See generated README.md file.
+#' @return TRUE if flowGraph object successfully saved.
+#' @examples
+#'  no_cores <- 1
+#'  data(fg_data_pos15)
+#'  fg <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class,
+#'                  no_cores=no_cores)
+#'
+#'  fg_save(fg, "tmp")
+#'
+#' @seealso
+#'  \code{length},\code{c("nrow", "nrow")},\code{NULL}
+#'  \code{\link[purrr]{map}}
+#' @rdname fg_save
+#' @export
+#' @importFrom purrr map
+#' @importFrom data.table fwrite
+#' @importFrom utils write.csv
+fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
+    options(encoding="UTF-8")
+
+    # check folder path
+    if (is.null(folder_path)) {
+        folder_path <- fg_get_etc(fg)$save$path
+        if (is.null(folder_path))
+            stop("please provide valid folder path")
+    }
+    if (!dir.exists(folder_path))
+        dir.create(folder_path, recursive=TRUE, showWarnings=FALSE)
+    if (length(dir(folder_path, all.files=TRUE))==0) {
+        stop_save <- TRUE
+
+        etc_dir <- paste0(folder_path,"/etc/etc.rds")
+        if (file.exists(etc_dir))
+            if (readRDS(etc_dir)$save$id == fg_get_etc(fg)$save$id)
+                stop_save <- FALSE
+
+        if (stop_save)
+            stop("the folder provided is non-empty")
+    }
+
+    # create readme file
+    fg_graph <- fg_get_graph(fg)
+    fc <- file(paste0(folder_path,"/README.md"))
+    writeLines(c(
+        "PLEASE DO NOT MAKE CHANGES TO THIS FILE.",
+        paste0("Last saved: ",  Sys.time()),
+        "",
+        "This folder contains files in a flowGraph object created by the flowGraph package.",
+        "",
+        "For a given flow cytometry sample and its cell populations, flowGraph generates SpecEnr values for each cell population or immunophenotype of based their expected proportion.",
+        "By doing so, flowGraph accounts for the relation between cell populations and flags truly enriched cell populations rather than those with induced changes.",
+        "",
+        "The Summary_statistics folder contains p-values obtained from features associated with each immunophenotype or/ relation between immunophenotypes. The plots folder contains plots to help interpret those p-values.",
+        "",
+        "The Features folder contains features for:",
+        paste0("- ", nrow(fg_get_meta(fg)), " flow cytometry samples."),
+        paste0("- ", length(fg_get_markers(fg)), " markers: ",
+               paste0(fg_get_markers(fg), collapse=", ")),
+        paste0("- ", nrow(fg_graph$v),
+               " cell population nodes (nodes for short) and ",
+               nrow(fg_graph$e), " edges on ",
+               max(fg_get_graph(fg)$v$phenolayer), " layers."),
+        "",
+        "Cell hierarchy plots: By default, for SpecEnr features, we generate two cell_hierarchy plots. The original one is where the colours represent difference between mean SpecEnr values across sample classes. We also add one where the colours represent difference betwee mean original values across sample classes. Original here is usually proportion: the feature used to create SpecEnr. Note that if a node is coloured lightly on the second plot, then the difference is very small, meaning the SpecEnr value may become sporadic. Therefore, when analyzing the plots, for most cases we recommend looking at most important cell populations as the ones with large difference in both plots.",
+        ""), fc)
+
+    close(fc)
+
+
+    # save sample meta data and markers
+    meta <- fg_get_meta(fg)
+    utils::write.csv(meta, file=paste0(folder_path, "/sample_meta.csv"),
+                     row.names=FALSE)
+
+
+    # save features
+    fg_feat <- fg_get_feature_all(fg)
+    fg_feat_desc <- fg_get_feature_desc(fg)
+    fn_dir <- paste0(folder_path, "/features/nodes")
+    dir.create(fn_dir, recursive=TRUE, showWarnings=FALSE)
+    a <- purrr::map(names(fg_feat$node), function(fn) {
+        m <- as.matrix(fg_feat$node[[fn]])
+        utils::write.csv(m, file=paste0(fn_dir,"/", fn, ".csv"))
+    })
+    sm <- fg_feat_desc$node
+    utils::write.csv(as.matrix(sm), file=paste0(fn_dir,".csv"), row.names=FALSE)
+
+    if (!is.null(fg_feat$edge)) {
+        fe_dir <- paste0(folder_path, "/features/edges")
+        dir.create(fe_dir, recursive=TRUE, showWarnings=FALSE)
+        a <- purrr::map(names(fg_feat$edge), function(fe) {
+            m <- as.matrix(fg_feat$edge[[fe]])
+            # if (fe=="prop") fn <- "Proportion"
+            utils::write.csv(m, file=paste0(fe_dir,"/", fe, ".csv"))
+        })
+        sm <- fg_feat_desc$edge
+        utils::write.csv(sm, file=paste0(fe_dir,".csv"), row.names=FALSE)
+    }
+
+
+    # save summaries
+    fg_summary_desc <- fg_get_summary_desc(fg)
+    fg_summary <- fg_get_summary_all(fg)
+    if (!is.null(fg_summary$node)) {
+        sn_dir <- paste0(folder_path, "/summary_statistics/nodes")
+        dir.create(sn_dir, recursive=TRUE, showWarnings=FALSE)
+        tb <- fg_get_summary_tables(fg)
+        utils::write.csv(tb, file=paste0(sn_dir, "/pvalues.csv"))
+        sm <- fg_summary_desc$node
+        data.table::fwrite(sm, file=paste0(sn_dir,".csv"), sep=",",
+                           row.names=FALSE, col.names=TRUE)
+    }
+
+    if (!is.null(fg_summary$edge)) {
+        se_dir <- paste0(folder_path, "/summary_statistics/edges")
+        dir.create(se_dir, recursive=TRUE, showWarnings=FALSE)
+        tb <- fg_get_summary_tables(fg, type="edge")
+        utils::write.csv(tb, file=paste0(se_dir, "/pvalues.csv"))
+        sm <- as.matrix(fg_summary_desc$edge)
+        data.table::fwrite(sm, file=paste0(sn_dir,".csv"), sep=",",
+                           row.names=FALSE, col.names=TRUE)
+    }
+
+    # save edge lists, graph layout and others for reproducibility
+    # add folder and save id to object
+    el <- fg_get_el(fg)
+    markers <- fg_get_markers(fg)
+    pl <- fg_get_plot_layout(fg)
+    fg@etc$save$id <<- list(id=stringi::stri_rand_strings(1,5))
+    fg@etc$save$path <<- folder_path
+    etc <- fg_get_etc(fg)
+    save(fg_graph, el, fg_summary, markers, pl, etc,
+         file=paste0(folder_path, "/other.Rdata"))
+
+    if (save_plots)
+        fg_save_plots(fg, plot_path=paste0(folder_path,"/plots"), paired=paired)
+
+    return(TRUE)
+}
+
+#' @title Load a flowGraph object from a specified folder path.
+#' @description Load a flowGraph object from a specified folder path.
+#' @param folder_path A string indicating the folder path to where a flowGraph
+#'  object was saved using the \code{fg_save} function.
+#' @return flowGraph object
+#' @details see function \code{fg_save}
+#' @examples
+#'
+#'  no_cores <- 1
+#'  data(fg_data_pos15)
+#'  fg <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class,
+#'                  no_cores=no_cores)
+#'
+#'  fg_save(fg, "tmp")
+#'  fg <- fg_load("tmp")
+#' @seealso
+#'  \code{\link[flowGraph]{fg_save}}
+#' @rdname fg_load
+#' @export
+#' @importFrom data.table fread
+#' @importFrom purrr map
+#' @importFrom methods new
+fg_load <- function(folder_path) {
+    options(encoding="UTF-8")
+    options(stringsAsFactors=FALSE)
+
+    # load sample meta data and markers
+    meta <- data.table::fread(paste0(folder_path, "/sample_meta.csv"), data.table=FALSE)
+
+    # load features
+    fn_dir <- paste0(folder_path, "/features/nodes")
+    fn_files <- gsub(".csv","",list.files(fn_dir))
+    feats <- list(node=purrr::map(fn_files, function(fn) {
+        a <- data.table::fread(file=paste0(fn_dir,"/", fn, ".csv"))
+        rownames_a <- a[,1]
+        a <- as.matrix(a[,-1,drop=FALSE])
+        rownames(a) <- unlist(rownames_a)
+        colnames(a)[1] <- ""
+        a
+    }))
+    names(feats$node) <- fn_files
+    feats_desc <- list(node=data.table::fread(paste0(fn_dir,".csv"), data.table=FALSE))
+
+    fe_dir <- paste0(folder_path, "/features/edges")
+    if (dir.exists(fe_dir)) {
+        fe_files <- gsub(".csv","",list.files(fe_dir))
+        feats$edge <- purrr::map(fe_files, function(fe) {
+            a <- data.table::fread(file=paste0(fe_dir,"/", fe, ".csv"))
+            rownames_a <- a[,1]
+            a <- as.matrix(a[,-1,drop=FALSE])
+            rownames(a) <- unlist(rownames_a)
+            a
+        })
+        feats_desc$edge <- data.table::fread(paste0(fe_dir,".csv"), data.table=FALSE)
+        names(feats$edge) <- fe_files
+    }
+
+
+    # load summary descriptions
+    summary_desc <- list()
+    sn_dir <- paste0(folder_path, "/summary_statistics/nodes")
+    if (dir.exists(sn_dir))
+        summary_desc$node <- data.table::fread(paste0(sn_dir,".csv"), data.table=FALSE)
+
+    se_dir <- paste0(folder_path, "/summary_statistics/edges")
+    if (dir.exists(se_dir)) {
+        summary_desc$edge <- data.table::fread(paste0(se_dir,".csv"), data.table=FALSE)
+    }
+
+    # load edge lists, graph layout and others for reproducibility
+    # fg_graph, el, fg_summary, markers, pl, etc
+    load(paste0(folder_path, "/other.Rdata"))
+
+    # organize into flowGraph object
+    fg <- methods::new(
+        "flowGraph",
+        feat=feats,
+        feat_desc=feats_desc,
+        summary=fg_summary, summary_desc=summary_desc,
+        markers=markers,
+        graph=fg_graph, edge_list=el,
+        meta=meta, plot_layout=pl,
+        etc=etc
+    )
+}
+
+
 #' @title Retrieves a feature matrix.
 #' @description Retrieves a feature matrix from a given flowGraph object,
 #'  the feature type, and feature name.
@@ -25,8 +266,10 @@
 #' @export
 fg_get_feature <- function(fg, type="node", feature="count") {
     type <- match.arg(type, c("node", "edge"))
-    as.matrix(fg@feat[[type]][[feature]])
+    as.matrix(fg_get_feature_all(fg)[[type]][[feature]])
 }
+
+fg_get_feature_all <- function(fg) fg@feat
 
 
 #' @title Retrieves the index of the requested summary.
@@ -79,14 +322,14 @@ fg_get_feature <- function(fg, type="node", feature="count") {
 #' @export
 fg_get_summary_index <- function(fg, type="node", index=NULL, summary_meta=NULL) {
     type <- match.arg(type, c("node", "edge"))
-    if (base::is.null(fg@summary_desc)) stop("summary not found")
-    if (base::is.null(fg@summary_desc[[type]])) stop()
-    if (base::is.null(index) & base::is.null(summary_meta)) {
+    if (is.null(fg_get_summary_desc(fg))) stop("summary not found")
+    if (is.null(fg_get_summary_desc(fg)[[type]])) stop()
+    if (is.null(index) & is.null(summary_meta)) {
         warning("no summary statistic index/summary_meta provided, returning index=1")
         return(1)
     }
-    if (base::is.null(index)) {
-        index <- which(base::apply(fg@summary_desc[[type]],1, function(x)
+    if (is.null(index)) {
+        index <- which(apply(fg_get_summary_desc(fg)[[type]],1, function(x)
             identical(as.character(unlist(x)),
                       as.character(unlist(summary_meta)))))
         if (length(index) == 0) stop("summary not found")
@@ -226,30 +469,27 @@ fg_get_summary_index <- function(fg, type="node", index=NULL, summary_meta=NULL)
 #' @importFrom effsize cohen.d
 fg_get_summary <- function(
     fg, type="node", index=NULL, summary_meta=NULL, adjust_custom="byLayer",
-    summary_fun=base::colMeans,
+    summary_fun=colMeans,
     adjust0_lim=c(-.1,.1), filter_adjust0=1, filter_es=0,
     filter_btwn_tpthres=.05, filter_btwn_es=.5,
     default_p_thres=1
 ) {
     type <- match.arg(type, c("node", "edge"))
     index <- fg_get_summary_index(fg,type=type, index, summary_meta)
-    summary_meta <- unlist(fg@summary_desc[[type]][index,])
+    summary_meta <- unlist(fg_get_summary_desc(fg)[[type]][index,])
     if (!grepl("SpecEnr",unlist(summary_meta["feat"])))
         filter_adjust0 <- 1
 
-    sl <- fg@summary[[type]][[index]]
+    sl <- fg_get_summary_all(fg)[[type]][[index]]
     sl <- append(sl, list(
-        id1=fg@meta[,summary_meta["class"]]==summary_meta["label1"],
-        id2=fg@meta[,summary_meta["class"]]==summary_meta["label2"]))
+        id1=fg_get_meta(fg)[,summary_meta["class"]]==summary_meta["label1"],
+        id2=fg_get_meta(fg)[,summary_meta["class"]]==summary_meta["label2"]))
 
     # adjust function
     if (!is.function(adjust_custom))
         if (adjust_custom=="none") {
             adjust_custom <- function(x) x
         } else if (adjust_custom!="byLayer") {
-            # adjust_custom <-
-            #   match.arg(c("holm", "hochberg", "hommel", "bonferroni",
-            #                             "BH", "BY", "fdr", "none"))
             ac <- adjust_custom
             adjust_custom <- function(x) stats::p.adjust(x,method=ac)
         }
@@ -257,10 +497,11 @@ fg_get_summary <- function(
     pna <- is.na(sl$values)
     pnaw <- which(!pna)
     if (!is.function(adjust_custom)) {
-        lyrs <- fg@graph$v$phenolayer[!pna]
+        fg_graph <- fg_get_graph(fg)
+        lyrs <- fg_graph$v$phenolayer[!pna]
         if (type=="edge")
-            lyrs <- fg@graph$v$phenolayer[match(
-                fg@graph$e$to[!pna], fg@graph$v$phenotype)]
+            lyrs <- fg_graph$v$phenolayer[match(
+                fg_graph$e$to[!pna], fg@graph$v$phenotype)]
         lyrsu <- unique(lyrs)
         for (lyr in lyrsu) {
             lyri <- lyrs==lyr
@@ -274,9 +515,8 @@ fg_get_summary <- function(
     belowthres <- sl$values<default_p_thres
 
     # colmeans
-    if (!base::is.null(summary_fun)) {
-        feat <- unlist(fg@summary_desc[[type]]$feat[index])
-        # m <- fg@feat[[type]][[feat]]
+    if (!is.null(summary_fun)) {
+        feat <- unlist(fg_get_summary_desc(fg)[[type]]$feat[index])
         m1 <- fg_get_feature_means(
             fg, type, feat, id=sl$id1, summary_fun=summary_fun)
         m2 <- fg_get_feature_means(
@@ -286,41 +526,39 @@ fg_get_summary <- function(
 
     # cohen's d
     ename <- paste(summary_meta[c("feat", "class","label1","label2")], collapse="_")
-    if (base::is.null(fg@etc$effect_size[[type]]))
-        fg@etc$effect_size[[type]] <- list()
-    if (base::is.null(fg@etc$effect_size[[type]][[ename]]))
-        fg@etc$effect_size[[type]][[ename]] <-
+    fg_etc <- fg_get_etc(fg)
+    if (is.null(fg_etc$effect_size[[type]]))
+        fg_etc$effect_size[[type]] <- list()
+    if (is.null(fg_etc$effect_size[[type]][[ename]]))
+        fg_etc$effect_size[[type]][[ename]] <-
             fg_cohensd_(fg@feat[[type]][[feat]], sl$id1, sl$id2)
-    fg <<- fg
 
-    sl <- append(sl, fg@etc$effect_size[[type]][[ename]])
+    sl <- append(sl, fg_etc$effect_size[[type]][[ename]])
 
     if (grepl("SpecEnr", summary_meta["feat"])) {
         aname <- paste(summary_meta[c("feat","class","label1","label2")], collapse="_")
-        if (base::is.null(fg@etc$adjust0[[type]]))
-            fg@etc$adjust0[[type]] <- list()
-        if (base::is.null(fg@etc$adjust0[[type]][[aname]]))
-            fg@etc$adjust0[[type]][[aname]] <-
-                fg_adjust0_(fg@feat[[type]][[feat]], sl$id1,sl$id2, adjust0_lim)
-        fg <<- fg
+        if (is.null(fg_etc$adjust0[[type]]))
+            fg_etc$adjust0[[type]] <- list()
+        if (is.null(fg_etc$adjust0[[type]][[aname]]))
+            fg_etc$adjust0[[type]][[aname]] <-
+                fg_adjust0_(fg_get_feature_all(fg)[[type]][[feat]],
+                            sl$id1,sl$id2, adjust0_lim)
 
-        sl$adjust0 <- fg@etc$adjust0[[type]][[aname]]
+        sl$adjust0 <- fg_etc$adjust0[[type]][[aname]]
 
         sm_name <- paste0(summary_meta[-2], collapse="_")
-        if (base::is.null(fg@etc$actualVSexpect[[type]]))
-            fg@etc$actualVSexpect[[type]] <- list()
-        if (base::is.null(fg@etc$actualVSexpect[[type]][[sm_name]])) {
-            feat_ <- flowGraph:::se_feats(feat)
+        if (is.null(fg_etc$actualVSexpect[[type]]))
+            fg_etc$actualVSexpect[[type]] <- list()
+        if (is.null(fg_etc$actualVSexpect[[type]][[sm_name]])) {
+            feat_ <- se_feats(feat)
             mp <- fg_get_feature(fg, type=type, feature=feat_[2])
             mep <- fg_get_feature(fg, type=type, feature=feat_[3])
-            fg@etc$actualVSexpect[[type]][[sm_name]] <-
-                flowGraph:::fg_btwn_(
-                    sl$id1, sl$id2, mp, mep,
-                    btwn_test_custom=function(x,y)
-                        tryCatch(stats::t.test(x,y)$p.value, error=function(e) 1))
-            fg <<- fg
+            fg_etc$actualVSexpect[[type]][[sm_name]] <- fg_btwn_(
+                sl$id1, sl$id2, mp, mep,
+                btwn_test_custom=function(x,y)
+                    tryCatch(stats::t.test(x,y)$p.value, error=function(e) 1))
         }
-        sl$btwn <- df_ps <- fg@etc$actualVSexpect[[type]][[sm_name]]
+        sl$btwn <- df_ps <- fg_etc$actualVSexpect[[type]][[sm_name]]
 
         sl0 <- sl$values
         if (filter_btwn_es>0 | filter_btwn_tpthres<1) {
@@ -345,9 +583,12 @@ fg_get_summary <- function(
             sl$values[abs(sl$cohensd)<filter_es & belowthres] <- default_p_thres
         }
     }
+    fg@etc <<- fg_etc
     sl$values[is.na(sl$values) | sl$values>1] <- 1
     return(sl)
 }
+
+fg_get_summary_all <- function(fg) fg@summary
 
 
 #' @title Retrieves a table containing all node or edge summary statistics.
@@ -388,16 +629,16 @@ fg_get_summary <- function(
 fg_get_summary_tables <- function(fg, type="node") {
     type <- match.arg(type, c("node", "edge"))
     if (type=="node") {
-        gr <- fg@graph$v
+        gr <- fg_get_graph(fg)$v
         gr <- gr[,!colnames(gr)%in%c("x", "y")]
     } else {
-        gr <- fg@graph$e
+        gr <- fg_get_graph(fg)$e
         gr <- gr[,!colnames(gr)%in%c("from.x", "from.y", "to.x", "to.y")]
     }
-    if (!type%in%names(fg@summary)) stop("no summaries found")
+    if (!type%in%names(fg_get_summary_all(fg))) stop("no summaries found")
 
-    desc <- fg@summary_desc[[type]]
-    descn <- base::apply(desc, 1, function(x) paste0(x, collapse="."))
+    desc <- fg_get_summary_desc(fg)[[type]]
+    descn <- apply(desc, 1, function(x) paste0(x, collapse="."))
     descn <- paste0(type, ".", descn)
     for (ft1 in seq_len(length(descn)))
         gr[[descn[ft1]]] <- fg_get_summary(fg, type, index=ft1)$values
@@ -433,17 +674,18 @@ fg_get_summary_tables <- function(fg, type="node") {
 #' @export
 fg_get_feature_desc <- function(fg, re_calc=FALSE) {
     if (re_calc) {
-        result1 <- as.data.frame(sapply(base::names(fg@feat$node), function(x)
-            summary_table(fg@feat$node[[x]], x)))
+        fg_feat <- fg_get_feature_all(fg)
+        result1 <- as.data.frame(sapply(names(fg_feat$node), function(x)
+            summary_table(fg_feat$node[[x]], x)))
 
         result2 <- NULL
-        if (base::length(fg@feat$edge) >
+        if (length(fg_feat$edge) >
             0) {
             result2 <- as.data.frame(sapply(
-                base::names(fg@feat$edge), function(x)
-                    summary_table(fg@feat$edge[[x]], x)))
+                names(fg_feat$edge), function(x)
+                    summary_table(fg_feat$edge[[x]], x)))
         }
-        fg@feat_desc <- list(node=result1, edge=result2)
+        return(list(node=result1, edge=result2))
     }
     fg@feat_desc
 }
@@ -541,6 +783,8 @@ fg_get_meta <- function(fg) fg@meta
 #' @export
 fg_get_graph <- function(fg) fg@graph
 
+fg_get_el <- function(fg) fg@edge_list
+
 
 ## get markers
 #' @title Retrieves the markers from a given flowGraph object.
@@ -607,18 +851,20 @@ fg_get_markers <- function(fg) fg@markers
 fg_get_feature_means <- function(
     fg, type=c("node","edge"), feature="count",
     class=NULL, label=NULL, id=NULL,
-    summary_fun=base::colMeans
+    summary_fun=colMeans
 ) {
     m <- fg_get_feature(fg, type, feature)
-    if (!base::is.null(id)) {
+    if (!is.null(id)) {
         m1 <- m[id,,drop=FALSE]
     } else {
-        m1 <- m[fg@meta[[class]]==label,,drop=FALSE]
+        m1 <- m[fg_get_meta(fg)[[class]]==label,,drop=FALSE]
     }
     summary_fun(as.matrix(m1))
 }
 
+fg_get_etc <- function(fg) fg@etc
 
+fg_get_plot_layout <- function(fg) fg@plot_layout
 
 
 # given number of markers, output number of nodes, edges

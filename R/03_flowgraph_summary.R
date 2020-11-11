@@ -121,35 +121,37 @@ fg_summary <- function(
     # if label1 is NULL, compare all
     # if node/edge_features is NULL, do all
 
-    if (!class%in%base::colnames(fg@meta)) {
+    fg_meta <- fg_get_meta
+
+    if (!class%in%colnames(fg_meta)) {
         print(class)
-        stop("invalid class, choose one from @meta")
+        stop("invalid class, choose one from fg_get_meta(fg)")
     }
 
     test_name <- gsub("[.]","_",test_name)
-    classes_ <- fg@meta[,class]
-    classes <- base::unique(classes_)
-    if (base::length(classes)<2)
-        stop("please provide a valid class from columns of fg@meta.")
+    classes_ <- fg_meta[,class]
+    classes <- unique(classes_)
+    if (length(classes)<2)
+        stop("please provide a valid class from columns of fg_get_meta(fg).")
 
     # class list lists what classes to compare
-    if (!base::is.null(label1))
-        if (!label1%in%fg@meta[,class] & !base::is.null(class_labels)) {
+    if (!is.null(label1))
+        if (!label1%in%fg_meta[,class] & !is.null(class_labels)) {
             label1 <- NULL
             stop("we will proceed to compare all class labels with each other.")
         }
-    if (!base::is.null(class_labels)) {
+    if (!is.null(class_labels)) {
         if (!all(purrr::map_lgl(class_labels, function(x) x%in%classes_)))
             stop("please provide valid class labels class_labels.")
         class_list <- list(class_labels)
-    } else if (!base::is.null(label1) & base::is.null(label2)) {
+    } else if (!is.null(label1) & is.null(label2)) {
         class_list <- purrr::map(classes[classes!=label1],
                                function(x) c(label1, x))
-    } else if (!base::is.null(label1) & !base::is.null(label2)) {
+    } else if (!is.null(label1) & !is.null(label2)) {
         class_list <- list(a=c(label1, label2))
     } else {
-        class_list <- purrr::map(2:base::length(classes), function(i)
-            purrr::map(base::seq_len(i-1), function(j) c(classes[i], classes[j])))
+        class_list <- purrr::map(2:length(classes), function(i)
+            purrr::map(seq_len(i-1), function(j) c(classes[i], classes[j])))
         class_list <- unlist(class_list, recursive=FALSE)
     }
 
@@ -173,20 +175,21 @@ fg_summary <- function(
         }
     }
 
+    fg_feat <- fg_get_feature_all(fg)
     for (type in c("node","edge")) {
         if (type=="node")
             features <- node_features
         if (type=="edge")
             features <- edge_features
 
-        if (base::is.null(features)) features <- base::names(fg@feat[[type]])
-        if (base::length(features)==0) next
+        if (is.null(features)) features <- names(fg_feat[[type]])
+        if (length(features)==0) next
         if (features[1]=="NONE") next
-        features <- features[features%in%base::names(fg@feat[[type]])]
-        if (base::length(features)==0) next
+        features <- features[features%in%names(fg_feat[[type]])]
+        if (length(features)==0) next
 
         for (feature in features) {
-            if (!feature%in%base::names(fg@feat[[type]])) next
+            if (!feature%in%names(fg_feat[[type]])) next
             for (classl in class_list) {
                 start1 <- Sys.time()
                 message("- claculating summary statistics (for class ",
@@ -211,22 +214,22 @@ fg_summary <- function(
                 sm_name <- paste0(c(feature, class, classl), collapse="_")
 
                 if (effect_size) {
-                    if (base::is.null(fg@etc$effect_size))
+                    if (is.null(fg_get_etc(fg)$effect_size))
                         fg@etc$effect_size <- list()
-                    if (base::is.null(fg@etc$effect_size[[type]]))
+                    if (is.null(fg_get_etc(fg)$effect_size[[type]]))
                         fg@etc$effect_size[[type]] <- list()
-                    if (base::is.null(fg@etc$effect_size[[type]][[sm_name]])) {
+                    if (is.null(fg_get_etc(fg)$effect_size[[type]][[sm_name]])) {
                         fg@etc$effect_size[[type]][[sm_name]] <-
-                            fg_cohensd_(fg@feat[[type]][[feature]], id1, id2)
+                            fg_cohensd_(fg_get_feature(fg, type, feature), id1, id2)
                     }
                 }
 
                 if (adjust0 & grepl("SpecEnr", feature)) {
-                    if (base::is.null(fg@etc$adjust0))
+                    if (is.null(fg@etc$adjust0))
                         fg@etc$adjust0 <- list()
-                    if (base::is.null(fg@etc$adjust0[[type]]))
+                    if (is.null(fg@etc$adjust0[[type]]))
                         fg@etc$adjust0[[type]] <- list()
-                    if (base::is.null(fg@etc$adjust0[[type]][[sm_name]])) {
+                    if (is.null(fg@etc$adjust0[[type]][[sm_name]])) {
                         fg@etc$adjust0[[type]][[sm_name]] <-
                             fg_adjust0_(fg@feat[[type]][[feature]], id1, id2,
                                         adjust0_lim=adjust0_lim)
@@ -260,11 +263,11 @@ fg_summary <- function(
                     }
 
                     cf <- se_feats(feature)
-                    if (base::is.null(fg@etc$actualVSexpect))
+                    if (is.null(fg@etc$actualVSexpect))
                         fg@etc$actualVSexpect <- list()
-                    if (base::is.null(fg@etc$actualVSexpect[[type]]))
+                    if (is.null(fg@etc$actualVSexpect[[type]]))
                         fg@etc$actualVSexpect[[type]] <- list()
-                    if (base::is.null(fg@etc$actualVSexpect[[type]][[sm_name]])) {
+                    if (is.null(fg@etc$actualVSexpect[[type]][[sm_name]])) {
                         mp <- fg_get_feature(fg, type=type, feature=cf[2])
                         mep <- fg_get_feature(fg, type=type, feature=cf[3])
                         fg@etc$actualVSexpect[[type]][[sm_name]] <-
@@ -366,11 +369,11 @@ fg_cohensd_ <- function(m, id1, id2) {
     cd <- purrr::map(seq_len(ncol(m)), function(ci)
         effsize::cohen.d(m[id1,ci], m[id2,ci]))
     cde <- purrr::map_dbl(cd, function(x) x$estimate)
-    cde[base::is.na(cde)] <- 0
+    cde[is.na(cde)] <- 0
     cdd <- purrr::map_int(cd, function(x) x$magnitude)
-    cdd[base::is.na(cdd)] <- 1
+    cdd[is.na(cdd)] <- 1
     cdd <- factor(cdd)
-    levels(cdd) <- levels(cd[[which(!base::is.na(cdd))[1]]]$magnitude)
+    levels(cdd) <- levels(cd[[which(!is.na(cdd))[1]]]$magnitude)
     return(list(cohensd=cde, cohensd_size=cdd))
 }
 
@@ -383,52 +386,52 @@ fg_summary_ <- function(
     test_custom, p_thres, p_rate, save_functions,
     no_cores=1
 ) {
-    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     # split feature matrix into sample classes
-    mnames <- base::colnames(m1)
-    ml <- base::length(mnames)
+    mnames <- colnames(m1)
+    ml <- length(mnames)
+
+    fg_graph <- fg_get_graph(fg)
 
     # prepare layers
-    if (type=="node") layers_ <- fg@graph$v$phenolayer
+    if (type=="node") layers_ <- fg_graph$v$phenolayer
     if (type=="edge") {
-        phen_to <- fg@graph$e$to
-        phen_from <- fg@graph$e$from
-        layers_ <- fg@graph$v$phenolayer[
-            base::match(phen_to, fg@graph$v$phenotype)]
+        phen_to <- fg_graph$e$to
+        phen_from <- fg_graph$e$from
+        layers_ <- fg_graph$v$phenolayer[
+            match(phen_to, fg_graph$v$phenotype)]
     }
-    layers <- base::sort(base::unique(layers_))
+    layers <- sort(unique(layers_))
 
     if (!diminish) {
         # calculate p values
         if (no_cores>1) {
-            loop_ind <- flowGraph:::loop_ind_f(base::seq_len(ml), no_cores)
-            p <- base::unlist(furrr::future_map(loop_ind, function(ii)
+            loop_ind <- flowGraph:::loop_ind_f(seq_len(ml), no_cores)
+            p <- unlist(furrr::future_map(loop_ind, function(ii)
                 purrr::map_dbl(ii, function(i) test_custom(m1[,i], m2[,i])) ))
         } else {
-            p <- purrr::map_dbl(base::seq_len(ml), function(i)
+            p <- purrr::map_dbl(seq_len(ml), function(i)
                 test_custom(m1[,i], m2[,i]))
 
         }
 
     } else {
-        # pparen <- fg@edge_list$parent
-        pchild <- fg@edge_list$child
+        pchild <- fg_get_el(fg)$child
 
         # p value thresholds determining whether to continue down hierarchy
-        p_thress <- rep(p_rate, base::length(layers))
+        p_thress <- rep(p_rate, length(layers))
         if (any(layers==0)) p_thress <- p_thress[-length(p_thress)]
         p_thress[1] <- p_thres
         p_thress <- cumprod(p_thress)
-        p_thress <- base::sort(p_thress, decreasing=TRUE)
+        p_thress <- sort(p_thress, decreasing=TRUE)
 
         # initialize p values vector
         p <- rep(NA, ml)
         root_ <- mnames==""
         if (sum(root_)>0) {
             p[root_] <- test_custom(m1[,root_], m2[,root_])
-            if (base::is.nan(p[root_])) p[root_] <- 1
+            if (is.nan(p[root_])) p[root_] <- 1
         }
 
         # calculate p values for layer 1
@@ -437,7 +440,7 @@ fg_summary_ <- function(
         while (sum(testi)>0) {
             if (no_cores>1) {
                 loop_ind <- loop_ind_f(which(testi), no_cores)
-                pl <- base::unlist(furrr::future_map(loop_ind, function(ii)
+                pl <- unlist(furrr::future_map(loop_ind, function(ii)
                     purrr::map_dbl(ii, function(i)
                         pt <- test_custom(m1[,i], m2[,i])
                     )
@@ -452,7 +455,7 @@ fg_summary_ <- function(
             pl_cpops_ <- mnames[which(testi)[pl_cpops]]
             p_thress_i <- p_thress_i + 1
             if (type=="node") {
-                testi <- mnames %in% base::unlist(pchild[pl_cpops_])
+                testi <- mnames %in% unlist(pchild[pl_cpops_])
             } else {
                 good_edges <- mnames %in% pl_cpops_
                 testi <- phen_from %in% phen_to[good_edges]
@@ -461,7 +464,7 @@ fg_summary_ <- function(
         }
     }
 
-    base::names(p) <- mnames
+    names(p) <- mnames
     p_ <- list(values=p)
     if (save_functions)
         p_$test_fun <- test_custom

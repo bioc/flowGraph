@@ -58,26 +58,30 @@ fg_add_feature <- function(
     feat_fun=NULL, overwrite=FALSE, ...
 ) {
     type <- match.arg(type, c("node", "edge"))
-    exists_ <- feature %in% base::names(fg@feat[[type]])
+    fg_feat <- fg_get_feature_all(fg)
+    fg_feat_desc <- fg_get_feature_desc(fg)
+
+    feat_names <- names(fg_feat[[type]])
+    exists_ <- feature %in% feat_names
     if (exists_) {
         if (!overwrite) {
             message("skipped")
             return(fg)
         }
-        f_ind <- base::names(fg@feat[[type]]) != feature
-        fg@feat_desc[[type]] <- fg@feat_desc[[type]][f_ind,,drop=FALSE]
-        fg@feat[[type]] <- fg@feat[[type]][f_ind]
+        f_ind <- feat_names != feature
+        fg_feat_desc[[type]] <- fg_feat_desc[[type]][f_ind,,drop=FALSE]
+        fg_feat[[type]] <- fg_feat[[type]][f_ind]
     }
 
-    if (base::is.null(m)) {
-        if (base::is.null(feat_fun))
+    if (is.null(m)) {
+        if (is.null(feat_fun))
             stop("please provide a feature matrix or a function to create one")
         m <- feat_fun(fg, ...)
     }
 
-    fg@feat_desc[[type]] <-
-        rbind(fg@feat_desc[[type]], summary_table(m, feature))
-    fg@feat[[type]][[feature]] <- m
+    fg_feat_desc[[type]] <-
+        rbind(fg_feat_desc[[type]], summary_table(m, feature))
+    fg_feat[[type]][[feature]] <- m
 
     return(fg)
 }
@@ -119,10 +123,11 @@ fg_rm_feature <- function(fg, type="node", feature=NULL) {
     type <- match.arg(type, c("node", "edge"))
     if (feature=="count" & type=="node")
         stop("cannot remove the count node feature from a flowGraph object.")
-    ft_ind <- which(names(fg@feat[[type]]) == feature)
+    ft_ind <- which(names(fg_get_feature_all(fg)[[type]]) == feature)
     fg@feat[[type]][[feature]] <- NULL
-    if (base::length(ft_ind)==1) {
-        fg@feat_desc[[type]] <- fg@feat_desc[[type]][-ft_ind,, drop=FALSE]
+    if (length(ft_ind)==1) {
+        fg@feat_desc[[type]] <-
+            fg_get_feature_desc(fg)[[type]][-ft_ind,, drop=FALSE]
     } else {
         warning("feature not found, nothing was dropped")
     }
@@ -226,8 +231,8 @@ fg_add_summary <- function(
         fg <- fg_rm_summary(fg, type=type, index=index)
     }, silent=TRUE)
 
-    if (base::is.null(p)) {
-        if (base::is.null(summ_fun))
+    if (is.null(p)) {
+        if (is.null(summ_fun))
             stop("provide summary statistic values or a function to create one")
         p <- summ_fun(fg, type=type, ...)  # list(values, test, adjust)
     }
@@ -239,15 +244,15 @@ fg_add_summary <- function(
 
     sm <- data.frame(matrix(summary_meta, nrow=1))
     colnames(sm) <- c("feat", "test_name","class","label1", "label2")
-    if (base::length(fg@summary_desc[[type]])==0) {
+    if (length(fg_get_summary_desc(fg)[[type]])==0) {
         fg@summary_desc[[type]] <- sm
     } else {
-        fg@summary_desc[[type]] <- rbind(fg@summary_desc[[type]], sm)
+        fg@summary_desc[[type]] <- rbind(fg_get_summary_desc(fg)[[type]], sm)
         rownames(fg@summary_desc[[type]]) <- NULL
     }
 
-    if (base::is.null(fg@summary[[type]])) fg@summary[[type]] <- list()
-    fg@summary[[type]][[nrow(fg@summary_desc[[type]])]] <- p
+    if (is.null(fg_get_summary_all(fg)[[type]])) fg@summary[[type]] <- list()
+    fg@summary[[type]][[nrow(fg_get_summary_desc(fg)[[type]])]] <- p
 
     return(fg)
 }
@@ -310,7 +315,8 @@ fg_rm_summary <- function(fg, type="node", index=NULL, summary_meta=NULL) {
     index <- fg_get_summary_index(fg,type=type, index,summary_meta)
     fg@summary[[type]][[index]] <- NULL
     # don't need the drop part, but just in case.
-    fg@summary_desc[[type]] <- fg@summary_desc[[type]][-index,, drop=FALSE]
+    fg@summary_desc[[type]] <-
+        fg_get_summary_desc(fg)[[type]][-index,, drop=FALSE]
     return(fg)
 }
 
@@ -334,11 +340,12 @@ fg_rm_summary <- function(fg, type="node", index=NULL, summary_meta=NULL) {
 #' @export
 #' @importFrom purrr compact
 fg_clear_features <- function(fg) {
-    if (length(fg@feat$node)>1)
-        fg@feat$node[!base::names(fg@feat$node)%in%"count"] <- NULL
-    fg@feat$node <- purrr::compact(fg@feat$node)
+    if (length(fg_get_feature_all(fg)$node)>1)
+        fg@feat$node[!names(fg_get_feature_all(fg)$node)%in%"count"] <- NULL
+    fg@feat$node <- purrr::compact(fg_get_feature_all(fg)$node)
     fg@feat$edge <- fg@feat_desc$edge <- list()
-    fg@feat_desc$node = fg@feat_desc$node[fg@feat_desc$node$feat=="count",]
+    fg@feat_desc$node <-
+        fg_get_feature_desc(fg)$node[fg_get_feature_desc(fg)$node$feat=="count",]
     return(fg)
 }
 
@@ -366,8 +373,8 @@ fg_clear_features <- function(fg) {
 #' @rdname fg_clear_summary
 #' @export
 fg_clear_summary <- function(fg) {
-    fg@summary <- fg@summary_desc <- base::list()
-    fg@etc$actualVSexpect <- base::list()
+    fg@summary <- fg@summary_desc <- list()
+    fg@etc$actualVSexpect <- list()
     return(fg)
 }
 
@@ -431,53 +438,52 @@ fg_extract_raw <- function(fg) {
 #' @importFrom purrr map
 fg_gsub_markers <- function(fg, markers_new, markers_old=NULL) {
 
-    if (base::is.null(markers_old)) {
-        if (base::length(markers_new) != base::length(fg@markers))
+    if (is.null(markers_old)) {
+        if (length(markers_new) != length(fg_get_markers(fg)))
             stop("incorrect number of markers\n")
 
-        markers_old <- fg@markers
+        markers_old <- fg_get_markers(fg)
     } else {
-        if (base::length(markers_old) != base::length(markers_new))
+        if (length(markers_old) != length(markers_new))
             stop("incorrect number of markers\n")
     }
-    for (mi in base::seq_len(base::length(markers_old))) {
+    for (mi in seq_len(length(markers_old))) {
+        fg_graph <- fg_get_graph(fg)
         fg@graph$v$phenotype <-
-            base::gsub(markers_old[mi], markers_new[mi], fg@graph$v$phenotype)
+            gsub(markers_old[mi], markers_new[mi], fg_graph$v$phenotype)
         fg@graph$e$from <-
-            base::gsub(markers_old[mi], markers_new[mi], fg@graph$e$from)
+            gsub(markers_old[mi], markers_new[mi], fg_graph$e$from)
         fg@graph$e$to <-
-            base::gsub(markers_old[mi], markers_new[mi], fg@graph$e$to)
+            gsub(markers_old[mi], markers_new[mi], fg_graph$e$to)
         fg@graph$e$marker <-
-            base::gsub(markers_old[mi], markers_new[mi], fg@graph$e$marker)
+            gsub(markers_old[mi], markers_new[mi], fg_graph$e$marker)
 
         fg@edge_list$parent <-
             purrr::map(fg@edge_list$parent, function(x)
-                base::gsub(markers_old[mi], markers_new[mi], x))
-        base::names(fg@edge_list$parent) <-
-            base::gsub(markers_old[mi], markers_new[mi],
-                       base::names(fg@edge_list$parent))
+                gsub(markers_old[mi], markers_new[mi], x))
+        names(fg@edge_list$parent) <-
+            gsub(markers_old[mi], markers_new[mi], names(fg@edge_list$parent))
         fg@edge_list$child <-
             purrr::map(fg@edge_list$child, function(x)
                 purrr::map(x, function(y)
-                    base::gsub(markers_old[mi], markers_new[mi], y) ))
-        base::names(fg@edge_list$child) <-
-            base::gsub(markers_old[mi], markers_new[mi],
-                       base::names(fg@edge_list$child))
-
+                    gsub(markers_old[mi], markers_new[mi], y) ))
+        names(fg@edge_list$child) <-
+            gsub(markers_old[mi], markers_new[mi], names(fg@edge_list$child))
     }
-    fg@feat$node <- purrr::map(fg@feat$node, function(x) {
-        base::colnames(x) <- fg@graph$v$phenotype
+    fg_graph <- fg_get_graph(fg)
+    fg@feat$node <- purrr::map(fg_get_feature_all(fg)$node, function(x) {
+        colnames(x) <- fg_graph$v$phenotype
         x
     })
-    if (base::length(fg@feat$edge) > 0) {
-        ecn <- paste0(fg@graph$e$from, "_", fg@graph$e$to)
-        fg@feat$edge <- purrr::map(fg@feat$edge, function(x) {
-            base::colnames(x) <- ecn
+    if (length(fg_get_feature_all(fg)$edge) > 0) {
+        ecn <- paste0(fg_graph$e$from, "__", fg_graph$e$to)
+        fg@feat$edge <- purrr::map(fg_get_feature_all(fg)$edge, function(x) {
+            colnames(x) <- ecn
             x
         })
     }
 
-    fg@markers[match(markers_old, fg@markers)] <- markers_new
+    fg@markers[match(markers_old, fg_get_markers(fg))] <- markers_new
     return(fg)
 }
 
@@ -512,24 +518,26 @@ fg_gsub_markers <- function(fg, markers_new, markers_old=NULL) {
 #' @importFrom purrr map
 fg_gsub_ids <- function(fg, ids_new, ids_old=NULL) {
 
-    if (base::is.null(ids_old)) {
-        if (base::length(ids_new) != base::nrow(fg@meta))
+    fg_meta <- fg_get_meta(fg)
+    fg_feat <- fg_get_feature_all(fg)
+    if (is.null(ids_old)) {
+        if (length(ids_new) != nrow(fg_meta))
             stop("incorrect number of ids\n")
 
-        ids_old <- fg@meta$id
-    } else if (base::length(ids_old) != base::length(ids_new)) {
+        ids_old <- fg_meta$id
+    } else if (length(ids_old) != length(ids_new)) {
         stop("incorrect number of ids\n")
     }
 
-    ids_ind <- base::match(ids_old, fg@meta$id)
+    ids_ind <- match(ids_old, fg_meta$id)
     fg@meta$id[ids_ind] <- ids_new
-    fg@feat$node <- purrr::map(fg@feat$node, function(x) {
-        base::rownames(x)[ids_ind] <- ids_new
+    fg@feat$node <- purrr::map(fg_feat$node, function(x) {
+        rownames(x)[ids_ind] <- ids_new
         x
     })
-    if (base::length(fg@feat$edge) > 0) {
-        fg@feat$edge <- purrr::map(fg@feat$edge, function(x) {
-            base::rownames(x)[ids_ind] <- ids_new
+    if (length(fg_feat$edge) > 0) {
+        fg@feat$edge <- purrr::map(fg_feat$edge, function(x) {
+            rownames(x)[ids_ind] <- ids_new
             x
         })
     }
@@ -574,42 +582,47 @@ fg_gsub_ids <- function(fg, ids_new, ids_old=NULL) {
 fg_merge_samples <- function(fg1, fg2) {
     fg <- fg1
 
-    cnames = intersect(colnames(fg1@meta), colnames(fg2@meta))
+    fg1_meta <- fg_get_meta(fg1)
+    fg2_meta <- fg_get_meta(fg2)
+    fg1_feat <- fg_get_feature_all(fg1)
+    fg2_feat <- fg_get_feature_all(fg2)
 
-    id2 <- setdiff(fg2@meta$id, fg1@meta$id)
-    meta2 <- fg2@meta[fg2@meta$id%in%id2,cnames,drop=FALSE]
-    meta1 <- fg1@meta[,cnames,drop=FALSE]
+    cnames = intersect(colnames(fg1_meta), colnames(fg2_meta))
 
-    fg@meta <- base::rbind(meta1, meta2)
-    nfs <- base::intersect(base::names(fg1@feat$node),
-                           base::names(fg2@feat$node))
+    id2 <- setdiff(fg2_meta$id, fg1_meta$id)
+    meta2 <- fg2_meta[fg2_meta$id%in%id2,cnames,drop=FALSE]
+    meta1 <- fg1_meta[,cnames,drop=FALSE]
+
+    fg@meta <- rbind(meta1, meta2)
+    nfs <- intersect(names(fg1_feat$node),
+                           names(fg2_feat$node))
     fg@feat$node=purrr::map(nfs, function(xi) {
-        a <- fg1@feat$node[[xi]]
-        b <- fg2@feat$node[[xi]][id2, , drop=FALSE]
-        abcol <- base::intersect(base::colnames(a), base::colnames(b))
-        ab <- base::rbind(a[,base::match(abcol, base::colnames(a)), drop=FALSE],
-                          b[base::match(base::setdiff(base::rownames(b),
-                                                      base::rownames(a)),
-                                        base::rownames(b)),
-                            base::match(abcol, base::colnames(b)), drop=FALSE])
+        a <- fg1_feat$node[[xi]]
+        b <- fg2_feat$node[[xi]][id2, , drop=FALSE]
+        abcol <- intersect(colnames(a), colnames(b))
+        ab <- rbind(a[,match(abcol, colnames(a)), drop=FALSE],
+                          b[match(setdiff(rownames(b),
+                                                      rownames(a)),
+                                        rownames(b)),
+                            match(abcol, colnames(b)), drop=FALSE])
     })
-    base::names(fg@feat$node) <- nfs
-    if (base::length(fg@feat$edge) > 0) {
-        efs <- base::intersect(base::names(fg1@feat$edge),
-                               base::names(fg2@feat$edge))
+    names(fg@feat$node) <- nfs
+    if (length(fg@feat$edge) > 0) {
+        efs <- intersect(names(fg1_feat$edge),
+                               names(fg2_feat$edge))
         fg@feat$edge <- purrr::map(efs, function(xi) {
-            a <- fg1@feat$edge[[xi]]
-            b <- fg2@feat$edge[[xi]][id2,, drop=FALSE]
-            abcol <- base::intersect(base::colnames(a),
-                                     base::colnames(b))
-            ab <- base::rbind(
-                a[, base::match(abcol, base::colnames(a)), drop=FALSE],
-                b[base::match(base::setdiff(base::rownames(b),
-                                            base::rownames(a)),
-                              base::rownames(b)),
-                  base::match(abcol, base::colnames(b)),drop=FALSE])
+            a <- fg1_feat$edge[[xi]]
+            b <- fg2_feat$edge[[xi]][id2,, drop=FALSE]
+            abcol <- intersect(colnames(a),
+                                     colnames(b))
+            ab <- rbind(
+                a[, match(abcol, colnames(a)), drop=FALSE],
+                b[match(setdiff(rownames(b),
+                                            rownames(a)),
+                              rownames(b)),
+                  match(abcol, colnames(b)),drop=FALSE])
         })
-        base::names(fg@feat$edge) <- efs
+        names(fg@feat$edge) <- efs
     }
 
     fg@feat_desc <- fg_get_feature_desc(fg, re_calc=TRUE)
@@ -650,22 +663,26 @@ fg_merge_samples <- function(fg1, fg2) {
 #' @export
 #' @importFrom purrr map
 fg_extract_samples <- function(fg, sample_ids, rm_summary=TRUE) {
-    if (!any(sample_ids %in% fg@meta$id))
+    fg_meta <- fg_get_meta(fg)
+    if (!any(sample_ids %in% fg_meta$id))
         stop("please provide valid sample id's; see @meta$id\n")
 
 
-    id_inds <- base::match(sample_ids, fg@meta$id)
+    id_inds <- match(sample_ids, fg_meta$id)
 
-    fg@meta <- fg@meta[id_inds, , drop=FALSE]
-    fg@feat$node <- purrr::map(fg@feat$node, function(x)
+    fg@meta <- fg_meta[id_inds, , drop=FALSE]
+
+    fg_feat <- fg_get_feature_all(fg)
+    fg@feat$node <- purrr::map(fg_feat$node, function(x)
         x[id_inds, , drop=FALSE])
-    if (base::length(fg@feat$edge) > 0)
-        fg@feat$edge <- purrr::map(fg@feat$edge, function(x)
-            x[id_inds, , drop=FALSE])
+    if (length(fg_feat$edge) > 0)
+        fg@feat$edge <- purrr::map(fg_feat$edge, function(x)
+            x[id_inds,, drop=FALSE])
 
     fg@feat_desc <- fg_get_feature_desc(fg, re_calc=TRUE)
 
-    if (!base::is.null(fg@summary$node) | !base::is.null(fg@summary$edge))
+    fg_summary <- fg_get_summary_all(fg)
+    if (!is.null(fg_summary$node) | !is.null(fg_summary$edge))
         if (rm_summary) {
             warning("subsetting samples mean that summary statistics will no longer be valide, removing summary statistics.")
             fg <- fg_clear_summary(fg)
@@ -709,27 +726,30 @@ fg_extract_phenotypes <- function(fg, phenotypes) {
     if (!any(phenotypes %in% fg@graph$v$phenotype))
         stop("please provide valid phenotypes; see @graph$v\n")
 
-    id_inds <- fg@graph$v$phenotype %in% phenotypes
-    id_inds_ <- fg@graph$e$from %in% phenotypes &
-        fg@graph$e$to %in% phenotypes
+    fg_graph <- fg_get_graph(fg)
 
-    fg@graph$v <- fg@graph$v[id_inds,, drop=FALSE]
-    fg@graph$e <- fg@graph$e[id_inds_,, drop=FALSE]
-    fg <- fg_set_layout(fg, fg@plot_layout)
+    id_inds <- fg_graph$v$phenotype %in% phenotypes
+    id_inds_ <- fg_graph$e$from %in% phenotypes &
+        fg_graph$e$to %in% phenotypes
 
-    fg@feat$node <- purrr::map(fg@feat$node, function(x)
+    fg@graph$v <- fg_graph$v[id_inds,, drop=FALSE]
+    fg@graph$e <- fg_graph$e[id_inds_,, drop=FALSE]
+    fg <- fg_set_layout(fg, fg_get_plot_layout(fg))
+
+    fg_feat <- fg_get_feature_all(fg)
+    fg@feat$node <- purrr::map(fg_feat$node, function(x)
         x[, id_inds, drop=FALSE])
-    if (base::length(fg@feat$edge) > 0)
-        fg@feat$edge <- purrr::map(fg@feat$edge, function(x)
+    if (length(fg_feat$edge) > 0)
+        fg@feat$edge <- purrr::map(fg_feat$edge, function(x)
             x[, id_inds_, drop=FALSE])
 
     fg@edge_list$child <-
         fg@edge_list$child[phenotypes[phenotypes %in%
-                                          base::names(fg@edge_list$child)]]
+                                          names(fg@edge_list$child)]]
     fg@edge_list$child <- purrr::map(fg@edge_list$child, function(x)
         purrr::map(x, function(y) {
             a <- y[y %in% phenotypes]
-            if (base::length(a) == 0)
+            if (length(a) == 0)
                 return(NULL)
             a
         }))
@@ -737,10 +757,10 @@ fg_extract_phenotypes <- function(fg, phenotypes) {
     fg@edge_list$child <- purrr::compact(fg@edge_list$child)
     fg@edge_list$parent <-
         fg@edge_list$parent[phenotypes[phenotypes %in%
-                                           base::names(fg@edge_list$parent)]]
+                                           names(fg@edge_list$parent)]]
     fg@edge_list$parent <- purrr::map(fg@edge_list$parent, function(x) {
         a <- x[x %in% phenotypes]
-        if (base::length(a) == 0)
+        if (length(a) == 0)
             return(NULL)
         a
     })
@@ -830,29 +850,29 @@ fg_merge <- function(
     if (method_sample == "none" & method_phenotype == "none")
         return(fg1)
 
-    sample_id1 <- fg1@meta$id
-    sample_id2 <- fg2@meta$id
-    sample_id1_int <- base::intersect(sample_id1, sample_id2)
-    sample_id1_new <- base::setdiff(sample_id1, sample_id2)
-    sample_id1_uni <- base::union(sample_id1, sample_id2)
+    sample_id1 <- fg_get_meta(fg1)$id
+    sample_id2 <- fg_get_meta(fg2)$id
+    sample_id1_int <- intersect(sample_id1, sample_id2)
+    sample_id1_new <- setdiff(sample_id1, sample_id2)
+    sample_id1_uni <- union(sample_id1, sample_id2)
 
-    phen1 <- fg1@graph$v$phenotype
-    phen2 <- fg2@graph$v$phenotype
-    phen1_int <- base::intersect(phen1, phen2)
-    phen1_new <- base::setdiff(phen1, phen2)
-    phen1_uni <- base::union(phen1, phen2)
+    phen1 <- fg_get_graph(fg1)$v$phenotype
+    phen2 <- fg_get_graph(fg2)$v$phenotype
+    phen1_int <- intersect(phen1, phen2)
+    phen1_new <- setdiff(phen1, phen2)
+    phen1_uni <- union(phen1, phen2)
 
     if (method_sample == "none")
         sample1 <- fg1
 
     if (method_sample == "intersect") {
-        if (base::length(sample_id1_int) == 0)
+        if (length(sample_id1_int) == 0)
             stop("no intersecting samples")
         sample1 <- fg_extract_samples(fg1, sample_id1_int)
     }
 
     if (method_sample == "setdiff") {
-        if (base::length(sample_id1_new) == 0)
+        if (length(sample_id1_new) == 0)
             stop("no setdiff samples")
         sample1 <- fg_extract_samples(fg1, sample_id1_new)
     }
@@ -861,7 +881,7 @@ fg_merge <- function(
         return(sample1)
 
     if (method_phenotype == "intersect") {
-        if (base::length(phen1_int) == 0)
+        if (length(phen1_int) == 0)
             stop("no intersecting phenotypes")
         if (all(phen1_int %in% phen2))
             return(sample1)
@@ -869,7 +889,7 @@ fg_merge <- function(
     }
 
     if (method_phenotype == "setdiff") {
-        if (base::length(phen1_new) == 0)
+        if (length(phen1_new) == 0)
             stop("no setdiff phenotypes")
         if (all(phen1_new %in% phen1))
             return(sample1)
@@ -907,17 +927,19 @@ fg_merge <- function(
 #' @export
 #' @importFrom purrr map
 fg_replace_meta <- function(fg, meta) {
-    if (nrow(meta)!=nrow(fg@meta))
+    if (nrow(meta)!=nrow(fg_get_meta(fg)))
         stop("meta must have same number of rows as the number of samples")
     if (!"id"%in%colnames(meta)) stop("meta must have id column")
     fg@meta <- meta
-    fg@feat$node <- purrr::map(fg@feat$node, function(x) {
-        base::rownames(x) <- meta$id
+
+    fg_feat <- fg_get_feature_all(fg)
+    fg@feat$node <- purrr::map(fg_feat$node, function(x) {
+        rownames(x) <- meta$id
         x
     })
-    if (base::length(fg@feat$edge) > 0)
-        fg@feat$edge <- purrr::map(fg@feat$edge, function(x) {
-            base::rownames(x) <- meta$id
+    if (length(fg_feat$edge) > 0)
+        fg@feat$edge <- purrr::map(fg_feat$edge, function(x) {
+            rownames(x) <- meta$id
             x
         })
 

@@ -222,15 +222,15 @@ methods::setClass(
 # #' @return a description of the \code{flowGraph} object.
 methods::setMethod(
     "show", "flowGraph", function(object) {
-        cat("flowGraph object with ", base::length(object@feat$node), "/",
-            base::length(object@summary$node)," node and ",
-            base::length(object@feat$edge), "/",
-            base::length(object@summary$edge),
+        cat("flowGraph object with ", length(object@feat$node), "/",
+            length(object@summary$node)," node and ",
+            length(object@feat$edge), "/",
+            length(object@summary$edge),
             " edge feature(s)/summaries.",
             "\n- markers: ", paste0(object@markers, collapse=", "),
-            "\n- contains: ", base::nrow(object@graph$v),
+            "\n- contains: ", nrow(object@graph$v),
             " cell populations and ",
-            base::nrow(object@graph$e), " edges\n", sep="")
+            nrow(object@graph$e), " edges\n", sep="")
         return(list(features=fg_get_feature_desc(object),
                     summaries=fg_get_summary_desc(object)))
     }
