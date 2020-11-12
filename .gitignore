@@ -1,6 +1,5 @@
 build_pkg.R
 R/_*.R
-R/*_.R
 flowGraph.Rproj
 .Rproj.user
 .Rhistory
