@@ -99,9 +99,9 @@
 #' with mandatory argument \code{input_}.
 #' Creating objects using \code{new} is discouraged.
 #'
-#' @section Methods: 'object' represents a \code{flowGraph} object.
+#' @section Methods: 'fg' represents a \code{flowGraph} object.
 #' \itemize{
-#'   \item{\code{show(object)}: Shows a description of the \code{flowGraph} object.}
+#'   \item{\code{show(fg)}: Shows a description of the \code{flowGraph} object.}
 #'   \item{\code{fg_get_meta}: Retrieves the sample meta data
 #'    from a given \code{flowGraph} object.
 #'    See \code{\link[flowGraph]{fg_get_meta}}.}
@@ -195,8 +195,8 @@ methods::setClass(
 #' #' @title flowGraph object accessor
 #' #' @description Shows a summary of a given flowGraph object.
 #' #' @aliases show,flowGraph-method
-#' #' @usage \\method{show}{flowGraph}(object)
-#' #' @param object Object of class \code{flowGraph}.
+#' #' @usage \\method{show}{flowGraph}(fg)
+#' #' @param fg Object of class \code{flowGraph}.
 #' #'
 #' #' @return A list containing the two data frames from the \code{feat_desc} and
 #' #'  \code{summary_desc} slots of a \code{flowGraph} object.
