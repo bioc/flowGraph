@@ -21,26 +21,6 @@ Retrieves a feature matrix from a given flowGraph object,
  the feature type, and feature name.
 }
 \details{
-#' @title Indicates whether a flowGraph has cumsumpos features.
-#' @description Indicates whether a flowGraph has cumsumpos features; see
-#'  \code{\link[flowGraph]{flowGraph}} for examples of cumsumpos features.
-#' @param fg flowGraph object.
-#' @return A logical variable.
-#' @examples
-#'
-#'  data(fg_data_pos30)
-#'  fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                  prop=FALSE, specenr=FALSE,
-#'                  no_cores=1, cumsumpos=TRUE)
-#'  fg_csp(fg)
-#'
-#' @seealso
-#'  \code{\link[flowGraph]{flowGraph-class}}
-#'  \code{\link[flowGraph]{flowGraph}}
-#' @rdname fg_csp
-#' @export
-fg_csp <- function(fg) fg@etc$cumsumpos
-
 Returns \code{NULL} if the requested feature does not exist.
 }
 \examples{

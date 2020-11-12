@@ -10,7 +10,7 @@ fg_get_summary(
   index = NULL,
   summary_meta = NULL,
   adjust_custom = "byLayer",
-  summary_fun = base::colMeans,
+  summary_fun = colMeans,
   adjust0_lim = c(-0.1, 0.1),
   filter_adjust0 = 1,
   filter_es = 0,

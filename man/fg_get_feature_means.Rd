@@ -11,7 +11,7 @@ fg_get_feature_means(
   class = NULL,
   label = NULL,
   id = NULL,
-  summary_fun = base::colMeans
+  summary_fun = colMeans
 )
 }
 \arguments{

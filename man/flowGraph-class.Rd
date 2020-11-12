@@ -10,7 +10,7 @@
 \S4method{show}{flowGraph}(object)
 }
 \arguments{
-\item{object}{A flowGraph object.}
+\item{fg}{A flowGraph object.}
 }
 \value{
 a flowGraph object.

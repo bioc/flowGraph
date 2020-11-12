@@ -15,27 +15,6 @@ Time formatted as a string; used in \code{time_output} function.
 \description{
 Formats time into a string HH:MM:SS given time zone.
 }
-\details{
-#' @title Prepares number of cores for parallel backend.
-#' @description Prepares number of cores needed for parallel backend.
-#' @param no_cores An integer indicating how many cores to parallelize on.
-#' @return An integer indicating how many cores to parallelize on.
-#' @details Given the number of cores a user wishes to parallelize processes on
-#'  \code{no_cores}, \code{ncores} ensures this value does not
-#'  exceed the actual number of cores the user's computer contains.
-#' @examples
-#'
-#'  # NOT EXPORTED
-#'  no_cores <- 100
-#'  flowGraph:::ncores(no_cores)
-#'
-#' @seealso
-#'  \code{\link[parallel]{detectCores}}
-#' @rdname ncores
-#' @importFrom parallel detectCores
-ncores <- function(no_cores=1)
-    max(1, min(no_cores, parallel::detectCores()-1))
-}
 \examples{
  # NOT EXPORTED
  flowGraph:::tstr(Sys.time())

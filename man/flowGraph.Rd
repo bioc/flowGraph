@@ -23,7 +23,7 @@ flowGraph(
   diminish = TRUE,
   label1 = NULL,
   label2 = NULL,
-  save_plots = TRUE
+  save_plots = FALSE
 )
 }
 \arguments{
