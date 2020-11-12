@@ -178,7 +178,6 @@ methods::setClass(
         feat_desc="list",#list(node="list", edge="list"),
         summary="list",
         summary_desc="list",#list(node="list", edge="list",
-        #desc=list(node="list", edge="list")),
         meta="data.frame",
         markers="character", edge_list="list",
         graph="list", plot_layout="character",
@@ -187,39 +186,11 @@ methods::setClass(
 
 
 
-#' #' Accessor method for the data frames containing information on features
-#' #' and feature summaries in the \code{feat_desc} and \code{summary_desc}
-#' #' slots of a \code{flowGraph} object.
-#' #'
-#' #' @name show
-#' #' @title flowGraph object accessor
-#' #' @description Shows a summary of a given flowGraph object.
-#' #' @aliases show,flowGraph-method
-#' #' @usage \\method{show}{flowGraph}(fg)
-#' #' @param fg Object of class \code{flowGraph}.
-#' #'
-#' #' @return A list containing the two data frames from the \code{feat_desc} and
-#' #'  \code{summary_desc} slots of a \code{flowGraph} object.
-#' #' @seealso
-#' #'  \code{\link[flowGraph]{flowGraph-class}}
-#' #' @keywords methods
-#' #' @examples
-#' #'
-#' #'  no_cores <- 1
-#' #'  data(fg_data_pos30)
-#' #'  fg <- flowGraph(fg_data_pos30$count, meta=fg_data_pos30$meta,
-#' #'                  prop=FALSE, specenr=FALSE,
-#' #'                  no_cores=no_cores)
-#' #'  show(fg)
-#' #'
-#' #' @rdname flowGraph-show
-#' #' @export
 #' @describeIn flowGraph show method
 #' @param fg A flowGraph object.
 #' @exportMethod show
 #' @export
 #' @importFrom methods setMethod show
-# #' @return a description of the \code{flowGraph} object.
 methods::setMethod(
     "show", "flowGraph", function(fg) {
         cat("flowGraph object with ",
