@@ -3,7 +3,6 @@
 #' @name flowGraph-class
 #' @aliases flowGraph-class
 #' @docType class
-#' @usage \S4method{show}{flowGraph}(fg)
 #' @slot feat A list containing elements \code{node} and \code{edge},
 #' each containing a list with feature values;
 #'   each element in this list is named by the feature name and contains a
@@ -187,6 +186,7 @@ methods::setClass(
 
 
 #' @describeIn flowGraph show method
+#' @usage \S4method{show}{flowGraph}(fg)
 #' @param fg A flowGraph object.
 #' @exportMethod show
 #' @export
