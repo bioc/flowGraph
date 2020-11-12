@@ -354,7 +354,6 @@ fg_feat_node_specenr <- function(fg,no_cores=1,feature="prop",overwrite=FALSE) {
 #' @importFrom stats median
 fg_feat_node_exprop_ <- function(fg, no_cores=1) {
     # prepare parallel backend
-    # no_cores <- flowGraph:::ncores(no_cores)
     if (no_cores>1) future::plan(future::multiprocess)
 
     fg_graph <- fg_get_graph(fg)

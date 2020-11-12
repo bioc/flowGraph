@@ -54,8 +54,7 @@
 #' @rdname fg_add_feature
 #' @export
 fg_add_feature <- function(
-    fg, type="node", feature, m=NULL,
-    feat_fun=NULL, overwrite=FALSE, ...
+    fg, type="node", feature, m=NULL, feat_fun=NULL, overwrite=FALSE, ...
 ) {
     type <- match.arg(type, c("node", "edge"))
     fg_feat <- fg_get_feature_all(fg)
@@ -79,9 +78,9 @@ fg_add_feature <- function(
         m <- feat_fun(fg, ...)
     }
 
-    fg_feat_desc[[type]] <-
+    fg@feat_desc[[type]] <-
         rbind(fg_feat_desc[[type]], summary_table(m, feature))
-    fg_feat[[type]][[feature]] <- m
+    fg@feat[[type]][[feature]] <- m
 
     return(fg)
 }
@@ -722,7 +721,6 @@ fg_extract_samples <- function(fg, sample_ids, rm_summary=TRUE) {
 #' @export
 #' @importFrom purrr map compact
 fg_extract_phenotypes <- function(fg, phenotypes) {
-
     if (!any(phenotypes %in% fg@graph$v$phenotype))
         stop("please provide valid phenotypes; see @graph$v\n")
 
