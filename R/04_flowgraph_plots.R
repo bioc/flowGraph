@@ -138,7 +138,6 @@ fg_plot <- function(
     node_labels=c("prop", "expect_prop"),
     summary_fun=colMeans, layout_fun=NULL,
     show_bgedges=TRUE,
-    # mod_layout=FALSE,
     main=NULL, interactive=FALSE, visNet_plot=TRUE,
     path=NULL, width=9, height=9
 ) {

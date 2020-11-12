@@ -215,23 +215,24 @@ methods::setClass(
 #' #' @rdname flowGraph-show
 #' #' @export
 #' @describeIn flowGraph show method
-#' @param object A flowGraph object.
+#' @param fg A flowGraph object.
 #' @exportMethod show
 #' @export
 #' @importFrom methods setMethod show
 # #' @return a description of the \code{flowGraph} object.
 methods::setMethod(
-    "show", "flowGraph", function(object) {
-        cat("flowGraph object with ", length(object@feat$node), "/",
-            length(object@summary$node)," node and ",
-            length(object@feat$edge), "/",
-            length(object@summary$edge),
+    "show", "flowGraph", function(fg) {
+        cat("flowGraph object with ",
+            length(fg_get_feature_all(fg)$node), "/",
+            length(fg_get_summary_all(fg)$node)," node and ",
+            length(fg_get_feature_all(fg)$edge), "/",
+            length(fg_get_summary_all(fg)$edge),
             " edge feature(s)/summaries.",
-            "\n- markers: ", paste0(object@markers, collapse=", "),
-            "\n- contains: ", nrow(object@graph$v),
+            "\n- markers: ", paste0(fg_get_markers(fg), collapse=", "),
+            "\n- contains: ", nrow(fg_get_graph(fg)$v),
             " cell populations and ",
-            nrow(object@graph$e), " edges\n", sep="")
-        return(list(features=fg_get_feature_desc(object),
-                    summaries=fg_get_summary_desc(object)))
+            nrow(fg_get_graph(fg)$e), " edges\n", sep="")
+        return(list(features=fg_get_feature_desc(fg),
+                    summaries=fg_get_summary_desc(fg)))
     }
 )

@@ -143,7 +143,7 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
     fg@etc$save$id <<- list(id=stringi::stri_rand_strings(1,5))
     fg@etc$save$path <<- folder_path
     etc <- fg_get_etc(fg)
-    save(fg_graph, el, fg_summary, markers, pl, etc,
+    save(fg_graph, elist, fg_summary, markers, pl, etc,
          file=paste0(folder_path, "/other.Rdata"))
 
     if (save_plots)

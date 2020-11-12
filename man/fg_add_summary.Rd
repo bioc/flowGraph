@@ -10,7 +10,7 @@ fg_add_summary(
   summary_meta = NULL,
   p = NULL,
   summ_fun = NULL,
-  overwrite = TRUE,
+  overwrite = FALSE,
   ...
 )
 }
