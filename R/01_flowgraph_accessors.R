@@ -137,7 +137,7 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
 
     # save edge lists, graph layout and others for reproducibility
     # add folder and save id to object
-    el <- fg_get_el(fg)
+    elist <- fg_get_el(fg)
     markers <- fg_get_markers(fg)
     pl <- fg_get_plot_layout(fg)
     fg@etc$save$id <<- list(id=stringi::stri_rand_strings(1,5))
@@ -232,7 +232,7 @@ fg_load <- function(folder_path) {
         feat_desc=feats_desc,
         summary=fg_summary, summary_desc=summary_desc,
         markers=markers,
-        graph=fg_graph, edge_list=el,
+        graph=fg_graph, edge_list=elist,
         meta=meta, plot_layout=pl,
         etc=etc
     )
