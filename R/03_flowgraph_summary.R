@@ -121,7 +121,7 @@ fg_summary <- function(
     # if label1 is NULL, compare all
     # if node/edge_features is NULL, do all
 
-    fg_meta <- fg_get_meta
+    fg_meta <- fg_get_meta(fg)
 
     if (!class%in%colnames(fg_meta)) {
         print(class)
