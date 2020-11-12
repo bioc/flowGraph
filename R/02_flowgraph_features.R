@@ -170,24 +170,23 @@ fg_feat_edge_specenr <- function(fg, no_cores=1, overwrite=FALSE) {
     start1 <- Sys.time()
     message("preparing feature(s): expected proportion on edges ")
 
-    fg_feat <- fg_get_feature_all(fg)
     # mp: sample x cell population, cell count matrix
-    if (is.null(fg_feat$node$prop) | overwrite)
+    if (is.null(fg_get_feature_all(fg)$node$prop) | overwrite)
         fg <- fg_feat_node_prop(fg)
 
     # ep: sample x edge, proportion matrix i.e. if column name is A+B+C+_A+B+,
     # then the value is the count of A+B+C+ over A+B+.
-    if (is.null(fg_feat$edge$prop) | overwrite)
+    if (is.null(fg_get_feature_all(fg)$edge$prop) | overwrite)
         fg <- fg_feat_edge_prop(fg, no_cores=no_cores)
 
     # create expected features
-    if (is.null(fg_feat$node$expect_prop) | overwrite)
+    if (is.null(fg_get_feature_all(fg)$node$expect_prop) | overwrite)
         fg <- fg_add_feature(fg, type="node", feature="expect_prop",
                              overwrite=overwrite,
                              m=NULL, feat_fun=fg_feat_node_exprop_,
                              no_cores=no_cores)
 
-    if (is.null(fg_feat$edge$expect_prop) | overwrite)
+    if (is.null(fg_get_feature_all(fg)$edge$expect_prop) | overwrite)
     fg <- fg_add_feature(fg, type="edge", feature="expect_prop",
                          overwrite=overwrite,
                          m=NULL, feat_fun=fg_feat_edge_exprop_, no_cores=no_cores)
