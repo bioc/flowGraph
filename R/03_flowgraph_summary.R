@@ -125,7 +125,7 @@ fg_summary <- function(
 
     if (!class%in%colnames(fg_meta)) {
         print(class)
-        stop("invalid class, choose one from fg_get_meta(fg)")
+        stop(paste0("invalid class, choose one from fg_get_meta(fg): did not find ", fg_meta))
     }
 
     test_name <- gsub("[.]","_",test_name)
