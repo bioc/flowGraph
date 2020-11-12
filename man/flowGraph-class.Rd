@@ -7,7 +7,7 @@
 \title{'flowGraph': A class for storing cell count feature values
  for the Phenotype class.}
 \usage{
-\S4method{show}{flowGraph}(object)
+\S4method{show}{flowGraph}(fg)
 }
 \arguments{
 \item{fg}{A flowGraph object.}
@@ -18,34 +18,6 @@ a flowGraph object.
 \description{
 'flowGraph': A class for storing cell count feature values
  for the Phenotype class.
-
-#' Accessor method for the data frames containing information on features
-#' and feature summaries in the \code{feat_desc} and \code{summary_desc}
-#' slots of a \code{flowGraph} object.
-#'
-#' @name show
-#' @title flowGraph object accessor
-#' @description Shows a summary of a given flowGraph object.
-#' @aliases show,flowGraph-method
-#' @usage \\method{show}{flowGraph}(fg)
-#' @param fg Object of class \code{flowGraph}.
-#'
-#' @return A list containing the two data frames from the \code{feat_desc} and
-#'  \code{summary_desc} slots of a \code{flowGraph} object.
-#' @seealso
-#'  \code{\link[flowGraph]{flowGraph-class}}
-#' @keywords methods
-#' @examples
-#'
-#'  no_cores <- 1
-#'  data(fg_data_pos30)
-#'  fg <- flowGraph(fg_data_pos30$count, meta=fg_data_pos30$meta,
-#'                  prop=FALSE, specenr=FALSE,
-#'                  no_cores=no_cores)
-#'  show(fg)
-#'
-#' @rdname flowGraph-show
-#' @export
 }
 \section{Methods (by generic)}{
 \itemize{
