@@ -1488,7 +1488,8 @@ fg_plot_pVSdiff <- function(
 #'
 #'  no_cores <- 1
 #'  data(fg_data_pos15)
-#'  fg <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class,
+#'  fg <- flowGraph(fg_data_pos15$count,
+#'                  class=fg_data_pos15$meta$class,
 #'                  no_cores=no_cores)
 #'
 #'  fg_save_plots(fg, "temp")
@@ -1512,8 +1513,7 @@ fg_save_plots <- function(
     label_max=10, box_no=20, paired=FALSE, logged=FALSE,
     filter_adjust0=1, filter_es=0,
     filter_btwn_tpthres=1, filter_btwn_es=0, overwrite=TRUE,
-    node_labels="NONE", ...
-) {
+    node_labels="NONE", ...) {
     for (type in plot_types) {
         fg_summary <- fg_get_summary_all(fg)
 
@@ -1523,7 +1523,7 @@ fg_save_plots <- function(
         for (index in seq_len(length(fg_summary[[type]]))) {
             sm <- unlist(fg_summary_desc[[type]][index,])
             sm[2] <- paste0(sm[2], "-", ifelse(
-                    is.function(adjust_custom),"adjusted",adjust_custom))
+                is.function(adjust_custom),"adjusted",adjust_custom))
             plot_path_ <- paste0(
                 plot_path, "/", type, "/", paste0(sm, collapse="_"))
             while (dir.exists(plot_path_) & !overwrite)
@@ -1611,7 +1611,7 @@ fg_save_plots <- function(
                             class=fg_summary_desc$node$class[[index]],
                             label=fg_summary_desc$node$label2[[index]])
 
-                        gr$v$v_ind[(m2>m1 & gr$v$colour<0) | (m2<m1 & gr$v$colour>0)] <- F
+                        gr$v$v_ind[(m2>m1 & gr$v$colour<0) | (m2<m1 & gr$v$colour>0)] <- FALSE
                         gr$v$colour <- m2-m1
                         gr$main <- paste0(gr$main,"\n- colour: mean ",feats[2]," diff")
                         gp <- plot_gr(gr, label_coloured=FALSE)
