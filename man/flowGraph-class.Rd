@@ -7,10 +7,10 @@
 \title{'flowGraph': A class for storing cell count feature values
  for the Phenotype class.}
 \usage{
-\S4method{show}{flowGraph}(fg)
+\S4method{show}{flowGraph}(object)
 }
 \arguments{
-\item{fg}{A flowGraph object.}
+\item{object}{A flowGraph object.}
 }
 \value{
 a flowGraph object.
@@ -135,7 +135,7 @@ Creating objects using \code{new} is discouraged.
 }
 
 \section{Methods}{
- 'fg' represents a \code{flowGraph} object.
+ 'object' represents a \code{flowGraph} object.
 \itemize{
   \item{\code{show(fg)}: Shows a description of the \code{flowGraph} object.}
   \item{\code{fg_get_meta}: Retrieves the sample meta data
