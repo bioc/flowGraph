@@ -156,7 +156,7 @@ fg_plot <- function(
 
     # get summary statistics
     summary_meta <- unlist(fg_get_summary_desc(fg)[[type]][
-        flowGraph:::fg_get_summary_index(fg, type, index, summary_meta),])
+        fg_get_summary_index(fg, type, index, summary_meta),])
     if (!grepl("SpecEnr",unlist(summary_meta["feat"])))
         filter_adjust0 <- 1
     pms <- fg_get_summary(
@@ -593,7 +593,7 @@ plot_gr <- function(
             # get only phenotype and p
             label=v_label,
             title=gr$v$label_long[v_ind],
-            color=flowGraph:::noTOcol(gr$v$colour[v_ind],
+            color=noTOcol(gr$v$colour[v_ind],
                                       colourp=colour_palette),
             size=gr$v$size[v_ind],
             group=gr$v$phenogroup[v_ind],
@@ -757,7 +757,7 @@ fg_plot_qq <- function(
 
     if (shiny_plot) interactive <- TRUE
 
-    index <- flowGraph:::fg_get_summary_index(
+    index <- fg_get_summary_index(
         fg,type=type, index, summary_meta)
     summary_meta <- unlist(fg_get_summary_desc(fg)[[type]][index,])
     if (!grepl("SpecEnr",unlist(summary_meta["feat"])))
@@ -1079,7 +1079,7 @@ fg_plot_box_set <- function(
     dfb <- pp$btwn
     rownames(dfb) <- dfb$phenotype
 
-    features <- flowGraph:::se_feats(feature)
+    features <- se_feats(feature)
         a1 <- fg_get_feature(fg, type, features[2])[pp$id1,node_edge]
         a2 <- fg_get_feature(fg, type, features[2])[pp$id2,node_edge]
         b1 <- fg_get_feature(fg, type, features[3])[pp$id1,node_edge]
@@ -1311,7 +1311,7 @@ fg_plot_pVSdiff <- function(
 
     if (shiny_plot) interactive <- TRUE
 
-    index <- flowGraph:::fg_get_summary_index(fg, type, index, summary_meta)
+    index <- fg_get_summary_index(fg, type, index, summary_meta)
     summary_meta <- unlist(fg_get_summary_desc(fg)[[type]][index,])
     if (!grepl("SpecEnr",unlist(summary_meta["feat"])))
         filter_adjust0 <- 1
@@ -1600,7 +1600,7 @@ fg_save_plots <- function(
                     feat_index <- fg_summary_desc$node$feat[[index]]
                     if (grepl("SpecEnr",feat_index)) {
                         gp <- plot_gr(gr, label_coloured=FALSE)
-                        feats <- flowGraph:::se_feats(feat_index)
+                        feats <- se_feats(feat_index)
 
                         m1 <- fg_get_feature_means(
                             fg, "node", feats[2],

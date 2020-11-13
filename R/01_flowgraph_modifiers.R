@@ -221,7 +221,7 @@ fg_add_summary <- function(
     type <- match.arg(type, c("node", "edge"))
     options(stringsAsFactors=FALSE)
     try({
-        index <- flowGraph:::fg_get_summary_index(
+        index <- fg_get_summary_index(
             fg, type=type, summary_meta=summary_meta)
         if (!overwrite) {
             message("summary exists, skipped")

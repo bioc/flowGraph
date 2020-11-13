@@ -98,7 +98,7 @@
 #' with mandatory argument \code{input_}.
 #' Creating objects using \code{new} is discouraged.
 #'
-#' @section Methods: 'fg' represents a \code{flowGraph} object.
+#' @section Methods: 'object' represents a \code{flowGraph} object.
 #' \itemize{
 #'   \item{\code{show(fg)}: Shows a description of the \code{flowGraph} object.}
 #'   \item{\code{fg_get_meta}: Retrieves the sample meta data
@@ -171,8 +171,7 @@
 #' @importFrom methods setClass
 #' @export
 methods::setClass(
-    "flowGraph",
-    slots <- list(
+    "flowGraph", slots=list(
         feat="list",
         feat_desc="list",#list(node="list", edge="list"),
         summary="list",
@@ -186,13 +185,13 @@ methods::setClass(
 
 
 #' @describeIn flowGraph show method
-#' @usage \S4method{show}{flowGraph}(fg)
-#' @param fg A flowGraph object.
+#' @usage \S4method{show}{flowGraph}(object)
+#' @param object A flowGraph object.
 #' @exportMethod show
 #' @export
 #' @importFrom methods setMethod show
 methods::setMethod(
-    "show", "flowGraph", function(fg) {
+    "show", "flowGraph", function(object) {
         cat("flowGraph object with ",
             length(fg_get_feature_all(fg)$node), "/",
             length(fg_get_summary_all(fg)$node)," node and ",

@@ -409,7 +409,7 @@ fg_summary_ <- function(
     if (!diminish) {
         # calculate p values
         if (no_cores>1) {
-            loop_ind <- flowGraph:::loop_ind_f(seq_len(ml), no_cores)
+            loop_ind <- loop_ind_f(seq_len(ml), no_cores)
             p <- unlist(furrr::future_map(loop_ind, function(ii)
                 purrr::map_dbl(ii, function(i) test_custom(m1[,i], m2[,i])) ))
         } else {

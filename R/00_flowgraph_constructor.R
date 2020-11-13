@@ -163,7 +163,7 @@
 #'                 no_cores=no_cores)
 #' # - save to file directly
 #' # fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-#'                 no_cores=no_cores, path="path_to_folder)
+#' #                no_cores=no_cores, path="path_to_folder)
 #'
 #' # input: matrix + meta data frame
 #' # fg <- flowGraph(fg_data_pos30$count, meta=fg_data_pos30$meta,
