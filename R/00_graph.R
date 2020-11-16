@@ -54,10 +54,10 @@ cell_type_layers <- function(phen)
 get_phen_meta <- function(phen, phenocode=NULL) {
     pm <- data.frame(phenotype=phen)
     markers <- unique(unlist(stringr::str_split(phen, "[-+]")))
-    markers <- gsub("_","",markers)
+    markers <- gsub("_","",markers) # underscore between marker conditions
     markers <- markers[markers != ""]
     if (is.null(phenocode)) {
-        pm$phenocode <- purrr::map_chr(phen, function(x) {
+        phenocode <- purrr::map_chr(phen, function(x) {
             if (x == "")
                 return(paste0(rep(0, length(markers)), collapse=""))
             b <- stringr::str_split(x, "[+-]+")[[1]]
@@ -70,9 +70,8 @@ get_phen_meta <- function(phen, phenocode=NULL) {
             c[is.na(c)] <- 0
             paste0(c, collapse="")
         })
-    } else {
-        pm$phenocode <- phenocode
     }
+    pm$phenocode <- phenocode
     pm$phenolayer <- cell_type_layers(phen)
     pm$phenotype <- as.character(pm$phenotype)
     pm$phenogroup <- gsub("[+-]+", "_", pm$phenotype)
@@ -119,19 +118,17 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
     if (is.null(meta_cell))
         meta_cell <- get_phen_meta(phen)
 
-    meta_cell_grid <- do.call(rbind,
-                                    stringr::str_split(meta_cell$phenocode, ""))
+    meta_cell_grid <- do.call(rbind,stringr::str_split(meta_cell$phenocode, ""))
     meta_cell_grid <- Matrix::Matrix(
         apply(meta_cell_grid, 2, as.numeric), sparse=TRUE)
     allcolu <- purrr::map(seq_len(ncol(meta_cell_grid)),
                           function(j) unique(meta_cell_grid[, j]))
-    allcol <- purrr::map(seq_len(length(allcolu)),
-                         function(ci) {
-                             a <- purrr::map(allcolu[[ci]], function(ui)
-                                 meta_cell_grid[, ci] == ui)
-                             names(a) <- allcolu[[ci]]
-                             a
-                         })
+    allcol <- purrr::map(seq_len(length(allcolu)), function(ci) {
+        a <- purrr::map(allcolu[[ci]], function(ui)
+            meta_cell_grid[, ci] == ui)
+        names(a) <- allcolu[[ci]]
+        a
+    })
 
     pchild <- list(meta_cell$phenotype[meta_cell$phenolayer == 1])
     names(pchild) <- ""
