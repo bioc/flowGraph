@@ -221,8 +221,11 @@ head(rownames(mcount))
 
 A note that input cell population phenotype names must be made up of
 marker/measurement conditions <marker><-+> e.g. ssc+cd45- and the 
-markers/measurements must not contain an underscore. Optionally, underscores
-can be used to separate marker/measurement conditions e.g. ssc+_cd45-.
+markers/measurements must not contain an underscore. If underscores were
+used to separate marker/measurement conditions e.g. ssc+_cd45-, the underscores
+will be removed from the column names of the features matrices but will be
+saved in `fg_get_meta(fg)$phenotype_`.
+
 
 
 ## Retrieving results from a flowGraph object

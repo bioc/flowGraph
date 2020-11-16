@@ -122,7 +122,7 @@ fg_feat_edge_prop_ <- function(fg, no_cores=1) {
                 mc[,edf$to[i]]/mc[,pname]
             }))
     }
-    colnames(childprop_) <- paste0(edf$from,"_",edf$to)
+    colnames(childprop_) <- paste0(edf$from,"__",edf$to)
     childprop_[is.nan(as.matrix(childprop_))] <- 0
 
     return(childprop_)
@@ -239,7 +239,7 @@ fg_feat_edge_exprop_ <- function(fg, no_cores=1) {
                 mep[,edf$to[i]]/mp[,pname]
             }))
     }
-    colnames(childprop_) <- paste0(edf$from,"_",edf$to)
+    colnames(childprop_) <- paste0(edf$from,"__",edf$to)
     childprop_[is.nan(as.matrix(childprop_))] <- 0
 
     return(childprop_)
@@ -381,11 +381,11 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
 
     if (no_cores>1) {
         ep_ <- do.call(cbind, furrr::future_map(phens, function(phen)
-            apply(ep[,paste0(pparen[[phen]], "_", phen),drop=FALSE], 1, min)
+            apply(ep[,paste0(pparen[[phen]], "__", phen),drop=FALSE], 1, min)
         ))
     } else {
         ep_ <- do.call(cbind, purrr::map(phens, function(phen)
-            apply(ep[,paste0(pparen[[phen]], "_", phen),drop=FALSE], 1, min)
+            apply(ep[,paste0(pparen[[phen]], "__", phen),drop=FALSE], 1, min)
         ))
     }
     colnames(ep_) <- phens
@@ -453,13 +453,6 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
     # "count" is a variable given by gsubfn to any function it is given
     # count <- 0
     csp <- fg_get_etc(fg)$cumsumpos | !multiplus
-    if (csp) {
-        # replaces whatever pattern only once; e.g. gsubfn("_", p, "A_B_C_")
-        # "count" is a variable given by gsubfn
-        p <- function(x) gsub('(.*?)-(.*)', '\\1+\\2', x)
-    } else {
-        p <- function(x) gsub('(.*?)-(.*)', '\\1[+]+\\2', x)
-    }
 
     for (lev in sort(unique(cpopnegl))) {
         sibsl <- cells[cellsn==lev]
@@ -477,14 +470,14 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
                             pari <- which(purrr::map_lgl(
                                 pparen[[cpop]],
                                 ~grepl(.x,sib)))
-                            if (length(pari)==0)
-                                return(rep(0,nrow(mp)))
+                            if (length(pari)==0) return(rep(0,nrow(mp)))
                             return(mp[,pparen[[cpop]][pari[1]]])
                         }
                         pname <- intersect(pparen[[cpop]],
                                                  pparen[[sib]])
                         return(mp[,pname] - expec[,sib])
-                    }))
+                    })
+                )
             } else {
                 expecn <- do.call(
                     cbind, furrr::future_map(cpops, function(cpop) {

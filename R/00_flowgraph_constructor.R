@@ -303,6 +303,12 @@ flowGraph <- function(
 
     ## make meta for cell populations FINAL -----------------
     meta_cell <- get_phen_meta(phen[keepinds],phenocode)
+    if (any(grepl("_",meta_cell$phenotype))) {
+        meta_cell$phenotype_ <- meta_cell$phenotype
+        meta_cell$phenotype <- gsub("_","", meta_cell$phenotype)
+        colnames(mc) <- meta_cell$phenotype
+    }
+    message("NOTE: markers/measurements should not contain underscores_!")
 
     # make parent list (for each cell popultion, list its parents)
     pccell <- get_phen_list(meta_cell=meta_cell, no_cores=no_cores)
