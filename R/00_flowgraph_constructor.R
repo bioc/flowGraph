@@ -253,9 +253,9 @@ flowGraph <- function(
 
         phen <- colnames(mc)
         if (is.null(markers)) {
-            markers <- unique(unlist(stringr::str_split(phen,"[-+]+")))
+            markers <- unlist(stringr::str_split(phen,"[-+]+"))
             markers <- gsub("_","",markers) # underscore between marker conditions
-            markers <- markers[markers!=""]
+            markers <- unique(markers[markers!=""])
         }
 
     } else {

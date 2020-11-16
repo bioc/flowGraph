@@ -53,14 +53,13 @@ cell_type_layers <- function(phen)
 #' @importFrom purrr map_chr map_int map
 get_phen_meta <- function(phen, phenocode=NULL) {
     pm <- data.frame(phenotype=phen)
-    markers <- unique(unlist(stringr::str_split(phen, "[-+]")))
+    markers <- unlist(stringr::str_split(phen, "[-+]"))
     markers <- gsub("_","",markers) # underscore between marker conditions
-    markers <- markers[markers != ""]
+    markers <- unique(markers[markers != ""])
     if (is.null(phenocode)) {
         phenocode <- purrr::map_chr(phen, function(x) {
-            if (x == "")
-                return(paste0(rep(0, length(markers)), collapse=""))
-            b <- stringr::str_split(x, "[+-]+")[[1]]
+            if (x == "") return(paste0(rep(0, length(markers)), collapse=""))
+            b <- stringr::str_split(x, "[+-]+[_]*")[[1]]
             b <- b[-length(b)]
             bo <- match(markers, b)
             phec <- purrr::map_int(
@@ -132,8 +131,7 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
 
     pchild <- list(meta_cell$phenotype[meta_cell$phenolayer == 1])
     names(pchild) <- ""
-    pparen <- purrr::map(seq_len(length(pchild[[1]])),
-                         function(x) "")
+    pparen <- purrr::map(seq_len(length(pchild[[1]])), function(x) "")
     names(pparen) <- pchild[[1]]
 
     jjl <- sort(unique(meta_cell$phenolayer))
@@ -151,15 +149,12 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
 
             message("- ", nrow(meta_cell_), " pops @ layer ", jjli - 1)
             allcol__ <- purrr::map(allcol, function(x)
-                purrr::map(x, function(y)
-                    y[jj_inds[[jjli]]] ))
+                purrr::map(x, function(y) y[jj_inds[[jjli]]] ))
             allcol_ <- purrr::map(allcol, function(x)
-                purrr::map(x, function(y)
-                    y[jj_inds[[jjli - 1]]]))
+                purrr::map(x, function(y) y[jj_inds[[jjli - 1]]]))
 
             # child
-            loop_ind <- loop_ind_f(seq_len(nrow(meta_cell_)),
-                                   no_cores)
+            loop_ind <- loop_ind_f(seq_len(nrow(meta_cell_)), no_cores)
             pchildl <- furrr::future_map(loop_ind, function(jj)
                 purrr::map(jj, function(j) {
                     colj1 <- which(meta_cell_grid_[j, ] > 0)
@@ -201,8 +196,7 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
             seq_len(length(pchild)), function(x)
                 data.frame(from=names(pchild)[x], to=pchild[[x]])))
 
-    temp_se <- function(x)
-        stringr::str_extract_all(x, "[a-zA-Z0-9]+[+-]+")
+    temp_se <- function(x) stringr::str_extract_all(x, "[^_]+[+-]+")
     from_ <- temp_se(edf$from)
     to_ <- temp_se(edf$to)
     edf$marker <- purrr::map_chr(seq_len(length(from_)), function(x)

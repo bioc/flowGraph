@@ -219,6 +219,11 @@ mcount <- fg_get_feature(fg, "node", "count")
 head(rownames(mcount))
 ```
 
+A note that input cell population phenotype names must be made up of
+marker/measurement conditions <marker><-+> e.g. ssc+cd45- and the 
+markers/measurements must not contain an underscore. Optionally, underscores
+can be used to separate marker/measurement conditions e.g. ssc+_cd45-.
+
 
 ## Retrieving results from a flowGraph object
 
