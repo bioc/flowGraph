@@ -196,7 +196,7 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
             seq_len(length(pchild)), function(x)
                 data.frame(from=names(pchild)[x], to=pchild[[x]])))
 
-    temp_se <- function(x) stringr::str_extract_all(x, "[^_]+[+-]+")
+    temp_se <- function(x) stringr::str_extract_all(x, "[^_^+^-]+[+-]+")
     from_ <- temp_se(edf$from)
     to_ <- temp_se(edf$to)
     edf$marker <- purrr::map_chr(seq_len(length(from_)), function(x)

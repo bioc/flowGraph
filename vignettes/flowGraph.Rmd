@@ -14,41 +14,61 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# License
-
-Artistic-3.0
-
 ```{r style, echo=FALSE, results='asis'}
 BiocStyle::markdown()
 ```
+
+
+[![DOI](https://zenodo.org/badge/DOI/10.1101/837765.svg)](https://doi.org/10.1101/837765)
+
+[Summary blog post](https://aya49.github.io/2020/09/30/flowGraph/)
+
+flowGraph is an R package used to identify candidate biomarkers for disease diagnosis in flow cytometry data. It does so by identifying driver cell populations whose abundance changes significantly and independently given a disease.
+
+flowGraph takes cell counts as input and outputs SpecEnr values for each cell population within a flow cytometry sample, based on their expected proportion. SpecEnr accounts for dependencies between cell populations such that we can use it to flag only cell populations whose abundance change is incurred wholly or in part because of its association with a sample class (e.g. healthy vs sick).
 
 # Installing the package
 
 **flowGraph** can be installed via Bioconductor.
 
-You can also intall the development version directly from Github using BiocManager:
+You can also install the development version directly from Github using BiocManager:
 
 ```{r, eval=FALSE, label=library1, warning=FALSE, message=FALSE, echo=TRUE, fig=FALSE, results='hide'}
 if (!require("BiocManager")) install.packages('BiocManager') 
 BiocManager::install("aya49/flowGraph")
 ```
 
+# Citation
+
+The theory, proof, and algorithm behind the SpecEnr statistic used in the 
+flowGraph package can be found in the following [paper](https://www.biorxiv.org/content/10.1101/837765v3.abstract). 
+Please consider citing if you found it helpful.
+
+bibtex:
+```
+@article{yue2019identifying,
+  title={Identifying differential cell populations in flow cytometry data accounting for marker frequency},
+  author={Yue, Alice and Chauve, Cedric and Libbrecht, Maxwell and Brinkman, Ryan},
+  journal={BioRxiv},
+  pages={837765},
+  year={2019},
+  publisher={Cold Spring Harbor Laboratory}
+}
+```
+
+The scripts and data from the paper can be downloaded ons [Zenodo](https://zenodo.org/record/3991166).
 
 # Introduction
-
-**flowGraph** contains functions to analyze the space of all possible 
-(overlapping) cell populations in one or more flow cytometry samples, 
-given their cell counts.
-
-```{r, label=library2, warning=FALSE, message=FALSE, echo=TRUE, fig=FALSE, message=FALSE}
-library(flowGraph)
-```
 
 The main goal of _**flowGraph**_ is to help users interpret which cell populations 
 are differential between samples of different etiologies. To understand how 
 flowGraph defines cell populations, we introduce the cell hierarchy model below.
 This model will serve as the basis for the analysis done in the 
 _**flowGraph**_ package.
+
+```{r, label=library2, warning=FALSE, message=FALSE, echo=TRUE, fig=FALSE, message=FALSE}
+library(flowGraph)
+```
 
 ## Cell population naming convention
 
@@ -219,12 +239,27 @@ mcount <- fg_get_feature(fg, "node", "count")
 head(rownames(mcount))
 ```
 
-A note that input cell population phenotype names must be made up of
-marker/measurement conditions <marker><-+> e.g. ssc+cd45- and the 
-markers/measurements must not contain an underscore. If underscores were
+
+### Input format
+
+The input to flowGraph is a sample x cell population phenotype matrix containing
+the cell count of each cell population for each sample.
+
+The row names of the input matrix should be sample ID, otherwise, 
+flowGraph will create sample IDs for you. 
+
+The column names of the input matrix should be cell population phenotype names
+that follow cell population naming conventions.
+Markers/measurements must not contain underscores, dashes, or pluses 
+(`_`, `+`, `-`). If underscores were
 used to separate marker/measurement conditions e.g. ssc+_cd45-, the underscores
 will be removed from the column names of the features matrices but will be
 saved in `fg_get_meta(fg)$phenotype_`.
+
+To calculate the SpecEnr of a cell population (e.g. A+B+C+), 
+flowGraph requires that all of its parent (A+B+, B+C+, A+C+) 
+and grandparent cell populations (A+, B+, C+) are available. If not all of them 
+are given, then the SpecEnr value calculated may not be accurate.
 
 
 

@@ -581,7 +581,7 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
     })))
 
 
-    cells_ <- stringr::str_extract_all(cells, "[^_]+[+-]+")
+    cells_ <- stringr::str_extract_all(cells, "[^_^+^-]+[+-]+")
     # some: loop_ind <- loop_ind_f(1:length(cells),no_cores)
     loop_ind <- loop_ind_f(cpind,no_cores) # prepares loop indices
     expecp <- do.call(cbind, furrr::future_map(loop_ind, function(ii) {
