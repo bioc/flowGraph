@@ -227,19 +227,21 @@ fg_load <- function(folder_path) {
     other_path <- paste0(folder_path, "/other.Rdata")
     attach(other_path, warn.conflicts=FALSE)
 
+    other_path_ <- paste0("file:", other_path)
+
     # organize into flowGraph object
     methods::new(
         "flowGraph",
         feat=feats,
         feat_desc=feats_desc,
-        summary=get("fg_summary", pos=other_path),
+        summary=get("fg_summary", pos=other_path_),
         summary_desc=summary_desc,
-        markers=get("markers", pos=other_path),
-        graph=get("fg_graph", pos=other_path),
-        edge_list=get("elist", pos=other_path),
+        markers=get("markers", pos=other_path_),
+        graph=get("fg_graph", pos=other_path_),
+        edge_list=get("elist", pos=other_path_),
         meta=meta,
-        plot_layout=get("pl", pos=other_path),
-        etc=get("etc", pos=other_path)
+        plot_layout=get("pl", pos=other_path_),
+        etc=get("etc", pos=other_path_)
     )
 }
 
