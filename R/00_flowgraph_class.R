@@ -193,16 +193,16 @@ methods::setClass(
 methods::setMethod(
     "show", "flowGraph", function(object) {
         cat("flowGraph object with ",
-            length(fg_get_feature_all(fg)$node), "/",
-            length(fg_get_summary_all(fg)$node)," node and ",
-            length(fg_get_feature_all(fg)$edge), "/",
-            length(fg_get_summary_all(fg)$edge),
+            length(fg_get_feature_all(object)$node), "/",
+            length(fg_get_summary_all(object)$node)," node and ",
+            length(fg_get_feature_all(object)$edge), "/",
+            length(fg_get_summary_all(object)$edge),
             " edge feature(s)/summaries.",
-            "\n- markers: ", paste0(fg_get_markers(fg), collapse=", "),
-            "\n- contains: ", nrow(fg_get_graph(fg)$v),
+            "\n- markers: ", paste0(fg_get_markers(object), collapse=", "),
+            "\n- contains: ", nrow(fg_get_graph(object)$v),
             " cell populations and ",
-            nrow(fg_get_graph(fg)$e), " edges\n", sep="")
-        return(list(features=fg_get_feature_desc(fg),
-                    summaries=fg_get_summary_desc(fg)))
+            nrow(fg_get_graph(object)$e), " edges\n", sep="")
+        return(list(features=fg_get_feature_desc(object),
+                    summaries=fg_get_summary_desc(object)))
     }
 )

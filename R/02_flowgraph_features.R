@@ -546,6 +546,18 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
 
     rooti <- which(colnames(mp)=="")
 
+    if (no_cores>1) {
+        ep_ <- do.call(cbind, furrr::future_map(phens, function(phen)
+            apply(ep[,paste0(pparen[[phen]], "__", phen),drop=FALSE], 1, min)
+        ))
+    } else {
+        ep_ <- do.call(cbind, purrr::map(phens, function(phen)
+            apply(ep[,paste0(pparen[[phen]], "__", phen),drop=FALSE], 1, min)
+        ))
+    }
+    colnames(ep_) <- phens
+
+
     ## start calculating expected proportion
     ## first we prepare the list of cell populations;
     ## note we only calc expected proportion for cell populations in layers 2+.

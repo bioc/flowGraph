@@ -420,7 +420,7 @@ ggdf <- function(gr0) {
 # #'  \code{\link[plotly]{plot_ly}}
 #' @rdname plot_gr
 #' @export
-#' @importFrom ggplot2 ggplot aes scale_x_continuous scale_y_continuous
+#' @importFrom ggplot2 ggplot aes_ scale_x_continuous scale_y_continuous
 #'  theme element_blank ggtitle scale_fill_brewer geom_segment geom_point
 #'  scale_colour_gradientn labs
 #' @importFrom ggiraph girafe geom_point_interactive geom_segment_interactive
@@ -470,7 +470,7 @@ plot_gr <- function(
         colour_palette <- c('blue','cyan','yellow','red')
 
     # prepare base plot
-    gp <- ggplot2::ggplot(gr_v, ggplot2::aes(x=x, y=y, ...)) +
+    gp <- ggplot2::ggplot(gr_v, ggplot2::aes_(x=~x, y=~y, ...)) +
         ggplot2::scale_x_continuous(expand=c(0,1)) + # expand x limits
         ggplot2::scale_y_continuous(expand=c(0,1)) + # expand y limits
         # theme_bw()+  # use the ggplot black and white theme
@@ -494,7 +494,7 @@ plot_gr <- function(
         gp <- gp +
         ggplot2::geom_segment(
             data=gr_e[!gr_e$e_ind,], color="grey",
-            ggplot2::aes(x=from.x,xend=to.x, y=from.y,yend=to.y))
+            ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y))
 
     if (!interactive) {
         if (!all(gr_e$colour==gr_e$colour[1]) &
@@ -502,33 +502,33 @@ plot_gr <- function(
             gp <- gp +
                 ggplot2::geom_segment(
                     data=gr_e[gr_e$e_ind,],
-                    ggplot2::aes(x=from.x, xend=to.x, y=from.y, yend=to.y,
-                                 color=colour, size=size)) +
+                    ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y,
+                                 color=~colour, size=~size)) +
                 ggplot2::geom_point(
                     data=gr_v[gr_v$v_ind,], colour="grey50",
-                    ggplot2::aes(x=x,y=y))
+                    ggplot2::aes_(x=~x,y=~y))
         } else {
             if (colour_edges) {
                 gp <- gp +
                     ggplot2::geom_segment(
                         data=gr_e[gr_e$e_ind,],
-                        ggplot2::aes(x=from.x, xend=to.x, y=from.y, yend=to.y,
-                                     colour=colour))
+                        ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y,
+                                     colour=~colour))
             } else {
                 gp <- gp +
                     ggplot2::geom_segment(
                         data=gr_e[gr_e$e_ind,], colour="grey50",
-                        ggplot2::aes(x=from.x, xend=to.x, y=from.y, yend=to.y))
+                        ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y))
             }
             gp <- gp +
                 ggplot2::geom_point(
                     data=gr_v[gr_v$v_ind,],
-                    ggplot2::aes(x=x,y=y, color=colour, size=size))
+                    ggplot2::aes_(x=~x, y=~y, color=~colour, size=~size))
             if (label_coloured) {
                 gp <- gp +
                     ggrepel::geom_label_repel(
                         data=gr_v[gr_v$label_ind,],
-                        ggplot2::aes(x=x, y=y,label=label, color=colour),
+                        ggplot2::aes_(x=~x, y=~y,label=~label, color=~colour),
                         nudge_x=-.1, direction="y", hjust=1,
                         segment.size=0.2,force=1.5)
 
@@ -536,7 +536,7 @@ plot_gr <- function(
                 gp <- gp +
                     ggrepel::geom_label_repel(
                         data=gr_v[gr_v$label_ind,],
-                        ggplot2::aes(x=x, y=y,label=label),
+                        ggplot2::aes_(x=~x, y=~y,label=~label),
                         nudge_x=-.1, direction="y", hjust=1,
                         segment.size=0.2,force=1.5)
             }
@@ -548,36 +548,36 @@ plot_gr <- function(
             gp <- gp +
                 ggplot2::geom_segment(
                     data=gr_e[gr_e$e_ind,],
-                    ggplot2::aes(x=from.x, xend=to.x, y=from.y, yend=to.y,
-                                 color=colour, size=size,
-                                 tooltip=paste0(from, " > ", to))) +
+                    ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y,
+                                 color=~colour, size=~size,
+                                 tooltip=paste0(~from, " > ", ~to))) +
                 ggplot2::geom_point(
                     data=gr_v[gr_v$v_ind,], colour="grey50",
-                    ggplot2::aes(x=x,y=y))
+                    ggplot2::aes_(x=~x,y=~y))
         } else {
             if (colour_edges) {
                 gp <- gp +
                     ggplot2::geom_segment(
                         data=gr_e[gr_e$e_ind,],
-                        ggplot2::aes(x=from.x, xend=to.x, y=from.y, yend=to.y,
-                                     colour=colour))
+                        ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y,
+                                     colour=~colour))
             } else {
                 gp <- gp +
                     ggplot2::geom_segment(
                         data=gr_e[gr_e$e_ind,], colour="grey50",
-                        ggplot2::aes(x=from.x, xend=to.x, y=from.y, yend=to.y))
+                        ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y))
             }
 
             if (shiny_plot) {
                 gp <- gp + ggiraph::geom_point_interactive(
                     data=gr_v[gr_v$v_ind,],
-                    ggplot2::aes(x=x,y=y, color=colour, size=size,
-                                 tooltip=label_long, data_id=phenotype))
+                    ggplot2::aes_(x=~x, y=~y, color=~colour, size=~size,
+                                 tooltip=~label_long, data_id=~phenotype))
             } else {
                 gp <- gp + ggiraph::geom_point_interactive(
                     data=gr_v[gr_v$v_ind,],
-                    ggplot2::aes(x=x,y=y, color=colour, size=size,
-                                 tooltip=label_long, data_id=phenogroup))
+                    ggplot2::aes_(x=~x, y=~y, color=~colour, size=~size,
+                                 tooltip=~label_long, data_id=~phenogroup))
             }
         }
 
@@ -744,7 +744,7 @@ noTOcol <- function(
 #' @export
 #' @importFrom htmlwidgets saveWidget
 #' @importFrom ggiraph girafe geom_point_interactive
-#' @importFrom ggplot2 ggplot ggtitle geom_point geom_abline labs ggsave
+#' @importFrom ggplot2 ggplot ggtitle geom_point geom_abline labs ggsave aes_
 fg_plot_qq <- function(
     fg, type="node", index=1, summary_meta=NULL, adjust_custom="byLayer",
     logged=TRUE, p_thres=.05,
@@ -801,8 +801,8 @@ fg_plot_qq <- function(
                      d_size=colMeans(fg_get_feature(fg, "node", "count")))
     df <- df[qo,]
     df$x <- uni
-    qp <- ggplot2::ggplot(df, ggplot2::aes(
-        y=y, x=x, colour=cohensd_size, alpha=.3, stroke=1)) +
+    qp <- ggplot2::ggplot(df, ggplot2::aes_(
+        y=~y, x=~x, colour=~cohensd_size, alpha=.3, stroke=1)) +
         ggplot2::geom_abline(intercept=0, slope=1) +
         ggplot2::ggtitle(main) +
         ggplot2::labs(x="uniform distribution", y="p-value",
@@ -812,10 +812,10 @@ fg_plot_qq <- function(
     if (interactive) {
         if (shiny_plot) {
             qp <- qp + ggiraph::geom_point_interactive(alpha=.4,
-                ggplot2::aes(tooltip=phenotype, data_id=phenotype, size=d_size))
+                ggplot2::aes_(tooltip=~phenotype, data_id=~phenotype, size=~d_size))
         } else {
             qp <- qp + ggiraph::geom_point_interactive(shape=1,
-                ggplot2::aes(tooltip=phenotype, data_id=phenogroup, size=d_size))
+                ggplot2::aes_(tooltip=~phenotype, data_id=~phenogroup, size=~d_size))
         }
         if (!shiny_plot) {
             qp <- ggiraph::girafe(ggobj=qp)
@@ -825,7 +825,7 @@ fg_plot_qq <- function(
                                path, paste0(path, ".html")))
         }
     } else {
-        qp <- qp + ggplot2::geom_point(shape=1, ggplot2::aes(size=d_size))
+        qp <- qp + ggplot2::geom_point(shape=1, ggplot2::aes_(size=~d_size))
         if (!is.null(path))
             suppressMessages({
                 ggplot2::ggsave(
@@ -925,7 +925,7 @@ fg_plot_qq <- function(
 #' @rdname fg_plot_box
 #' @export
 #' @importFrom htmlwidgets saveWidget
-#' @importFrom ggplot2 ggsave ggplot ggtitle geom_point geom_dotplot stat_summary geom_line aes position_dodge labs
+#' @importFrom ggplot2 ggsave ggplot ggtitle geom_point geom_dotplot stat_summary geom_line aes_ position_dodge labs
 #' @importFrom ggiraph girafe geom_boxplot_interactive
 #' @importFrom stringr str_split
 #' @importFrom grDevices boxplot.stats
@@ -994,7 +994,7 @@ fg_plot_box <- function(
 
     # plot
     gp <- ggplot2::ggplot(
-        dta, ggplot2::aes(x=class, y=val, fill=class)) +
+        dta, ggplot2::aes_(x=~class, y=~val, fill=~class)) +
         ggplot2::labs(y=paste0(
             type, " feature values (",ifelse(
                 is.numeric(node_edge),
@@ -1004,7 +1004,7 @@ fg_plot_box <- function(
 
     if (paired)
         gp <- gp + ggplot2::geom_line(
-            ggplot2::aes(group=ID), colour="black", linetype="11")
+            ggplot2::aes_(group=~ID), colour="black", linetype="11")
 
     if (dotplot)
         gp <- gp + ggplot2::geom_dotplot(
@@ -1039,7 +1039,7 @@ fg_plot_box <- function(
 
 # plot a set of boxplots for SpecEnr
 #' @importFrom gridExtra arrangeGrob
-#' @importFrom ggplot2 element_blank coord_cartesian
+#' @importFrom ggplot2 element_blank coord_cartesian aes_
 fg_plot_box_set <- function(
     fg, type="node", index=1, summary_meta=NULL,
     adjust_custom="byLayer", node_edge=1,
@@ -1117,7 +1117,7 @@ fg_plot_box_set <- function(
 
     # specenr/actual/expect class 1 vs class 2
     gp <- ggplot2::ggplot(dta[dta$feature==feature,],
-                            ggplot2::aes(x=class, y=val, fill=class)) +
+                            ggplot2::aes_(x=~class, y=~val, fill=~class)) +
         ggplot2::labs(y=paste0(type, " SpecEnr feature value")) +
         ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA)) +
         ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3) +
@@ -1126,7 +1126,7 @@ fg_plot_box_set <- function(
             classes[2],"-",length(b),")\n",main))
 
     gpae <- ggplot2::ggplot(dta[dta$feature!=features[1],],
-                                ggplot2::aes(x=class, y=val, fill=class)) +
+                                ggplot2::aes_(x=~class, y=~val, fill=~class)) +
         ggplot2::labs(y=paste0(type, " raw feature values")) +
         ggplot2::ggtitle(paste0("feature: ", features[2])) +
         ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA)) +
@@ -1136,7 +1136,7 @@ fg_plot_box_set <- function(
 
     # class 1/2 actual vs expected
     gp12 <- ggplot2::ggplot(dta[dta$feature!=feature,],
-                           ggplot2::aes(x=feature, y=val))+
+                           ggplot2::aes_(x=~feature, y=~val))+
         ggplot2::labs(y=paste0(type, " raw feature values")) +
         ggplot2::ggtitle(paste0(
             "diff btwn diff (p=",
@@ -1149,9 +1149,9 @@ fg_plot_box_set <- function(
 
     if (paired) {
         gp <- gp + ggplot2::geom_line(
-            ggplot2::aes(group=ID), colour="black", linetype="11")
+            ggplot2::aes_(group=~ID), colour="black", linetype="11")
         gpae <- gpae + ggplot2::geom_line(
-            ggplot2::aes(group=ID), colour="black", linetype="11")
+            ggplot2::aes_(group=~ID), colour="black", linetype="11")
     }
 
     if (dotplot) {
@@ -1294,7 +1294,7 @@ fg_plot_box_set <- function(
 #'  \code{\link[flowGraph]{fg_plot_qq}}
 #' @rdname fg_plot_pVSdiff
 #' @export
-#' @importFrom ggplot2 ggsave ggplot ggtitle geom_point labs geom_vline
+#' @importFrom ggplot2 ggsave ggplot ggtitle geom_point labs geom_vline aes_
 #' @importFrom ggrepel geom_text_repel
 #' @importFrom ggiraph girafe geom_point_interactive
 #' @importFrom htmlwidgets saveWidget
@@ -1359,9 +1359,9 @@ fg_plot_pVSdiff <- function(
         dta$phenotype <- ifelse(label_ind, names(p), "")
 
         gp <- ggplot2::ggplot(
-            dta, ggplot2::aes(x=log_p_value, y=difference,
-                     color=cohensd_size)) +
-            ggplot2::geom_point(shape=1, ggplot2::aes(size=avg_count)) +
+            dta, ggplot2::aes_(x=~log_p_value, y=~difference,
+                     color=~cohensd_size)) +
+            ggplot2::geom_point(shape=1, ggplot2::aes_(size=~avg_count)) +
             ggplot2::ggtitle(main) +
             ggplot2::labs(x=ifelse(logged,"-ln(p-value)","p-value"),
                             y="difference between mean feature values",
@@ -1369,7 +1369,7 @@ fg_plot_pVSdiff <- function(
             ggplot2::geom_vline(xintercept=ifelse(logged,-log(p_thres),p_thres))
         if (any(label_ind))
             gp <- gp + ggrepel::geom_text_repel(
-                ggplot2::aes(label=phenotype),
+                ggplot2::aes_(label=~phenotype),
                 nudge_x      = -0.35,
                 direction    = "y",
                 hjust        = 1,
@@ -1396,7 +1396,8 @@ fg_plot_pVSdiff <- function(
 
         start1 <- Sys.time()
         gp <- ggplot2::ggplot(
-            dta, ggplot2::aes(x=log_p_value,y=difference,color=cohensd_size)) +
+            dta, ggplot2::aes_(x=~log_p_value, y=~difference,
+                               color=~cohensd_size)) +
             ggplot2::ggtitle(main) +
             ggplot2::labs(x="-ln(p-value)",
                           y="difference between mean feature values",
@@ -1404,12 +1405,12 @@ fg_plot_pVSdiff <- function(
             ggplot2::geom_vline(xintercept=-log(p_thres))
         if (shiny_plot) {
             gp <- gp + ggiraph::geom_point_interactive(
-                ggplot2::aes(tooltip=phenotype, data_id=phenotype,
-                                       size=avg_count), alpha=.3)
+                ggplot2::aes_(tooltip=~phenotype, data_id=~phenotype,
+                                       size=~avg_count), alpha=.3)
         } else {
             gp <- gp + ggiraph::geom_point_interactive(
-                ggplot2::aes(tooltip=phenotype, data_id=phenogroup,
-                             size=avg_count))
+                ggplot2::aes_(tooltip=~phenotype, data_id=~phenogroup,
+                             size=~avg_count))
             gp <- ggiraph::girafe(ggobj=gp)
         }
         gp
