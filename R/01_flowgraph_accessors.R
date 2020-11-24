@@ -222,19 +222,24 @@ fg_load <- function(folder_path) {
     }
 
     # load edge lists, graph layout and others for reproducibility
-    # fg_graph, el, fg_summary, markers, pl, etc
-    load(paste0(folder_path, "/other.Rdata"))
+    # originally: load(paste0(folder_path, "/other.Rdata"))
+    # fg_graph, elist, fg_summary, markers, pl, etc
+    other_path <- paste0(folder_path, "/other.Rdata")
+    attach(other_path, warn.conflicts=FALSE)
 
     # organize into flowGraph object
-    fg <- methods::new(
+    methods::new(
         "flowGraph",
         feat=feats,
         feat_desc=feats_desc,
-        summary=fg_summary, summary_desc=summary_desc,
-        markers=markers,
-        graph=fg_graph, edge_list=elist,
-        meta=meta, plot_layout=pl,
-        etc=etc
+        summary=get("fg_summary", pos=other_path),
+        summary_desc=summary_desc,
+        markers=get("markers", pos=other_path),
+        graph=get("fg_graph", pos=other_path),
+        edge_list=get("elist", pos=other_path),
+        meta=meta,
+        plot_layout=get("pl", pos=other_path),
+        etc=get("etc", pos=other_path)
     )
 }
 
