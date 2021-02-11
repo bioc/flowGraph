@@ -25,7 +25,7 @@
 #' }
 "fg_data_fca"
 
-#' fg_data_pos15
+#' fg_data_pos2
 #'
 #' @format A list containing the following elements
 #'  for a positive control data set with markers A, B, C, D. This is a positive
@@ -41,7 +41,7 @@
 #'        from a "control" or "exp" (experiment) subject.}
 #'   }
 #' }
-"fg_data_pos15"
+"fg_data_pos2"
 
 
 #' fg_data_pos30

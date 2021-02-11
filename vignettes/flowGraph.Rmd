@@ -95,8 +95,8 @@ underscore e.g. $A^+\_B^+$.
 
 ```{r, message=FALSE}
 no_cores <- 1
-data(fg_data_pos15)
-fg <- flowGraph(fg_data_pos15$count, meta=fg_data_pos15$meta,
+data(fg_data_pos2)
+fg <- flowGraph(fg_data_pos2$count, meta=fg_data_pos2$meta,
                 prop=FALSE, specenr=FALSE,  no_cores=no_cores)
 gr <- fg_get_graph(fg)
 gr <- ggdf(gr)
@@ -132,10 +132,10 @@ a directory where one wants to save all of the flowGraph resuts and plots:
 
 ```{r, eval=FALSE}
 no_cores <- 1 # number of cores to parallelize on.
-data(fg_data_pos15)
+data(fg_data_pos2)
 fg <- flowGraph(
-    fg_data_pos15$count, # sample x cell population matrix
-    class=fg_data_pos15$meta$class, # a vector indicating each sample's class
+    fg_data_pos2$count, # sample x cell population matrix
+    class=fg_data_pos2$meta$class, # a vector indicating each sample's class
     path="flowGraph_example", # a directory for flowGraph to output results to
     no_cores=no_cores) # number of cores to use, typically 1 for small data
 ```
@@ -158,7 +158,7 @@ The package contains two data sets:
 and AML (acute myeloid leukemia) positive subjects; it is known that there is 
 an outlier sample and that cell population node $CD34^+$ increases in production 
 in the AML positive subjects' samples.
-- `fg_data_pos15`: a positive control data set where cell population node 
+- `fg_data_pos2`: a positive control data set where cell population node 
    $A^{+}B^{+}C^+$ is artificially increased by 50\%.
 - `fg_data_pos30`: a positive control data set where cell population node 
    $A^{+...}B^{+...}C^+$ is artificially increased by 50\%. Note this data set 
@@ -172,11 +172,11 @@ Both of these are lists containing elements:
 
 ```{r,label=Load_Data, fig=FALSE, message=FALSE}
 # data(fg_data_fca)
-data(fg_data_pos15)
+data(fg_data_pos2)
 # data(fg_data_pos30)
 
 # ?fg_data_fca
-# ?fg_data_pos15
+# ?fg_data_pos2
 # ?fg_data_pos30
 ```
 
@@ -192,7 +192,7 @@ can be used, see `?flowGraph`.
 
 
 For our example, we will directly use a numeric matrix as provided by our 
-`fg_data_pos15` data set. By default, `flowGraph` will calculate all of the 
+`fg_data_pos2` data set. By default, `flowGraph` will calculate all of the 
 proportion `prop`, and SpecEnr `specenr`.
 If you do not want any of these to be calculated, set the corresponding 
 parameters to `FALSE`.
@@ -200,10 +200,10 @@ parameters to `FALSE`.
 
 ```{r, message=FALSE}
 # no_cores <- 1 # number of cores to parallelize on.
-data(fg_data_pos15)
-fg <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class, 
+data(fg_data_pos2)
+fg <- flowGraph(fg_data_pos2$count, class=fg_data_pos2$meta$class, 
                 no_cores=no_cores)
-# fg <- flowGraph(fg_data_pos15$count, meta=fg_data_pos15$meta, class="class"
+# fg <- flowGraph(fg_data_pos2$count, meta=fg_data_pos2$meta, class="class"
 #                 no_cores=no_cores, prop=TRUE, specenr=TRUE)
 ```
 
@@ -480,8 +480,8 @@ For example, the user can plot a static/interactive
 a uniform distribution.
 
 ```{r, message=FALSE}
-data(fg_data_pos15)
-fg1 <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class, 
+data(fg_data_pos2)
+fg1 <- flowGraph(fg_data_pos2$count, class=fg_data_pos2$meta$class, 
                  no_cores=no_cores)
 ```
 ```{r}

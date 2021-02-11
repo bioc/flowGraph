@@ -15,8 +15,8 @@
 #' @return TRUE if flowGraph object successfully saved.
 #' @examples
 #'  no_cores <- 1
-#'  data(fg_data_pos15)
-#'  fg <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class,
+#'  data(fg_data_pos2)
+#'  fg <- flowGraph(fg_data_pos2$count, class=fg_data_pos2$meta$class,
 #'                  no_cores=no_cores)
 #'
 #'  fg_save(fg, "tmp")
@@ -161,8 +161,8 @@ fg_save <- function(fg, folder_path=NULL, save_plots=TRUE, paired=FALSE, ...) {
 #' @examples
 #'
 #'  no_cores <- 1
-#'  data(fg_data_pos15)
-#'  fg <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class,
+#'  data(fg_data_pos2)
+#'  fg <- flowGraph(fg_data_pos2$count, class=fg_data_pos2$meta$class,
 #'                  no_cores=no_cores)
 #'
 #'  fg_save(fg, "tmp")

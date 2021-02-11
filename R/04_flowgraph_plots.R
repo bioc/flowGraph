@@ -108,8 +108,8 @@
 #' @examples
 #'
 #'  no_cores <- 1
-#'  data(fg_data_pos15)
-#'  fg <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class,
+#'  data(fg_data_pos2)
+#'  fg <- flowGraph(fg_data_pos2$count, class=fg_data_pos2$meta$class,
 #'                  no_cores=no_cores)
 #'
 #'  gr <- fg_plot(fg, type="node", index=1, label_max=30,
@@ -395,8 +395,8 @@ ggdf <- function(gr0) {
 #' @examples
 #'
 #'  no_cores <- 1
-#'  data(fg_data_pos15)
-#'  fg <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class,
+#'  data(fg_data_pos2)
+#'  fg <- flowGraph(fg_data_pos2$count, class=fg_data_pos2$meta$class,
 #'                  no_cores=no_cores)
 #'
 #'  # fg <- fg_summary(fg, no_cores=no_cores, class="class", control="control",
@@ -724,8 +724,8 @@ noTOcol <- function(
 #' @examples
 #'
 #'  no_cores <- 1
-#'  data(fg_data_pos15)
-#'  fg <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class,
+#'  data(fg_data_pos2)
+#'  fg <- flowGraph(fg_data_pos2$count, class=fg_data_pos2$meta$class,
 #'                  no_cores=no_cores)
 #'
 #'  fg_plot_qq(fg, type="node", summary_meta=NULL, adjust_custom="byLayer", index=1,
@@ -909,8 +909,8 @@ fg_plot_qq <- function(
 #' @examples
 #'
 #'  no_cores <- 1
-#'  data(fg_data_pos15)
-#'  fg <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class,
+#'  data(fg_data_pos2)
+#'  fg <- flowGraph(fg_data_pos2$count, class=fg_data_pos2$meta$class,
 #'                  no_cores=no_cores)
 #'
 #'  fg_plot_box(fg, type="node", summary_meta=NULL, adjust_custom="byLayer", index=1, node_edge=10)
@@ -1278,8 +1278,8 @@ fg_plot_box_set <- function(
 #' @examples
 #'
 #'  no_cores <- 1
-#'  data(fg_data_pos15)
-#'  fg <- flowGraph(fg_data_pos15$count, class=fg_data_pos15$meta$class,
+#'  data(fg_data_pos2)
+#'  fg <- flowGraph(fg_data_pos2$count, class=fg_data_pos2$meta$class,
 #'                  no_cores=no_cores)
 #'
 #'  gp <- fg_plot_pVSdiff(fg, type="node", summary_meta=NULL,
@@ -1488,9 +1488,9 @@ fg_plot_pVSdiff <- function(
 #' @examples
 #'
 #'  no_cores <- 1
-#'  data(fg_data_pos15)
-#'  fg <- flowGraph(fg_data_pos15$count,
-#'                  class=fg_data_pos15$meta$class,
+#'  data(fg_data_pos2)
+#'  fg <- flowGraph(fg_data_pos2$count,
+#'                  class=fg_data_pos2$meta$class,
 #'                  no_cores=no_cores)
 #'
 #'  fg_save_plots(fg, "temp")
