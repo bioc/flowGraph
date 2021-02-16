@@ -206,3 +206,4 @@ methods::setMethod(
                     summaries=fg_get_summary_desc(object)))
     }
 )
+

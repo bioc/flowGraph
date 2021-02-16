@@ -47,7 +47,7 @@
 #' @param specenr logical variable: whether or not to calculate
 #'  the SpecEnr feature, Default: T
 #' @param path A string indicating the folder path to where the flowGraph
-#'  object should save its elements.
+#'  object should save its elements, Default = NULL (don't save).
 #' @param calculate_summary A logical variable indicating whether or not to
 #'  calculate the summary statistics for SpecEnr based on default parameters
 #'  using the \code{fg_summary} summary function on class
@@ -360,7 +360,6 @@ flowGraph <- function(
     if (is.null(meta)) meta <- data.frame(id=sample_id)
 
     desc <- summary_table(mc,"count")
-
     fg <- methods::new(
         "flowGraph",
         feat=list(node=list(count=mc), edge=list()),
@@ -411,7 +410,7 @@ flowGraph <- function(
         })
 
     if (calculate_summary & save_plots & saved)
-      fg_save_plots(fg, plot_path=paste0(path, "/plots"))
+        fg_save_plots(fg, plot_path=paste0(path, "/plots"))
 
     time_output(start, "total time used")
     return(fg)

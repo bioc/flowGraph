@@ -1,3 +1,24 @@
+test_c <- function(test_custom) {
+    if (!is.function(test_custom))
+        if (test_custom=="t") {
+            test_custom <- function(x,y)
+                tryCatch(stats::t.test(x,y)$p.value,error=function(e)1)
+        } else if (test_custom=="wilcox") {
+            test_custom <- function(x,y)
+                tryCatch(stats::wilcox.test(x,y)$p.value,error=function(e)1)
+        } else if (test_custom=="ks") {
+            test_custom <- function(x,y)
+                tryCatch(stats::ks.test(x,y)$p.value,error=function(e)1)
+        } else if (test_custom=="var") {
+            test_custom <- function(x,y)
+                tryCatch(stats::var.test(x,y)$p.value,error=function(e)1)
+        } else if (test_custom=="chisq") {
+            test_custom <- function(x,y)
+                tryCatch(stats::chisq.test(x,y)$p.value,error=function(e)1)
+        }
+    test_custom
+}
+
 #' @title Calculates feature summary statistics.
 #' @description Calculates feature summary statistics for flowGraph features;
 #'  users can choose from a list of statistical significance tests/adjustments
@@ -158,24 +179,7 @@ fg_summary <- function(
     }
 
     # test functions
-    if (!is.function(test_custom)) {
-        if (test_custom=="t") {
-            test_custom <- function(x,y)
-                tryCatch(stats::t.test(x,y)$p.value, error=function(e) 1)
-        } else if (test_custom=="wilcox") {
-            test_custom <- function(x,y)
-                tryCatch(stats::wilcox.test(x,y)$p.value, error=function(e) 1)
-        } else if (test_custom=="ks") {
-            test_custom <- function(x,y)
-                tryCatch(stats::ks.test(x,y)$p.value, error=function(e) 1)
-        } else if (test_custom=="var") {
-            test_custom <- function(x,y)
-                tryCatch(stats::var.test(x,y)$p.value, error=function(e) 1)
-        } else if (test_custom=="chisq") {
-            test_custom <- function(x,y)
-                tryCatch(stats::chisq.test(x,y)$p.value, error=function(e) 1)
-        }
-    }
+    test_custom <- test_c(test_custom)
 
     fg_feat <- fg_get_feature_all(fg)
     for (type in c("node","edge")) {
@@ -240,29 +244,7 @@ fg_summary <- function(
 
                 if (btwn & grepl("SpecEnr", feature)) {
                     # test functions
-                    if (!is.function(btwn_test_custom)) {
-                        if (btwn_test_custom=="t") {
-                            btwn_test_custom <- function(x,y)
-                                tryCatch(stats::t.test(x,y)$p.value,
-                                         error=function(e) 1)
-                        } else if (btwn_test_custom=="wilcox") {
-                            btwn_test_custom <- function(x,y)
-                                tryCatch(stats::wilcox.test(x,y)$p.value,
-                                         error=function(e) 1)
-                        } else if (btwn_test_custom=="ks") {
-                            btwn_test_custom <- function(x,y)
-                                tryCatch(stats::ks.test(x,y)$p.value,
-                                         error=function(e) 1)
-                        } else if (btwn_test_custom=="var") {
-                            btwn_test_custom <- function(x,y)
-                                tryCatch(stats::var.test(x,y)$p.value,
-                                         error=function(e) 1)
-                        } else if (btwn_test_custom=="chisq") {
-                            btwn_test_custom <- function(x,y)
-                                tryCatch(stats::chisq.test(x,y)$p.value,
-                                         error=function(e) 1)
-                        }
-                    }
+                    btwn_test_custom <- test_c(btwn_test_custom)
 
                     cf <- se_feats(feature)
                     if (is.null(fg@etc$actualVSexpect))

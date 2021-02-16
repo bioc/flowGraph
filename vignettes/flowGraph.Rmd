@@ -96,9 +96,11 @@ underscore e.g. $A^+\_B^+$.
 ```{r, message=FALSE}
 no_cores <- 1
 data(fg_data_pos2)
-fg <- flowGraph(fg_data_pos2$count, meta=fg_data_pos2$meta,
-                prop=FALSE, specenr=FALSE,  no_cores=no_cores)
-gr <- fg_get_graph(fg)
+
+meta_cell <- get_phen_meta(colnames(fg_data_pos2$count))
+pccell <- flowGraph:::get_phen_list(meta_cell, no_cores)
+gr <- set_layout_graph(list(e=pccell$edf, v=meta_cell)) # layout cell hierarchy
+
 gr <- ggdf(gr)
 gr$v$colour <- ifelse(!grepl("[-]",gr$v$phenotype), 1,0)
                      # "nodes with only marker conditions", "other nodes")
@@ -135,7 +137,7 @@ no_cores <- 1 # number of cores to parallelize on.
 data(fg_data_pos2)
 fg <- flowGraph(
     fg_data_pos2$count, # sample x cell population matrix
-    class=fg_data_pos2$meta$class, # a vector indicating each sample's class
+    meta=fg_data_pos2$meta, # a data frame with each sample's meta data
     path="flowGraph_example", # a directory for flowGraph to output results to
     no_cores=no_cores) # number of cores to use, typically 1 for small data
 ```
@@ -201,33 +203,33 @@ parameters to `FALSE`.
 ```{r, message=FALSE}
 # no_cores <- 1 # number of cores to parallelize on.
 data(fg_data_pos2)
-fg <- flowGraph(fg_data_pos2$count, class=fg_data_pos2$meta$class, 
-                no_cores=no_cores)
-# fg <- flowGraph(fg_data_pos2$count, meta=fg_data_pos2$meta, class="class"
-#                 no_cores=no_cores, prop=TRUE, specenr=TRUE)
+fg <- flowGraph(
+    fg_data_pos2$count, meta=fg_data_pos2$meta, 
+    no_cores=no_cores, summary_pars=list(
+        node_feature="SpecEnr",
+        edge_feature="NONE",
+        test_name="t_diminish",
+        test_custom="t",
+        diminish=TRUE,
+        class="class",
+        labels=NULL)
+)
+
 ```
 
 By default, `calculate_summary` is set to `TRUE` so that a default set of
 summary statistics will be calculated for the SpecEnr
 node feature and `prop` edge feature. Note that if the user decides to do this,
-the `class` parameter must also be a vector the same length as the given number of
-samples OR be set to the column name of column containing
-the class label the user wishes to analyze. We recommend the former.
-In the latter case, by default, we assume this column is named `class`.
+the `class` in `summary_pars`  must be the column name in data frame `meta` 
+with the class labels. This is set to `"class"` by default.
 A class in this context is, for example, an experiment or control sample.
 If the user does not wish for this to be calculated during construction
-of the flowGraph object, the user can set `calculate_summary` to `FALSE` in the
-`flowGraph` function.
+of the flowGraph object, the user can set `summary_pars` to `NULL` in the
+`flowGraph` function. Note that`summary_pars` must be specified if the fast
+version of flowGraph is used.
 
-A note that in the above example, we provided the `flowGraph` object constructur 
-with a `class` or a class vector the same length as our input indicating the 
-class labels of each sample. This vector will be put into a `meta` data frame
-inside the flowGraph object where its column is named `class`.
-
-If the user has a specific meta he/should like to use, the user can also input
-`meta` or the sample meta data directly (commented out above). 
-If the user did not provide a sample meta data, this
-can be given at a later time. Just make sure the meta data is a data frame
+`meta` can be given/modified at a later time. 
+Just make sure the meta data is a data frame
 containing a `id` column where its values correspond to the row names in 
 the flowGraph objects' feature matrices.
 
@@ -258,8 +260,7 @@ saved in `fg_get_meta(fg)$phenotype_`.
 
 To calculate the SpecEnr of a cell population (e.g. A+B+C+), 
 flowGraph requires that all of its parent (A+B+, B+C+, A+C+) 
-and grandparent cell populations (A+, B+, C+) are available. If not all of them 
-are given, then the SpecEnr value calculated may not be accurate.
+and grandparent cell populations (A+, B+, C+) are available.
 
 
 
@@ -279,8 +280,11 @@ populations with the most significant p-values as per below.
 fg_get_summary_desc(fg)
 # get a summary statistic
 fg_sum <- fg_get_summary(fg, type="node", summary_meta=list(
-    feature="SpecEnr", test_name="t_diminish", 
-    class="class", label1="exp", label2="control"))
+    node_feature="SpecEnr", 
+    test_name="t_diminish", 
+    class="class", 
+    labels=c("exp","control"))
+)
 # fg_sum <- fg_get_summary(fg, type="node", index=1) # same as above
 
 # list most significant cell populations
