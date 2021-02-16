@@ -333,7 +333,7 @@ ms_psig <- function(ms_, summary_pars, summary_adjust,
     return(ptf)
 }
 
-#' @name flowGraph
+#' @name flowGraph2
 #' @title flowGraph object constructor.
 #' @description Initializes a \code{flowGraph} object given the cell counts
 #'  for one or more flow cytometry sample(s).
