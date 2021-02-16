@@ -60,8 +60,10 @@ extract_markers <- function(phen) {
 #' and not necessarily changed cell population phenotype names.
 #' @seealso
 #'  \code{\link[stringr]{str_extract}},\code{\link[stringr]{str_split}}
-#' @example
+#' @examples
+#'
 #'   fg_clean_phen(c("A+_B+","B+_notC","A-_C"))
+#'
 #' @rdname fg_clean_phen
 # #' @export
 #' @importFrom stringr str_extract str_split
