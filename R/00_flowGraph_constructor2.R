@@ -651,7 +651,7 @@ flowGraph2 <- function(
 
     ## initialize features (SpecEnr, expect_prop, edge prop) for lyr0/1 ####
     # expected prop/SpecEnr for node(m), edge(e)
-    me <- ep <- ms <- p <- lyrp <- sig_phens <- NULL
+    me <- ep <- ms <- p <- lyrp <- sig_phens <- p1 <- NULL
     pchild <- pparen <- list()
 
     # root proportion is just 1, but for completeness we add it in
@@ -659,7 +659,7 @@ flowGraph2 <- function(
         me <- mp[,colnames(mp)=="",drop=FALSE]
         ms <- matrix(0, ncol=1, nrow=nrow(me), dimnames=dimnames(me))
         p <- 1; names(p) <- ""
-        sig_phens <- ""
+        p1 <- sig_phens <- ""
         lyrp <- 0
     }
     if ("1"%in%names(lyril)) {
@@ -694,6 +694,8 @@ flowGraph2 <- function(
 
     start0 <- Sys.time()
     for (lyr in lyrs[lyrstf]) {
+        if (length(p1)==0) break
+
         start1 <- Sys.time()
         message("- ", length(p1), "/", length(lyril[[as.character(lyr)]]),
                 " pops @ layer ", lyr)
