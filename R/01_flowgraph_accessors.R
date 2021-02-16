@@ -590,7 +590,7 @@ fg_get_summary <- function(
             sl$values[abs(sl$cohensd)<filter_es & belowthres] <- default_p_thres
         }
     }
-    fg@etc <<- fg_etc
+    # choice to update etc # fg@etc <<- fg_etc
     sl$values[is.na(sl$values) | sl$values>1] <- 1
     return(sl)
 }
