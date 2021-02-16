@@ -285,7 +285,7 @@ ms_psig <- function(ms_, summary_pars, summary_adjust,
         warning("no p threshold specified in `summary_adjust$filter_btwn_tpthres`, aplying default threshold 0.05")
         summary_adjust$filter_btwn_tpthres <- .05
     }
-    btwn_test_custom <- summary_adjust$filter_btwn_tpthres
+    btwn_test_custom <- test_c(summary_adjust$btwn_test_custom)
 
     ## calculate p values
     p <- apply(ms_,2,test_cust,meta[[summary_pars$class]],test_custom)
@@ -332,6 +332,45 @@ ms_psig <- function(ms_, summary_pars, summary_adjust,
     ptf[sigcands & p<summary_adjust$filter_btwn_tpthres] <- TRUE
     return(ptf)
 }
+
+
+#' @name flowGraph2_summary_pars
+#' @title Default for flowGraph2's summary_pars
+#' @description Default input for flowGraph2's \code{summary_pars} parameter.
+#' @return Default list parameter flowGraph2's \code{summary_pars} parameter.
+#' @rdname flowGraph2_summary_pars
+#' @examples
+#'
+#'  flowGraph2_summary_pars()
+#'
+#' @export
+flowGraph2_summary_pars <- function()
+    list(
+        node_feature="SpecEnr",
+        edge_feature="NONE",
+        test_name="t_diminish",
+        test_custom="t",
+        diminish=TRUE,
+        class="class",
+        labels=NULL)
+
+
+#' @name flowGraph2_summary_adjust
+#' @title Default for flowGraph2's summary_adjust
+#' @description Default input for flowGraph2's \code{summary_adjust} parameter.
+#' @return Default list parameter flowGraph2's \code{summary_adjust} parameter.
+#' @rdname flowGraph2_summary_adjust
+#' @examples
+#'
+#'  flowGraph2_summary_adjust()
+#'
+#' @export
+flowGraph2_summary_adjust <- function()
+    list(
+        adjust_custom="byLayer", btwn_test_custom="t",
+        adjust0_lim=c(-.1,.1), filter_adjust0=1, filter_es=0,
+        filter_btwn_tpthres=.05, filter_btwn_es=.5)
+
 
 #' @name flowGraph2
 #' @title flowGraph object constructor.
@@ -444,19 +483,9 @@ flowGraph2 <- function(
     path=NULL,
 
     # summary parameters
-    summary_pars=list(
-        node_feature="SpecEnr",
-        edge_feature="NONE",
-        test_name="t_diminish",
-        test_custom="t",
-        diminish=TRUE,
-        class="class",
-        labels=c("aml","control")),
+    summary_pars=flowGraph2_summary_pars(),
 
-    summary_adjust=list(
-        adjust_custom="byLayer", btwn_test_custom="t",
-        adjust0_lim=c(-.1,.1), filter_adjust0=1, filter_es=0,
-        filter_btwn_tpthres=.05, filter_btwn_es=.5),
+    summary_adjust=flowGraph2_summary_adjust(),
 
     # plotting parameters
     save_plots=TRUE) {
