@@ -62,7 +62,7 @@ extract_markers <- function(phen) {
 #'  \code{\link[stringr]{str_extract}},\code{\link[stringr]{str_split}}
 #' @examples
 #'
-#'   fg_clean_phen(c("A+_B+","B+_notC","A-_C"))
+#' # fg_clean_phen(c("A+_B+","B+_notC","A-_C"))
 #'
 #' @rdname fg_clean_phen
 # #' @export
