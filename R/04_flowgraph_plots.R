@@ -587,7 +587,7 @@ plot_gr <- function(
         v_ind <- gr$v$v_ind
         v_label <- purrr::map_chr(
             stringr::str_split(gr$v$label[v_ind]," "),
-            function(x) paste0(x[1:2], collapse=" "))
+            function(x) paste0(x[c(1,2)], collapse=" "))
         nodes <- data.frame(
             id=gr$v$phenotype[v_ind],
             # get only phenotype and p
