@@ -993,6 +993,7 @@ fg_plot_box <- function(
             " (mean=",round(pp$m2[node_edge],3),").")
 
     # plot
+
     gp <- ggplot2::ggplot(
         dta, ggplot2::aes_(x=~class, y=~val, fill=~class)) +
         ggplot2::labs(y=paste0(
@@ -1024,16 +1025,14 @@ fg_plot_box <- function(
         gp <- gp + ggplot2::ylim(ymin, ymax)
     }
 
-    if (!is.null(path)) {
-        suppressMessages({
-            ggplot2::ggsave(
-                ifelse(grepl("[.]png$",path, ignore.case=TRUE),
-                       path, paste0(path, ".png")),
-                plot=gp, scale=1, width=5, height=5,
-                units="in", dpi=500, limitsize=TRUE)
-            })
-    }
-    gp
+    if (!is.null(path))
+        ggplot2::ggsave(
+            ifelse(grepl("[.]png$",path, ignore.case=TRUE),
+                   path, paste0(path, ".png")),
+            plot=gp, scale=1, width=5, height=5,
+            units="in", dpi=500, limitsize=TRUE)
+
+    suppressMessages({ gp })
 }
 
 
