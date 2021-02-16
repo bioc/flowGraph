@@ -766,6 +766,7 @@ flowGraph2 <- function(
     start1 <- Sys.time()
     if (length(sig_phens[!sig_phens%in%""])==0) {
         warning("no significant cell population phenotypes found. Try again with another set of class labels or use `flowGraph` the ful constructor instead.")
+        return(NULL)
     }
 
 

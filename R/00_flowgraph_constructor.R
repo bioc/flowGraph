@@ -205,8 +205,6 @@ flowGraph <- function(
         stop("input must be a numeric sample x cell population matrix.")
     }
 
-    time_output(start1)
-
     # prepare sample meta ----------------------------------
     if (!is.null(meta)) {
         if (nrow(meta)!= nrow(mc))
@@ -233,7 +231,6 @@ flowGraph <- function(
     }
 
     ## feature: count (sample x cell population) -----------
-    start1 <- Sys.time()
     message("preparing feature(s): mapping out cell population relations")
 
     keepinds <- apply(mc, 2, function(x) any(x>0))
@@ -293,7 +290,8 @@ flowGraph <- function(
 
     edf <- edf[edf$to%in%cells_ & edf$from%in%cells_,,drop=FALSE]
 
-    time_output(start1, "cell population meta data created")
+    time_output(start1)
+    start1 <- Sys.time()
 
 
     ## list of outputs
@@ -312,6 +310,8 @@ flowGraph <- function(
         meta=meta, plot_layout=as.character(substitute(layout_fun)),
         etc=list(cumsumpos=FALSE, class_mean_normalized=FALSE)
     )
+    time_output(start1, "initialized flowGraph object")
+    start1 <- Sys.time()
 
     ## features ----------------------------
     cumsumpos <- cumsumpos & any(grepl("3",meta_cell$phenocode))
@@ -343,6 +343,7 @@ flowGraph <- function(
                 diminish=diminish)
         }
     })
+    time_output(start1, "calculated features")
 
     saved <- FALSE
     if (!is.null(path))
