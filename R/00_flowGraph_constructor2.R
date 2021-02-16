@@ -84,7 +84,7 @@ fg_clean_phen <- function(phen, markers=NULL) {
     phen
 }
 
-#' @title Converts \code{test_custom} into a significance test function
+#' @title Converts input into a significance test function
 #' @param test_custom a string \code{c("t", "wilcox","ks","var","chisq)} or a
 #'  function.
 #' @return a statistical significance test function.
@@ -122,7 +122,7 @@ test_c <- function(test_custom) {
 #' @param mp_ Numerical sample x cell population matrix w/ proportions.
 #' @param me_ Numerical sample x cell population matrix w/ expected proportions.
 #' @return Numerical sample x cell population matrix w/ SpecEnr.
-#' @rdname ms_create
+# #' @rdname ms_create
 # #' @export
 ms_create <- function(mp_, me_) {
     ms_ <- as.matrix(mp_/me_)
@@ -162,7 +162,7 @@ ms_create <- function(mp_, me_) {
 #'  updates \code{pchild}.
 #' @seealso
 #'  \code{\link[purrr]{map}},\code{\link[purrr]{keep}}
-#' @rdname get_child
+# #' @rdname get_child
 # #' @export
 #' @importFrom purrr map compact
 get_child <- function(parens, pchild, pc_i, ac__, meta_cell__) {
@@ -186,7 +186,7 @@ get_child <- function(parens, pchild, pc_i, ac__, meta_cell__) {
 
 #' @title Gets parent populations of given cell populations
 #' @description Gets the parent populations of a vector of given cell
-#'  `childs` and updates \code{pparen} the edge list if edge list doesn't
+#'  \code{childs} and updates \code{pparen} the edge list if edge list doesn't
 #'  contain the requested information.
 #' @param childs Character vector of cell population phenotypes.
 #' @param pparen Edge list where the name of the list is the cell population
@@ -218,7 +218,7 @@ get_paren <- function(childs, pparen, pc__i, ac_, meta_cell_) {
             ac_[[coli]][[as.character(mcgrow[coli])]] ))
         chi <- apply(chidf, 1, function(x) sum(!x) == 1)
         meta_cell_$phenotype[chi]
-    }, no_cores)#, pc=pc__i, ac=ac_, mcell=meta_cell_)
+    }, no_cores)
     names(res) <- rownames(pc__i)
 
     pparen <- append(pparen, purrr::compact(res))
@@ -377,7 +377,7 @@ ms_psig <- function(ms_, summary_pars, summary_adjust,
 #'   \item{\code{test_name}: "t_diminish"; this unneeded for now.}
 #'   \item{\code{test_custom}: "t"; a string or a function indicating the
 #'    statistical test desires. These tests can be
-#'    \code{c("t", "wilcox","ks","var","chisq) corresponding to functions
+#'    \code{c("t", "wilcox","ks","var","chisq)} corresponding to functions
 #'    \code{\link[stats]{t.test}},\code{\link[stats]{wilcox.test}},
 #'    \code{\link[stats]{ks.test}},\code{\link[stats]{var.test}},
 #'    \code{\link[stats]{chisq.test}}}

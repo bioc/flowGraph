@@ -1,13 +1,13 @@
 Package: flowGraph
 Type: Package
 Title: Identifying differential cell populations in flow cytometry data accounting for marker frequency
-Version: 0.99.19
+Version: 0.99.20
 Description: Identifies maximal differential cell populations in flow cytometry data taking into account dependencies between cell populations; flowGraph calculates and plots SpecEnr abundance scores given cell population cell counts.
 Date: 2019-11-30
 Authors@R: person("Alice", "Yue", email = "aya43@sfu.ca", role = c("aut", "cre"))
 License: Artistic-2.0
 VignetteBuilder: knitr
-Depends: R (>= 3.0)
+Depends: R (>= 4.1)
 Imports: 
     effsize,
     furrr, 

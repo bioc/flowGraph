@@ -61,6 +61,29 @@ A+, A++, A+++, ..., or A++, A+++, ... , Default: FALSE}
 \item{path}{A string indicating the folder path to where the flowGraph
 object should save its elements, Default = NULL (don't save).}
 
+\item{summary_pars}{A list containing parameters for calculating the
+ statistical significance summary significance that will determine whether
+ to trim out phenotypes for this fast version of flowGraph. The lists'
+ elements are:
+\itemize{
+  \item{\code{node_feature}: "SpecEnr"; this is the feature we will be
+   testing, don't change this.}
+  \item{\code{edge_feature}: "NONE"; this unneeded for now.}
+  \item{\code{test_name}: "t_diminish"; this unneeded for now.}
+  \item{\code{test_custom}: "t"; a string or a function indicating the
+   statistical test desires. These tests can be
+   \code{c("t", "wilcox","ks","var","chisq)} corresponding to functions
+   \code{\link[stats]{t.test}},\code{\link[stats]{wilcox.test}},
+   \code{\link[stats]{ks.test}},\code{\link[stats]{var.test}},
+   \code{\link[stats]{chisq.test}}}
+  \item{\code{diminish}: TRUE; whether or not to continue testing
+   phenotypes whos parent phenotypes are all insignificant.}
+  \item{\code{class}: "class"; the column name in \code{meta} that contains
+   class labels you want to test.}
+  \item{\code{labels}: c("aml", "control") for the flowcap data set;
+  SET THIS!! to the class labels you want to test using \code{test_custom}.}
+}}
+
 \item{summary_adjust}{A list of parameters on how to adjust the p-values;
  this also affects which phenotypes are tested. The elements in the list are:
 \itemize{

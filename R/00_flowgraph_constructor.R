@@ -86,56 +86,6 @@
 #'  must contain a \code{id} column corresponding to sample names.
 #' @examples
 #'
-#' ## Phenotypes input format will be restored after ftf*** is uploaded.
-#' # library(ftf***)
-#' #
-#' # # prepare parallel backend
-#' # no_cores <- 1 #parallel::detectCores()-1
-#' # # future::plan(future::multiprocess)
-#'
-#' # ## create Phenotypes data ----------------------
-#'
-#' # # define marker and total cell count
-#' # celln <- 10000
-#' # markern <- 3
-#' # markers <- LETTERS[1:markern]
-#'
-#' # # define marker thresholds
-#' # cvd <- rnorm(celln,2,1)
-#' # p50 <- quantile(cvd, .5)
-#' # thres <- lapply(markers, function(x) p50)
-#' # names(thres) <- markers
-#'
-#' # # generate ftf*** Phenotypes list
-#' # samplen <- 10
-#' # # ftl <- furrr::future_map(1:samplen, function(i) {
-#' # ftl <- lapply(1:samplen, function(i) {
-#' #     # make flow frame
-#' #     f <- new("flowFrame")
-#' #     f@exprs <- matrix(rnorm(celln*markern,2,1), nrow=celln)
-#' #     colnames(f@exprs) <- markers
-#' #
-#' #     # marker indices in flow frame
-#' #     ci <- c(1:ncol(f@exprs))
-#' #     names(ci) <- colnames(f@exprs)
-#' #
-#' #     # modify experiment samples such that ABC increases by 50%
-#' #     if (i>(samplen/2)) {
-#' #         ap <- f@exprs[,1]>thres[[1]]
-#' #         bp <- f@exprs[,2]>thres[[2]]
-#' #         cp <- f@exprs[,3]>thres[[3]]
-#' #         tm <- sum(ap & bp & cp)/2
-#' #         f@exprs <- rbind(f@exprs,
-#' #                          f@exprs[sample(which(ap & bp & cp),tm),])
-#' #     }
-#' #
-#' #     # make Phenotypes
-#' #     ftf***(Frame=f, PropMarkers=ci, MarkerNames=colnames(f@exprs),
-#' #              MaxMarkersPerPop=markern, PartitionsPerMarker=2,
-#' #              Thresholds=thres,
-#' #              Methods='Thresholds', verbose=FALSE, MemLimit=60)
-#' # })
-#'
 #' meta_file <- data.frame(
 #'     id=1:samplen,
 #'     class=append(rep("control", samplen/2), rep("exp", samplen/2)),
@@ -146,14 +96,6 @@
 #' ## using the constructor -----------------------
 #'
 #' data(fg_data_pos30)
-#'
-#' ## Phenotypes input format will be restored after ftf is uploaded.
-#' # # input: Phenotype object
-#' # fg <- flowGraph(ftl[[1]], no_cores=no_cores)
-#'
-#' # # input: Phenotype list
-#' # fg <- flowGraph(ftl, class=meta_file$class, no_cores=no_cores)
-#' # # fg <- flowGraph(ftl, meta=meta_file, no_cores=no_cores)
 #'
 #' # input: vector of load-able Phenotypes paths
 #' fg <- flowGraph(fg_data_pos30$count[1,], no_cores=no_cores)
