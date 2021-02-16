@@ -231,7 +231,7 @@ flowGraph <- function(
     }
 
     ## feature: count (sample x cell population) -----------
-    message("preparing feature(s): mapping out cell population relations")
+    message("preparing edge lists: mapping out cell population relations")
 
     keepinds <- apply(mc, 2, function(x) any(x>0))
     keepinds <- apply(mc, 2, function(x) any(x>0))
@@ -292,6 +292,7 @@ flowGraph <- function(
 
     time_output(start1)
     start1 <- Sys.time()
+    message("calculating features")
 
 
     ## list of outputs
@@ -310,7 +311,7 @@ flowGraph <- function(
         meta=meta, plot_layout=as.character(substitute(layout_fun)),
         etc=list(cumsumpos=FALSE, class_mean_normalized=FALSE)
     )
-    time_output(start1, "initialized flowGraph object")
+    time_output(start1)
     start1 <- Sys.time()
 
     ## features ----------------------------
@@ -343,7 +344,7 @@ flowGraph <- function(
                 diminish=diminish)
         }
     })
-    time_output(start1, "calculated features")
+    time_output(start1)
 
     saved <- FALSE
     if (!is.null(path))

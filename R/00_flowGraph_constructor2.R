@@ -557,8 +557,9 @@ flowGraph2 <- function(
         meta_cell <- meta_cell[phen_id,,drop=FALSE]
         input_ <- input_[,phen_id,drop=FALSE]
     }
-    time_output(start1, "checked input")
+    time_output(start1)
     start1 <- Sys.time()
+    message("preparing to calculate features")
 
     ## flowGraph ####
     fg <- methods::new(
@@ -647,8 +648,9 @@ flowGraph2 <- function(
         acs[[lyri]] <- purrr::map(allcol, purrr::map, function(y) y[li])
         meta_cells[[lyri]] <- meta_cell[li,, drop=FALSE]
     }
-    time_output(start1, "prepared input for feature calculation")
+    time_output(start1)
     start1 <- Sys.time()
+    mesage("calculating features + edge lists by + p-values for cell populations with significant parents only (this is the fast version of flowGraph);")
 
 
     ## initialize features (SpecEnr, expect_prop, edge prop) for lyr0/1 ####
@@ -762,7 +764,7 @@ flowGraph2 <- function(
         lyrp <- lyr
         time_output(start2)
     }
-    time_output(start1, "SpecEnr & cell population meta data created")
+    time_output(start1, "total time used to calcuate features + edge lists")
     start1 <- Sys.time()
     if (length(sig_phens[!sig_phens%in%""])==0) {
         warning("no significant cell population phenotypes found. Try again with another set of class labels or use `flowGraph` the ful constructor instead.")
@@ -817,6 +819,9 @@ flowGraph2 <- function(
 
 
     ## calculate summary
+    time_output(start1)
+    start1 <- Sys.time()
+    message("calculating summary statistics for SpecEnr")
     try({
         fg <- fg_summary(
             fg, no_cores=no_cores,
@@ -829,6 +834,7 @@ flowGraph2 <- function(
             test_name=summary_pars$test_name,
             diminish=summary_pars$diminish)
     })
+    time_output(start1)
 
 
     ## save flowGraph object
