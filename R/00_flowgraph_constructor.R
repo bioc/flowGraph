@@ -86,6 +86,7 @@
 #'  must contain a \code{id} column corresponding to sample names.
 #' @examples
 #'
+#' samplen <- 10
 #' meta_file <- data.frame(
 #'     id=1:samplen,
 #'     class=append(rep("control", samplen/2), rep("exp", samplen/2)),
