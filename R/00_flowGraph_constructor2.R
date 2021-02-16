@@ -377,7 +377,7 @@ ms_psig <- function(ms_, summary_pars, summary_adjust,
 #'   \item{\code{test_name}: "t_diminish"; this unneeded for now.}
 #'   \item{\code{test_custom}: "t"; a string or a function indicating the
 #'    statistical test desires. These tests can be
-#'    \code{c("t", "wilcox","ks","var","chisq)} corresponding to functions
+#'    \code{c("t", "wilcox","ks","var","chisq")} corresponding to functions
 #'    \code{\link[stats]{t.test}},\code{\link[stats]{wilcox.test}},
 #'    \code{\link[stats]{ks.test}},\code{\link[stats]{var.test}},
 #'    \code{\link[stats]{chisq.test}}}
@@ -398,7 +398,7 @@ ms_psig <- function(ms_, summary_pars, summary_adjust,
 #'    \code{summary_pars}; this statistical significance test is used in
 #'    the filters.}
 #'   \item{\code{adjust0_lim}: see \code{fg_get_summary}.}
-#'   \item{\code{filter_adjust0}: "see \code{fg_get_summary}.}
+#'   \item{\code{filter_adjust0}: see \code{fg_get_summary}.}
 #'   \item{\code{filter_es}: see \code{fg_get_summary}.}
 #'   \item{\code{filter_btwn_tpthres}: see \code{fg_get_summary}.}
 #'   \item{\code{filter_btwn_es}: see \code{fg_get_summary}.}
