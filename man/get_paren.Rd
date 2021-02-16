@@ -31,6 +31,6 @@ A list containing parent populations of \code{childs}; also globally
 }
 \description{
 Gets the parent populations of a vector of given cell
- `childs` and updates \code{pparen} the edge list if edge list doesn't
+ \code{childs} and updates \code{pparen} the edge list if edge list doesn't
  contain the requested information.
 }

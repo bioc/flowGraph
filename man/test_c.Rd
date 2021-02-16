@@ -2,19 +2,19 @@
 % Please edit documentation in R/00_flowGraph_constructor2.R
 \name{test_c}
 \alias{test_c}
-\title{Converts \code{test_custom} into a significance test function}
+\title{Converts input into a significance test function}
 \usage{
 test_c(test_custom)
 }
 \arguments{
-\item{test_custom}{a string \code{c("t", "wilcox","ks","var","chisq)} or a
+\item{test_custom}{a string \code{c("t", "wilcox","ks","var","chisq")} or a
 function.}
 }
 \value{
 a statistical significance test function.
 }
 \description{
-Converts \code{test_custom} into a significance test function
+Converts input into a significance test function
 }
 \seealso{
 \code{\link[stats]{t.test}},\code{\link[stats]{wilcox.test}},

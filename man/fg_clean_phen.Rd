@@ -18,6 +18,11 @@ and not necessarily changed cell population phenotype names.
 \description{
 Reformats cell population phenotypes into flowGraph format
 }
+\examples{
+
+# fg_clean_phen(c("A+_B+","B+_notC","A-_C"))
+
+}
 \seealso{
 \code{\link[stringr]{str_extract}},\code{\link[stringr]{str_split}}
 }
