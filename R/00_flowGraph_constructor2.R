@@ -85,7 +85,7 @@ fg_clean_phen <- function(phen, markers=NULL) {
 }
 
 #' @title Converts input into a significance test function
-#' @param test_custom a string \code{c("t", "wilcox","ks","var","chisq)} or a
+#' @param test_custom a string \code{c("t", "wilcox","ks","var","chisq")} or a
 #'  function.
 #' @return a statistical significance test function.
 #' @seealso
