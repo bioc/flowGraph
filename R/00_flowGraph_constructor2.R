@@ -558,7 +558,7 @@ flowGraph2 <- function(
         input_ <- input_[,phen_id,drop=FALSE]
     }
     time_output(start1, "checked input")
-
+    start1 <- Sys.time()
 
     ## flowGraph ####
     fg <- methods::new(
@@ -647,6 +647,8 @@ flowGraph2 <- function(
         acs[[lyri]] <- purrr::map(allcol, purrr::map, function(y) y[li])
         meta_cells[[lyri]] <- meta_cell[li,, drop=FALSE]
     }
+    time_output(start1, "prepared input for feature calculation")
+    start1 <- Sys.time()
 
 
     ## initialize features (SpecEnr, expect_prop, edge prop) for lyr0/1 ####
@@ -692,11 +694,10 @@ flowGraph2 <- function(
     lyrs <- sort(unique(meta_cell$phenolayer))
     lyrstf <- sapply(lyrs, function(x) (x-1)%in%lyrs & (x-2)%in%lyrs)
 
-    start0 <- Sys.time()
     for (lyr in lyrs[lyrstf]) {
         if (length(p1)==0) break
 
-        start1 <- Sys.time()
+        start2 <- Sys.time()
         message("- ", length(p1), "/", length(lyril[[as.character(lyr)]]),
                 " pops @ layer ", lyr)
 
@@ -759,9 +760,13 @@ flowGraph2 <- function(
         ms <- cbind(ms, ms_)
 
         lyrp <- lyr
-        time_output(start1)
+        time_output(start2)
     }
-    time_output(start0, "SpecEnr & cell population meta data created")
+    time_output(start1, "SpecEnr & cell population meta data created")
+    start1 <- Sys.time()
+    if (length(sig_phens[!sig_phens%in%""])==0) {
+        warning("no significant cell population phenotypes found. Try again with another set of class labels or use `flowGraph` the ful constructor instead.")
+    }
 
 
     ## trim everything so there are only significant cell populations ####
