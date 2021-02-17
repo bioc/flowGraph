@@ -390,15 +390,8 @@ fg_summary_ <- function(
 
     if (!diminish) {
         # calculate p values
-        if (no_cores>1) {
-            loop_ind <- loop_ind_f(seq_len(ml), no_cores)
-            p <- unlist(furrr::future_map(loop_ind, function(ii)
-                purrr::map_dbl(ii, function(i) test_custom(m1[,i], m2[,i])) ))
-        } else {
-            p <- purrr::map_dbl(seq_len(ml), function(i)
-                test_custom(m1[,i], m2[,i]))
-
-        }
+        p <- fpurrr_map(seq_len(ml), function(i)
+            test_custom(m1[,i], m2[,i]), no_cores=no_cores, prll=ml>500)
 
     } else {
         pchild <- fg_get_el(fg)$child
@@ -422,17 +415,10 @@ fg_summary_ <- function(
         testis <- testi <- layers_==min(layers_[!root_])
         p_thress_i <- 1
         while (sum(testi)>0) {
-            if (no_cores>1) {
-                loop_ind <- loop_ind_f(which(testi), no_cores)
-                pl <- unlist(furrr::future_map(loop_ind, function(ii)
-                    purrr::map_dbl(ii, function(i)
-                        pt <- test_custom(m1[,i], m2[,i])
-                    )
-                ))
-            } else {
-                pl <- purrr::map_dbl(which(testi), function(i)
-                        pt <- test_custom(m1[,i], m2[,i]))
-            }
+            wtesti <- which(testi)
+            pl <- unlist(fpurrr_map(wtesti, function(i)
+                pt <- test_custom(m1[,i], m2[,i])
+                , no_cores=no_cores, prll=length(wtesti)>500))
             p[testi] <- pl
 
             pl_cpops <- pl < p_thress[p_thress_i]

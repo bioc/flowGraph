@@ -107,21 +107,10 @@ fg_feat_edge_prop_ <- function(fg, no_cores=1) {
 
     rooti <- which(colnames(mc)=="")
 
-    if (no_cores>1) {
-        loop_ind <- loop_ind_f(seq_len(nrow(edf)), no_cores)
-        childprop_ <- do.call(cbind, furrr::future_map(loop_ind, function(ii){
-            do.call(cbind, purrr::map(ii, function(i) {
-                pname <- ifelse(edf$from[i]=="", rooti, edf$from[i])
-                mc[,edf$to[i]]/mc[,pname]
-            }))
-        }))
-    } else {
-        childprop_ <- do.call(
-            cbind, purrr::map(seq_len(nrow(edf)), function(i) {
-                pname <- ifelse(edf$from[i]=="", rooti, edf$from[i])
-                mc[,edf$to[i]]/mc[,pname]
-            }))
-    }
+    childprop_ <- do.call(cbind, fpurrr_map(seq_len(nrow(edf)), function(i) {
+        pname <- ifelse(edf$from[i]=="", rooti, edf$from[i])
+        mc[,edf$to[i]]/mc[,pname]
+    }, no_cores=no_cores, prll=nrow(edf)>1000))
     colnames(childprop_) <- paste0(edf$from,"__",edf$to)
     childprop_[is.nan(as.matrix(childprop_))] <- 0
 
@@ -224,21 +213,10 @@ fg_feat_edge_exprop_ <- function(fg, no_cores=1) {
 
     rooti <- which(colnames(mp)=="")
 
-    if (no_cores>1) {
-        loop_ind <- loop_ind_f(seq_len(nrow(edf)), no_cores)
-        childprop_ <- do.call(cbind, furrr::future_map(loop_ind, function(ii){
-            do.call(cbind, purrr::map(ii, function(i) {
-                pname <- ifelse(edf$from[i]=="", rooti, edf$from[i])
-                mep[,edf$to[i]]/mp[,pname]
-            }))
-        }))
-    } else {
-        childprop_ <- do.call(
-            cbind, purrr::map(seq_len(nrow(edf)), function(i) {
-                pname <- ifelse(edf$from[i]=="", rooti, edf$from[i])
-                mep[,edf$to[i]]/mp[,pname]
-            }))
-    }
+    childprop_ <- do.call(cbind, fpurrr_map(seq_len(nrow(edf)), function(i) {
+        pname <- ifelse(edf$from[i]=="", rooti, edf$from[i])
+        mep[,edf$to[i]]/mp[,pname]
+    }, no_cores=no_cores, prll=nrow(edf)>1000))
     colnames(childprop_) <- paste0(edf$from,"__",edf$to)
     childprop_[is.nan(as.matrix(childprop_))] <- 0
 
@@ -379,15 +357,9 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
     phens <- phens[phens!=""]
     # max edges
 
-    if (no_cores>1) {
-        ep_ <- do.call(cbind, furrr::future_map(phens, function(phen)
-            apply(ep[,paste0(pparen[[phen]], "__", phen),drop=FALSE], 1, min)
-        ))
-    } else {
-        ep_ <- do.call(cbind, purrr::map(phens, function(phen)
-            apply(ep[,paste0(pparen[[phen]], "__", phen),drop=FALSE], 1, min)
-        ))
-    }
+    ep_ <- do.call(cbind, fpurrr_map(phens, function(phen)
+        matrixStats::rowMins(ep[,paste0(pparen[[phen]], "__", phen),drop=FALSE])
+        , no_cores=no_cores, prll=length(phens)>1000))
     colnames(ep_) <- phens
 
     rooti <- which(colnames(mp)=="")
@@ -416,28 +388,25 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
     # this reduces computation time e.g. A+B+C+, not A+B+C-
     # cpind <- seq_len(length(cells))
     cpind <- which(!grepl("[-]",cells))
-    loop_ind <- loop_ind_f(cpind,no_cores) # prepares loop indices
     # all: loop_ind <- loop_ind_f(1:length(cells),no_cores)
-    expecp <- do.call(cbind, furrr::future_map(loop_ind, function(ii) {
-        do.call(cbind, purrr::map(ii, function(ic) {
-            # cell population name e.g. A+B+C+
-            cpop <- cells[ic]
+    expecp <- do.call(cbind, fpurrr_map(cpind, function(ic) {
+        # cell population name e.g. A+B+C+
+        cpop <- cells[ic]
 
-            # node proportion values extracted from mp for cpop's parents
-            # e.g. A+B+, A+C+, B+C+; and grandparents e.g. A+, B+, C+.
-            pnames <- pparen[[cpop]]
-            parent <- mp[,pnames,drop=FALSE] # proportion values of parents.
+        # node proportion values extracted from mp for cpop's parents
+        # e.g. A+B+, A+C+, B+C+; and grandparents e.g. A+, B+, C+.
+        pnames <- pparen[[cpop]]
+        parent <- mp[,pnames,drop=FALSE] # proportion values of parents.
 
-            # edge proportion values extracted from ep for edges between
-            # cpop's parents and grandparents.
-            pedges <- ep_[,pnames,drop=FALSE]
+        # edge proportion values extracted from ep for edges between
+        # cpop's parents and grandparents.
+        pedges <- ep_[,pnames,drop=FALSE]
 
-            # using the above, get expected proportion; see formula in
-            # https://www.biorxiv.org/content/10.1101/837765v2
-            expect1 <- apply(pedges,1,min) * apply(parent,1,max)
-            return(expect1)
-        }))
-    }))
+        # using the above, get expected proportion; see formula in
+        # https://www.biorxiv.org/content/10.1101/837765v2
+        expect1 <- apply(pedges,1,min) * apply(parent,1,max)
+        return(expect1)
+    }, no_cores=no_cores, prll=length(cbind)>500))
     expecp[is.nan(expecp)] <- 0
     colnames(expecp) <- cells[cpind]
 
@@ -463,44 +432,41 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
                                  function(x) cpopl[cpopnegno==x])
         for (cpops in cpopnegnos) {
             if (csp) {
-                expecn <- do.call(
-                    cbind, furrr::future_map(cpops, function(cpop) {
-                        sib <- gsub('(.*?)-(.*)', '\\1+\\2', cpop)
-                        if (!sib%in%colnames(expec)) {
-                            pari <- which(purrr::map_lgl(
-                                pparen[[cpop]],
-                                ~grepl(.x,sib)))
-                            if (length(pari)==0) return(rep(0,nrow(mp)))
-                            return(mp[,pparen[[cpop]][pari[1]]])
-                        }
-                        pname <- intersect(pparen[[cpop]],
-                                                 pparen[[sib]])
-                        return(mp[,pname] - expec[,sib])
-                    })
-                )
+                expecn <- do.call(cbind, fpurrr_map(cpops, function(cpop) {
+                    sib <- gsub('(.*?)-(.*)', '\\1+\\2', cpop)
+                    if (!sib%in%colnames(expec)) {
+                        pari <- which(purrr::map_lgl(
+                            pparen[[cpop]],
+                            ~grepl(.x,sib)))
+                        if (length(pari)==0) return(rep(0,nrow(mp)))
+                        return(mp[,pparen[[cpop]][pari[1]]])
+                    }
+                    pname <- intersect(pparen[[cpop]],
+                                       pparen[[sib]])
+                    return(mp[,pname] - expec[,sib])
+                }, no_cores=no_cores, prll=length(cpops)>500))
             } else {
-                expecn <- do.call(
-                    cbind, furrr::future_map(cpops, function(cpop) {
-                        cpopgsub <- gsub("[+]","[+]", cpop)
-                        cpopgsub <- gsub('(.*?)-(.*)', '\\1[+]+\\2',
-                                         cpopgsub)
-                        cpopgsub <- gsub("[-]","[-]", cpopgsub)
-                        sibs <- sibsl[grepl(cpopgsub,sibsl)]
-                        sibs_ <- sibs%in%colnames(expec)
-                        if (sum(sibs_)==0) {
-                            sibs__ <- paste0(sibs, collapse="")
-                            pari <- which(purrr::map_lgl(
-                                pparen[[cpop]],
-                                ~grepl(.x,sibs__)))
-                            if (length(pari)==0)
-                                return(rep(0,nrow(mp)))
-                            return(mp[,pparen[[cpop]][pari[1]]])
-                        }
-                        sibs <- sibs[sibs_]
-                        pname <- intersect(pparen[[cpop]],
-                                                 pparen[[sibs[1]]])
-                        return(mp[,pname] - rowSums(expec[,sibs,drop=FALSE]))
-                    }))
+                expecn <- do.call(cbind, fpurrr_map(cpops, function(cpop) {
+                    cpopgsub <- gsub("[+]","[+]", cpop)
+                    cpopgsub <- gsub('(.*?)-(.*)', '\\1[+]+\\2',
+                                     cpopgsub)
+                    cpopgsub <- gsub("[-]","[-]", cpopgsub)
+                    sibs <- sibsl[grepl(cpopgsub,sibsl)]
+                    sibs_ <- sibs%in%colnames(expec)
+                    if (sum(sibs_)==0) {
+                        sibs__ <- paste0(sibs, collapse="")
+                        pari <- which(purrr::map_lgl(
+                            pparen[[cpop]],
+                            ~grepl(.x,sibs__)))
+                        if (length(pari)==0)
+                            return(rep(0,nrow(mp)))
+                        return(mp[,pparen[[cpop]][pari[1]]])
+                    }
+                    sibs <- sibs[sibs_]
+                    pname <- intersect(pparen[[cpop]],
+                                       pparen[[sibs[1]]])
+                    return(mp[,pname] - rowSums(expec[,sibs,drop=FALSE]))
+                }, no_cores=no_cores, prll=length(cpops)>500))
             }
             colnames(expecn) <- cpops
             expec <- cbind(expec, expecn)
@@ -546,15 +512,9 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
 
     rooti <- which(colnames(mp)=="")
 
-    if (no_cores>1) {
-        ep_ <- do.call(cbind, furrr::future_map(phens, function(phen)
-            apply(ep[,paste0(pparen[[phen]], "__", phen),drop=FALSE], 1, min)
-        ))
-    } else {
-        ep_ <- do.call(cbind, purrr::map(phens, function(phen)
-            apply(ep[,paste0(pparen[[phen]], "__", phen),drop=FALSE], 1, min)
-        ))
-    }
+    ep_ <- do.call(cbind, fpurrr_map(phens, function(phen)
+        matrixStats::rowMins(ep[,paste0(pparen[[phen]], "__", phen),drop=FALSE])
+        , no_cores=no_cores, prll=length(phens)>500))
     colnames(ep_) <- phens
 
 
@@ -595,63 +555,60 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
 
     cells_ <- stringr::str_extract_all(cells, "[^_^+^-]+[+-]+")
     # some: loop_ind <- loop_ind_f(1:length(cells),no_cores)
-    loop_ind <- loop_ind_f(cpind,no_cores) # prepares loop indices
-    expecp <- do.call(cbind, furrr::future_map(loop_ind, function(ii) {
-        do.call(cbind, purrr::map(ii, function(ic) {
-            # cell population name e.g. A+B+C+
-            cpop <- cells[ic]
-            cmarkers <- cells_[[ic]]
+    expecp <- do.call(cbind, fpurrr_map(cpind, function(ic) {
+        # cell population name e.g. A+B+C+
+        cpop <- cells[ic]
+        cmarkers <- cells_[[ic]]
 
-            # node proportion values extracted from mp for cpop's parents
-            # e.g. A+B+, A+C+, B+C+; and grandparents e.g. A+, B+, C+.
-            pnames <- pparen[[cpop]]
-            parent <- mp[,pnames,drop=FALSE] # proportion values of parents.
-            if (length(cmarkers)==2) return(apply(parent,1,prod))
+        # node proportion values extracted from mp for cpop's parents
+        # e.g. A+B+, A+C+, B+C+; and grandparents e.g. A+, B+, C+.
+        pnames <- pparen[[cpop]]
+        parent <- mp[,pnames,drop=FALSE] # proportion values of parents.
+        if (length(cmarkers)==2) return(apply(parent,1,prod))
 
 
-            # try all combinations, because...
-            mpi <- mp[,cpop]
-            mlcombi <- mlcomb[[length(cmarkers)-1]]
-            allcombexp <- purrr::map(seq_len(ncol(mlcombi)),function(yi) {
-                y <- mlcombi[,yi]
-                par1 <- gsub(cmarkers[y[1]],"",cpop,fixed=TRUE)
-                mpe1p <- mp[,gsub(cmarkers[y[1]],"",cpop,fixed=TRUE)]
-                mpe1e <- ep[,paste0(gsub(cmarkers[y[2]],"",par1,fixed=TRUE),
-                                    "_",gsub(cmarkers[y[2]],"",cpop,fixed=TRUE))]
-                mpe1 <- mpe1p*mpe1e
+        # try all combinations, because...
+        mpi <- mp[,cpop]
+        mlcombi <- mlcomb[[length(cmarkers)-1]]
+        allcombexp <- purrr::map(seq_len(ncol(mlcombi)),function(yi) {
+            y <- mlcombi[,yi]
+            par1 <- gsub(cmarkers[y[1]],"",cpop,fixed=TRUE)
+            mpe1p <- mp[,gsub(cmarkers[y[1]],"",cpop,fixed=TRUE)]
+            mpe1e <- ep[,paste0(gsub(cmarkers[y[2]],"",par1,fixed=TRUE),
+                                "_",gsub(cmarkers[y[2]],"",cpop,fixed=TRUE))]
+            mpe1 <- mpe1p*mpe1e
 
-                par1 <- gsub(cmarkers[y[2]],"",cpop,fixed=TRUE)
-                mpe2p <- mp[,gsub(cmarkers[y[2]],"",cpop,fixed=TRUE)]
-                mpe2e <- ep[,paste0(gsub(cmarkers[y[1]],"",par1,fixed=TRUE),
-                                    "_",gsub(cmarkers[y[1]],"",cpop,fixed=TRUE))]
-                mpe2 <- mpe2p*mpe2e # mpe1 and mpe are the same
-                return(cbind(mpe1p,mpe1e,mpe2p,mpe2e,mpe1))
-            })
-            acediff <- sapply(allcombexp, function(x)
-                stats::median(abs(x[,5]-mp[,cpop])))
-            return(allcombexp[[which.min(acediff)]][,5])
+            par1 <- gsub(cmarkers[y[2]],"",cpop,fixed=TRUE)
+            mpe2p <- mp[,gsub(cmarkers[y[2]],"",cpop,fixed=TRUE)]
+            mpe2e <- ep[,paste0(gsub(cmarkers[y[1]],"",par1,fixed=TRUE),
+                                "_",gsub(cmarkers[y[1]],"",cpop,fixed=TRUE))]
+            mpe2 <- mpe2p*mpe2e # mpe1 and mpe are the same
+            return(cbind(mpe1p,mpe1e,mpe2p,mpe2e,mpe1))
+        })
+        acediff <- sapply(allcombexp, function(x)
+            stats::median(abs(x[,5]-mp[,cpop])))
+        return(allcombexp[[which.min(acediff)]][,5])
 
-            allcombexp_par <- sapply(allcombexp, function(x)
-                apply(x[,c(1,3)],1,min) )
-            allcombexp_edg <- sapply(allcombexp,function(x)
-                apply(x[,c(2,4)],1,max) )
-            allcombexp_which <- apply(abs(allcombexp_par-allcombexp_edg),1,which.max)
-            expect1 <- purrr::map_dbl(
-                seq_len(length(allcombexp_which)), function(x) {
+        allcombexp_par <- sapply(allcombexp, function(x)
+            apply(x[,c(1,3)],1,min) )
+        allcombexp_edg <- sapply(allcombexp,function(x)
+            apply(x[,c(2,4)],1,max) )
+        allcombexp_which <- apply(abs(allcombexp_par-allcombexp_edg),1,which.max)
+        expect1 <- purrr::map_dbl(
+            seq_len(length(allcombexp_which)), function(x) {
                 allcombexp[[allcombexp_which[x]]][x,5]
             })
 
-            # # edge proportion values extracted from ep for edges between
-            # # cpop's parents and grandparents.
-            # some: pes <- ep[,paste0(pparen[[cpop]], "_", cpop),drop=FALSE]
-            pedges <- ep_[,pnames,drop=FALSE]
+        # # edge proportion values extracted from ep for edges between
+        # # cpop's parents and grandparents.
+        # some: pes <- ep[,paste0(pparen[[cpop]], "_", cpop),drop=FALSE]
+        pedges <- ep_[,pnames,drop=FALSE]
 
-            # # using the above, get expected proportion; see formula in
-            # # https://www.biorxiv.org/content/10.1101/837765v2
-            # some: expect1 <- apply(pedges,1,min) * apply(parent,1,max)
-            return(expect1)
-        }))
-    }))
+        # # using the above, get expected proportion; see formula in
+        # # https://www.biorxiv.org/content/10.1101/837765v2
+        # some: expect1 <- apply(pedges,1,min) * apply(parent,1,max)
+        return(expect1)
+    }, no_cores=no_cores, prll=length(cpind)>500))
     expecp[is.nan(expecp)] <- 0
     colnames(expecp) <- cells[cpind]
 
@@ -728,29 +685,15 @@ fg_feat_cumsum <- function(fg, no_cores) {
     for (marker in cany1) {
         coldo <- which(meta_cell_grid_TF1[,marker])
         coldo <- coldo[order(meta_cell_grid[coldo,marker],
-                                   decreasing=TRUE)]
-        if (no_cores>1) {
-            loop_ind <- loop_ind_f(coldo, no_cores)
-            mc[,coldo] <- do.call(
-                cbind, furrr::future_map(loop_ind, function(jj)
-                    do.call(cbind,purrr::map(jj, function(j) {
-                        mcgi <- mcgis <- mcgip <- meta_cell_grid[j,]
-                        mcgis[marker] <- mcgis[marker]+1
-                        jsib <- meta_cell$phenocode==paste0(mcgis,collapse="")
-                        mc[,j] + mc[,jsib]
-                    }))
-                ))
+                             decreasing=TRUE)]
+        mc[,coldo] <- do.call(
+            cbind, fpurrr_map(coldo, function(j) {
+                mcgi <- mcgis <- mcgip <- meta_cell_grid[j,]
+                mcgis[marker] <- mcgis[marker]+1
+                jsib <- meta_cell$phenocode==paste0(mcgis,collapse="")
+                mc[,j] + mc[,jsib]
+            }, no_cores=no_cores, prll=length(coldo)>500))
 
-        } else {
-            mc[,coldo] <- do.call(
-                cbind, purrr::map(coldo, function(j) {
-                        mcgi <- mcgis <- mcgip <- meta_cell_grid[j,]
-                        mcgis[marker] <- mcgis[marker]+1
-                        jsib <- meta_cell$phenocode==paste0(mcgis,collapse="")
-                        mc[,j] + mc[,jsib]
-                    }))
-
-        }
     }
     fg@feat$node$count_original <- fg_get_feature(fg, "node", "count")
     fg@feat$node$count <- mc
@@ -831,8 +774,9 @@ fg_feat_mean_class <- function(
     node_features <- node_features[!grepl("MEAN", node_features)]
     if (length(node_features)>0) {
         fg_nodefs0 <- fg_feat$node[node_features]
-        fg_nodefs <- furrr::future_map(fg_nodefs0, function(m0)
-            mean_diff(as.matrix(m0), fg_meta[,class]))
+        fg_nodefs <- fpurrr_map(fg_nodefs0, function(m0)
+            mean_diff(as.matrix(m0), fg_meta[,class]),
+            no_cores=no_cores, prll=length(fg_nodefs0)>1000)
         names(fg_nodefs) <- paste0(names(fg_nodefs),label)
         fg@feat$node <- append(fg_feat$node, fg_nodefs)
     }
@@ -842,8 +786,9 @@ fg_feat_mean_class <- function(
     edge_features <- edge_features[!grepl("MEAN", edge_features)]
     if (length(edge_features)>0) {
         fg_edgefs0 <- fg_feat$edge[edge_features]
-        fg_edgefs <- furrr::future_map(fg_edgefs0, function(m0)
-            mean_diff(as.matrix(m0), fg_meta[,class]))
+        fg_edgefs <- fpurrr_map(fg_edgefs0, function(m0)
+            mean_diff(as.matrix(m0), fg_meta[,class]),
+            no_cores=no_cores, prll=length(fg_nodefs0)>1000)
         names(fg_nodefs) <- paste0(names(fg_edgefs),label)
         fg@feat$edge <- append(fg_feat$edge, fg_edgefs)
     }
