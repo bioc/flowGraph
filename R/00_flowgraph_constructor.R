@@ -332,6 +332,11 @@ flowGraph <- function(
             ifelse(length(class)==1, class%in%colnames(meta), TRUE) &
             all(node_features%in%c(names(fg_get_feature_all(fg)$node), "NONE")) &
             all(edge_features%in%c(names(fg_get_feature_all(fg)$edge), "NONE"))) {
+
+            time_output(start1)
+            start1 <- Sys.time()
+            message("calculating summary statistics")
+
             fg <- fg_summary(
                 fg, no_cores=no_cores,
                 class=ifelse(length(class)==1, class, "class"),

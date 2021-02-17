@@ -650,7 +650,7 @@ flowGraph2 <- function(
     }
     time_output(start1)
     start1 <- Sys.time()
-    mesage("calculating features + edge lists by + p-values for cell populations with significant parents only (this is the fast version of flowGraph);")
+    message("calculating features + edge lists by + p-values for cell populations with significant parents only (this is the fast version of flowGraph);")
 
 
     ## initialize features (SpecEnr, expect_prop, edge prop) for lyr0/1 ####
