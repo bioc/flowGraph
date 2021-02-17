@@ -107,7 +107,7 @@ get_phen_meta <- function(phen, phenocode=NULL) {
 #' @importFrom future plan multiprocess
 #' @importFrom stringr str_split str_extract_all
 #' @importFrom Matrix Matrix
-#' @importFrom purrr map compact map_chr map_dfr map_dfc
+#' @importFrom purrr map compact map_chr
 #' @importFrom furrr future_map
 #' @importFrom data.table as.data.table setattr
 get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
@@ -197,8 +197,8 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
         pparenl <- fpurrr_map(seq_len(nrow(meta_cell__)), function(j) {
                 mcgrow <- meta_cell_grid__[j, ]
                 colj1 <- which(mcgrow > 0)
-                chidf <- purrr::map_dfc(colj1, function(coli)
-                    allcol_[[coli]][[as.character(mcgrow[coli])]] )
+                chidf <- do.call(cbind, purrr::map(colj1, function(coli)
+                    allcol_[[coli]][[as.character(mcgrow[coli])]] ))
                 chi <- apply(chidf, 1, function(x) sum(!x) == 1)
                 meta_cell_$phenotype[chi]
             }, no_cores=no_cores, prll=nrow(meta_cell__) > 5000)
@@ -208,8 +208,8 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
 
         time_output(start2)
     }
-    edf <- purrr::map_dfr(seq_len(length(pchild)), function(x)
-        data.frame(from=names(pchild)[x], to=pchild[[x]]))
+    edf <- do.call(rbind,purrr::map(seq_len(length(pchild)), function(x)
+        data.frame(from=names(pchild)[x], to=pchild[[x]])) )
 
     temp_se <- function(x) stringr::str_extract_all(x, "[^_^+^-]+[+-]+")
     from_ <- temp_se(edf$from)

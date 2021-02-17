@@ -528,6 +528,34 @@ plot_gr(gr, main="Example cell hierarchy with markers A, B, C, D")
 ```
 
 
+## Appendix 2: flowGraph2, a fast version of the flowGraph constructor
+
+If the user is only interested in one set of class labels for a set of samples,
+they can choose to use `flowGraph2`, a faster version of the default constructor
+`flowGraph`. It is fast because the edge list, proportion, expected proportion, 
+and SpecEnr features are only calculated for cell populations who are in the
+0'th and 1st layer, or have a significant parent population. The assumption here
+is that cell populations who are significantly differentially abundant 
+must also have at least one significantly differentially abundant parent 
+population, which is true for almost all cases.
+
+The parameters for `flowGraph2` is a bit different than those in `flowGraph`.
+It is currently in beta, so we recommend reading the manual for it carefully.
+
+```{r, evaluate=FALSE}
+data(fg_data_pos2)
+fg <- flowGraph2(
+    fg_data_pos2$count, meta=fg_data_pos2$meta, no_cores=no_cores,
+    summary_pars=fg_smmary_pars(), summary_adjust=fg_summary_adjust())
+```
+
+However, if the user wants to test different sets of sample class labels on the 
+same set of samples, we recommend using the default `flowGraph` constructor
+as it calculates SpecEnr for all cell populations. Since SpecEnr only has to be
+calculated once, the user can apply multiple statistically significance tests
+and ask questions about different class samples on the same SpecEnr values.
+
+
 # System information
 
 The following is an output of `sessionInfo()` on the system on which this 
