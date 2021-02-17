@@ -27,7 +27,11 @@ fpurrr_map <- function(x, f, no_cores, prll=TRUE, ...) {
         res <- furrr::future_map(x, f)
     } else {
         xxx <- loop_ind_f(x, no_cores)
-        res <- furrr::future_map(xxx, function(xx) purrr::map(x, f))
+        res <- furrr::future_map(xxx, function(xx) {
+            a <- purrr::map(x, f)
+            if (is.list(a)) return(a)
+            list(a)
+        })
         res <- unlist(res, recursive=FALSE)
     }
     if (is.character(x))
