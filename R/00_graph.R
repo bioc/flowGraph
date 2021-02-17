@@ -213,10 +213,15 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
         data.frame(from=names(pchild)[x], to=pchild[[x]]))
 
     temp_se <- function(x) stringr::str_extract_all(x, "[^_^+^-]+[+-]+")
+    rooti <- edf$from==""
     from_ <- temp_se(edf$from)
     to_ <- temp_se(edf$to)
-    edf$marker <- purrr::map_chr(seq_len(length(from_)), function(x)
-        setdiff(to_[[x]], from_[[x]]))
+    edf$marker <- ""
+    edf$marker[rooti] <- edf$to[rooti]
+    edf$marker[!rooti] <- purrr::map_chr(which(!rooti), function(x) {
+        if (edf$from[x]=="") return(edf$from)
+        setdiff(to_[[x]], from_[[x]])
+    })
 
     return(list(pchild=pchild, pparen=pparen, edf=edf))
 }
