@@ -635,10 +635,10 @@ flowGraph2 <- function(
         allcolu <- split(allcolu, seq(ncol(allcolu)))
 
     # make allcol > markeri > 0/1/2 > T/F per phenotype
-    allcol <- purrr::map(seq_len(length(allcolu)), function(ci) {
+    allcol <- fpurrr_map(seq_len(length(allcolu)), function(ci) {
         a <- purrr::map(allcolu[[ci]], function(ui) pc[, ci]==ui)
         names(a) <- allcolu[[ci]]; return(a)
-    })
+    }, no_cores=no_cores)
 
     # split everything above by layer
     pcs <- acs <- meta_cells <- list()

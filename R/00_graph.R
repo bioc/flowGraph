@@ -106,7 +106,7 @@ get_phen_meta <- function(phen, phenocode=NULL) {
 #' @export
 #' @importFrom future plan multiprocess
 #' @importFrom stringr str_split str_extract_all
-#' @importFrom Matrix Matrix
+#' @importFrom Matrix Matrix as.data.table setattr
 #' @importFrom purrr map compact map_chr
 #' @importFrom furrr future_map
 get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
@@ -117,91 +117,103 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
     if (is.null(meta_cell))
         meta_cell <- get_phen_meta(phen)
 
-    meta_cell_grid <- do.call(rbind,stringr::str_split(meta_cell$phenocode, ""))
-    meta_cell_grid <- Matrix::Matrix(
-        apply(meta_cell_grid, 2, as.numeric), sparse=TRUE)
-    allcolu <- purrr::map(seq_len(ncol(meta_cell_grid)),
-                          function(j) unique(meta_cell_grid[, j]))
-    allcol <- purrr::map(seq_len(length(allcolu)), function(ci) {
-        a <- purrr::map(allcolu[[ci]], function(ui)
-            meta_cell_grid[, ci] == ui)
-        names(a) <- allcolu[[ci]]
-        a
-    })
 
-    pchild <- list(meta_cell$phenotype[meta_cell$phenolayer == 1])
-    names(pchild) <- ""
-    pparen <- purrr::map(seq_len(length(pchild[[1]])), function(x) "")
-    names(pparen) <- pchild[[1]]
+    ## initialize cell population meta material for making edge list ####
+    # indices for each layer
+    dt <- data.table::as.data.table(meta_cell$phenolayer)[
+        , list(list(.I)), by=meta_cell$phenolayer]
+    lyril <- data.table::setattr(dt$V1, 'names', dt$meta_cell)
+    lyrs <- length(lyril)
 
-    jjl <- sort(unique(meta_cell$phenolayer))
-    if (length(jjl) > 2) {
-        jjl <- jjl[jjl > 0]
-        jj_inds <- purrr::map(jjl, function(l)
-            which(meta_cell$phenolayer == as.numeric(l)))
-        for (jjli in 2:length(jj_inds)) {
-            start1 <- Sys.time()
+    # make phenocode matrix
+    pc <- Matrix::Matrix(Reduce(
+        rbind, lapply(stringr::str_split(meta_cell$phenocode,""),
+                      as.numeric)), sparse=TRUE)
+    rownames(pc) <- meta_cell$phenotype
+    allcolu <- apply(pc, 2,unique)
+    if (!is.list(allcolu))
+        allcolu <- split(allcolu, seq(ncol(allcolu)))
 
-            meta_cell_ <- meta_cell[jj_inds[[jjli - 1]],, drop=FALSE]
-            meta_cell__ <- meta_cell[jj_inds[[jjli]],, drop=FALSE]
-            meta_cell_grid_ <- meta_cell_grid[jj_inds[[jjli - 1]],, drop=FALSE]
-            meta_cell_grid__ <- meta_cell_grid[jj_inds[[jjli]],, drop=FALSE]
+    # make allcol > markeri > 0/1/2 > T/F per phenotype
+    allcol <- fpurrr_map(seq_len(length(allcolu)), function(ci) {
+        a <- purrr::map(allcolu[[ci]], function(ui) pc[, ci]==ui)
+        names(a) <- allcolu[[ci]]; return(a)
+    }, no_cores=no_cores)
 
-            message("- ", nrow(meta_cell_), " pops @ layer ", jjli - 1)
-            allcol__ <- purrr::map(allcol, function(x)
-                purrr::map(x, function(y) y[jj_inds[[jjli]]] ))
-            allcol_ <- purrr::map(allcol, function(x)
-                purrr::map(x, function(y) y[jj_inds[[jjli - 1]]]))
-
-            # child
-            loop_ind <- loop_ind_f(seq_len(nrow(meta_cell_)), no_cores)
-            pchildl <- furrr::future_map(loop_ind, function(jj)
-                purrr::map(jj, function(j) {
-                    colj1 <- which(meta_cell_grid_[j, ] > 0)
-                    mcgrow <- meta_cell_grid_[j, ]
-                    chi <- Reduce("&", purrr::map(colj1, function(coli)
-                        allcol__[[coli]][[as.character(mcgrow[coli])]]))
-                    meta_cell__$phenotype[chi]
-                }))
-            pchildl <- unlist(pchildl, recursive=FALSE)
-            names(pchildl) <- meta_cell_$phenotype
-            pchildl <- purrr::compact(pchildl)
-            pchild <- append(pchild, pchildl)
-
-            # paren
-            loop_ind <- loop_ind_f(seq_len(nrow(meta_cell__)),
-                                   no_cores)
-            pparenl <- furrr::future_map(loop_ind, function(jj)
-                purrr::map(jj, function(j) {
-                    colj1 <- which(meta_cell_grid__[j, ] > 0)
-                    mcgrow <- meta_cell_grid__[j, ]
-                    chidf <- do.call(
-                        cbind, purrr::map(colj1, function(coli)
-                            allcol_[[coli]][[as.character(mcgrow[coli])]]
-                        ))
-                    chi <- apply(chidf, 1, function(x) sum(!x) == 1)
-                    meta_cell_$phenotype[chi]
-                })
-            )
-            pparenl <- unlist(pparenl, recursive=FALSE)
-            names(pparenl) <- meta_cell__$phenotype
-            pchildl <- purrr::compact(pparenl)
-            pparen <- append(pparen, pparenl)
-
-            time_output(start1)
-        }
+    # split everything above by layer
+    pcs <- acs <- meta_cells <- list()
+    for (lyri in names(lyril)) {
+        li <- lyril[[lyri]]
+        pcs[[lyri]] <- pc[li,,drop=FALSE]
+        acs[[lyri]] <- purrr::map(allcol, purrr::map, function(y) y[li])
+        meta_cells[[lyri]] <- meta_cell[li,, drop=FALSE]
     }
-    edf <- do.call(
-        rbind, purrr::map(
-            seq_len(length(pchild)), function(x)
-                data.frame(from=names(pchild)[x], to=pchild[[x]])))
+
+    ## initialize
+    pchild <- pparen <- list()
+
+    # root proportion is just 1, but for completeness we add it in
+    if (all(c("0", "1")%in%names(lyril))) {
+        ## initiate child and parent edge lists for layers 0/1
+        pchild <- list(meta_cells[["1"]]$phenotype)
+        names(pchild) <- ""
+        pparen <- purrr::map(seq_len(length(pchild[[1]])), function(x) "")
+        names(pparen) <- pchild[[1]]
+    }
+
+
+    ## calculate features for each layer ####
+    lyrs <- sort(unique(meta_cell$phenolayer))
+    lyrstf <- sapply(lyrs, function(x) (x-1)%in%lyrs)
+
+    for (lyr in lyrs[lyrstf]) {
+        start2 <- Sys.time()
+        message("- ", length(lyril[[as.character(lyr)]]),
+                " pops @ layer ", lyr)
+
+        lyrc_ <- as.character(lyr-1)
+        lyrc__ <- as.character(lyr)
+        meta_cell_grid_ <- pcs[[lyrc_]]
+        meta_cell_grid__ <- pcs[[lyrc__]]
+        allcol_ <- acs[[lyrc_]]
+        allcol__ <- acs[[lyrc__]]
+
+        # child
+        pchildl <- fpurrr_map(seq_len(nrow(meta_cell_)), function(j) {
+            mcgrow <- meta_cell_grid_[j, ]
+            colj1 <- which(mcgrow > 0)
+            chi <- Reduce("&", purrr::map(colj1, function(coli)
+                allcol__[[coli]][[as.character(mcgrow[coli])]]))
+            meta_cell__$phenotype[chi]
+        }, no_cores=no_cores)
+        names(pchildl) <- meta_cell_$phenotype
+        pchildl <- purrr::compact(pchildl)
+        pchild <- append(pchild, pchildl)
+
+        # paren
+        pparenl <- fpurrr_map(seq_len(nrow(meta_cell__)), function(j) {
+                mcgrow <- meta_cell_grid__[j, ]
+                colj1 <- which(mcgrow > 0)
+                chidf <- do.call(cbind, purrr::map(colj1, function(coli)
+                    allcol_[[coli]][[as.character(mcgrow[coli])]] ))
+                chi <- apply(chidf, 1, function(x) sum(!x) == 1)
+                meta_cell_$phenotype[chi]
+            }, no_cores=no_cores)
+        names(pparenl) <- meta_cell__$phenotype
+        pchildl <- purrr::compact(pparenl)
+        pparen <- append(pparen, pparenl)
+
+        time_output(start2)
+    }
+
+    edf <- do.call(rbind, purrr::map(seq_len(length(pchild)), function(x)
+        data.frame(from=names(pchild)[x], to=pchild[[x]])))
 
     temp_se <- function(x) stringr::str_extract_all(x, "[^_^+^-]+[+-]+")
     from_ <- temp_se(edf$from)
     to_ <- temp_se(edf$to)
     edf$marker <- purrr::map_chr(seq_len(length(from_)), function(x)
         setdiff(to_[[x]], from_[[x]]))
-
 
     return(list(pchild=pchild, pparen=pparen, edf=edf))
 }
