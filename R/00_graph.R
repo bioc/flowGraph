@@ -215,8 +215,8 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
     temp_se <- function(x) stringr::str_extract_all(x, "[^_^+^-]+[+-]+")
     from_ <- temp_se(edf$from)
     to_ <- temp_se(edf$to)
-    edf$marker <- purrr::map_chr(seq_len(length(from_)), function(x)
-        setdiff(to_[[x]], from_[[x]]) )
+    edf$marker <- unlist(fpurrr_map(seq_len(length(from_)), function(x)
+        setdiff(to_[[x]], from_[[x]]), no_cores=no_cores, prll=nrow(edf)>5000))
 
     return(list(pchild=pchild, pparen=pparen, edf=edf))
 }
