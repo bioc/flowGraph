@@ -178,6 +178,8 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
         meta_cell_grid__ <- pcs[[lyrc__]]
         allcol_ <- acs[[lyrc_]]
         allcol__ <- acs[[lyrc__]]
+        meta_cell_ <- meta_cells[[lyrc_]]
+        meta_cell__ <- meta_cells[[lyrc__]]
 
         # child
         pchildl <- fpurrr_map(seq_len(nrow(meta_cell_)), function(j) {
