@@ -109,7 +109,7 @@ get_phen_meta <- function(phen, phenocode=NULL) {
 #' @importFrom Matrix Matrix
 #' @importFrom purrr map compact map_chr
 #' @importFrom furrr future_map
-#' @importFrom data.frame  as.data.table setattr
+#' @importFrom data.table  as.data.table setattr
 get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
     if (no_cores>1) future::plan(future::multiprocess)
 
