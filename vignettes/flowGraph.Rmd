@@ -544,9 +544,9 @@ It is currently in beta, so we recommend reading the manual for it carefully.
 
 ```{r, evaluate=FALSE}
 data(fg_data_pos2)
-fg <- flowGraph2(
-    fg_data_pos2$count, meta=fg_data_pos2$meta, no_cores=no_cores,
-    summary_pars=fg_smmary_pars(), summary_adjust=fg_summary_adjust())
+fg <- flowGraph2(fg_data_pos2$count, meta=fg_data_pos2$meta, no_cores=no_cores,
+                 summary_pars=flowGraph2_smmary_pars(),
+                 summary_adjust=flowGraph2_summary_adjust())
 ```
 
 However, if the user wants to test different sets of sample class labels on the 
