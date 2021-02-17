@@ -107,7 +107,7 @@ get_phen_meta <- function(phen, phenocode=NULL) {
 #' @importFrom future plan multiprocess
 #' @importFrom stringr str_split str_extract_all
 #' @importFrom Matrix Matrix
-#' @importFrom purrr map compact map_chr map_dfr
+#' @importFrom purrr map compact map_chr map_dfr map_dfc
 #' @importFrom furrr future_map
 #' @importFrom data.table as.data.table setattr
 get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
