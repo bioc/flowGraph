@@ -462,7 +462,7 @@ flowGraph2_summary_adjust <- function()
 #' @importFrom purrr map_lgl map map_dfr compact
 #' @importFrom methods new
 #' @importFrom future plan multiprocess
-#' @importFrom data.table as.data.table setattr
+#' @importFrom data.table as.data.table setattr ".I"
 #' @importFrom stringr str_split
 #' @importFrom matrixStats rowMins rowMaxs
 #' @importFrom stringi stri_rand_strings
