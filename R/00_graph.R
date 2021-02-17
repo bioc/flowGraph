@@ -107,7 +107,7 @@ get_phen_meta <- function(phen, phenocode=NULL) {
 #' @importFrom future plan multiprocess
 #' @importFrom stringr str_split str_extract_all
 #' @importFrom Matrix Matrix
-#' @importFrom purrr map compact map_chr
+#' @importFrom purrr map compact map_chr map_dfr
 #' @importFrom furrr future_map
 #' @importFrom data.table as.data.table setattr
 get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
@@ -188,7 +188,7 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
             chi <- Reduce("&", purrr::map(colj1, function(coli)
                 allcol__[[coli]][[as.character(mcgrow[coli])]]))
             meta_cell__$phenotype[chi]
-        }, no_cores=no_cores)
+        }, no_cores=no_cores, prll=nrow(meta_cell__) > 2*no_cores)
         names(pchildl) <- meta_cell_$phenotype
         pchildl <- purrr::compact(pchildl)
         pchild <- append(pchild, pchildl)
@@ -201,7 +201,7 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
                     allcol_[[coli]][[as.character(mcgrow[coli])]] ))
                 chi <- apply(chidf, 1, function(x) sum(!x) == 1)
                 meta_cell_$phenotype[chi]
-            }, no_cores=no_cores)
+            }, no_cores=no_cores, prll=nrow(meta_cell__) > 2*no_cores)
         names(pparenl) <- meta_cell__$phenotype
         pchildl <- purrr::compact(pparenl)
         pparen <- append(pparen, pparenl)
@@ -209,8 +209,8 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
         time_output(start2)
     }
 
-    edf <- do.call(rbind, purrr::map(seq_len(length(pchild)), function(x)
-        data.frame(from=names(pchild)[x], to=pchild[[x]])))
+    edf <- purrr::map_dfr(seq_len(length(pchild)), function(x)
+        data.frame(from=names(pchild)[x], to=pchild[[x]]))
 
     temp_se <- function(x) stringr::str_extract_all(x, "[^_^+^-]+[+-]+")
     from_ <- temp_se(edf$from)
