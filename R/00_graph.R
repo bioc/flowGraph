@@ -208,12 +208,8 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
 
         time_output(start2)
     }
-    print(pchild)
-    print(pparen)
-
     edf <- purrr::map_dfr(seq_len(length(pchild)), function(x)
         data.frame(from=names(pchild)[x], to=pchild[[x]]))
-    print(edf)
 
     temp_se <- function(x) stringr::str_extract_all(x, "[^_^+^-]+[+-]+")
     from_ <- temp_se(edf$from)
