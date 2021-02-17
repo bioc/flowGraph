@@ -188,10 +188,10 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
             chi <- Reduce("&", purrr::map(colj1, function(coli)
                 allcol__[[coli]][[as.character(mcgrow[coli])]]))
             meta_cell__$phenotype[chi]
-        }, no_cores=no_cores, prll=nrow(meta_cell__) > 3*no_cores)
+        }, no_cores=no_cores, prll=nrow(meta_cell__) > 5000)
         names(pchildl) <- meta_cell_$phenotype
         pchildl <- purrr::compact(pchildl)
-        pchild <<- append(pchild, pchildl)
+        pchild <- append(pchild, pchildl)
 
         # paren
         pparenl <- fpurrr_map(seq_len(nrow(meta_cell__)), function(j) {
@@ -201,16 +201,19 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
                     allcol_[[coli]][[as.character(mcgrow[coli])]] )
                 chi <- apply(chidf, 1, function(x) sum(!x) == 1)
                 meta_cell_$phenotype[chi]
-            }, no_cores=no_cores, prll=nrow(meta_cell__) > 3*no_cores)
+            }, no_cores=no_cores, prll=nrow(meta_cell__) > 5000)
         names(pparenl) <- meta_cell__$phenotype
         pchildl <- purrr::compact(pparenl)
-        pparen <<- append(pparen, pparenl)
+        pparen <- append(pparen, pparenl)
 
         time_output(start2)
     }
+    print(pchild)
+    print(pparen)
 
-    edf <<- purrr::map_dfr(seq_len(length(pchild)), function(x)
+    edf <- purrr::map_dfr(seq_len(length(pchild)), function(x)
         data.frame(from=names(pchild)[x], to=pchild[[x]]))
+    print(edf)
 
     temp_se <- function(x) stringr::str_extract_all(x, "[^_^+^-]+[+-]+")
     from_ <- temp_se(edf$from)
