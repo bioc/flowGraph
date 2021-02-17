@@ -488,6 +488,7 @@ fg_get_summary <- function(
         filter_adjust0 <- 1
 
     sl <- fg_get_summary_all(fg)[[type]][[index]]
+    if (is.list(sl$values)) sl$values <- unlist(sl$values)
     sl <- append(sl, list(
         id1=fg_get_meta(fg)[,summary_meta["class"]]==summary_meta["label1"],
         id2=fg_get_meta(fg)[,summary_meta["class"]]==summary_meta["label2"]))

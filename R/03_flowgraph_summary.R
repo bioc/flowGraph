@@ -435,6 +435,7 @@ fg_summary_ <- function(
     }
 
     names(p) <- mnames
+    p <- unlist(p)
     p_ <- list(values=p)
     if (save_functions)
         p_$test_fun <- test_custom

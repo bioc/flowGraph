@@ -10,7 +10,7 @@ doc
 Meta
 vignettes/*.html
 vignettes/*.R
-vignettes/flowGraph_.Rmd
+flowGraph_.Rmd
 tmp
 temp
 README.txt
