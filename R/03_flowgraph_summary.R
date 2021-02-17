@@ -391,7 +391,7 @@ fg_summary_ <- function(
     if (!diminish) {
         # calculate p values
         p <- fpurrr_map(seq_len(ml), function(i)
-            test_custom(m1[,i], m2[,i]), no_cores=no_cores, prll=ml>500)
+            test_custom(m1[,i], m2[,i]), no_cores=no_cores, prll=ml>1000)
 
     } else {
         pchild <- fg_get_el(fg)$child
@@ -418,7 +418,7 @@ fg_summary_ <- function(
             wtesti <- which(testi)
             pl <- unlist(fpurrr_map(wtesti, function(i)
                 pt <- test_custom(m1[,i], m2[,i])
-                , no_cores=no_cores, prll=length(wtesti)>500))
+                , no_cores=no_cores, prll=length(wtesti)>1000))
             p[testi] <- pl
 
             pl_cpops <- pl < p_thress[p_thress_i]

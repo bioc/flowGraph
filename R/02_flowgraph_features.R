@@ -406,7 +406,7 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
         # https://www.biorxiv.org/content/10.1101/837765v2
         expect1 <- apply(pedges,1,min) * apply(parent,1,max)
         return(expect1)
-    }, no_cores=no_cores, prll=length(cbind)>500))
+    }, no_cores=no_cores, prll=length(cbind)>1000))
     expecp[is.nan(expecp)] <- 0
     colnames(expecp) <- cells[cpind]
 
@@ -444,7 +444,7 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
                     pname <- intersect(pparen[[cpop]],
                                        pparen[[sib]])
                     return(mp[,pname] - expec[,sib])
-                }, no_cores=no_cores, prll=length(cpops)>500))
+                }, no_cores=no_cores, prll=length(cpops)>1000))
             } else {
                 expecn <- do.call(cbind, fpurrr_map(cpops, function(cpop) {
                     cpopgsub <- gsub("[+]","[+]", cpop)
@@ -466,7 +466,7 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
                     pname <- intersect(pparen[[cpop]],
                                        pparen[[sibs[1]]])
                     return(mp[,pname] - rowSums(expec[,sibs,drop=FALSE]))
-                }, no_cores=no_cores, prll=length(cpops)>500))
+                }, no_cores=no_cores, prll=length(cpops)>1000))
             }
             colnames(expecn) <- cpops
             expec <- cbind(expec, expecn)
@@ -514,7 +514,7 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
 
     ep_ <- do.call(cbind, fpurrr_map(phens, function(phen)
         matrixStats::rowMins(ep[,paste0(pparen[[phen]], "__", phen),drop=FALSE])
-        , no_cores=no_cores, prll=length(phens)>500))
+        , no_cores=no_cores, prll=length(phens)>1000))
     colnames(ep_) <- phens
 
 
@@ -608,7 +608,7 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
         # # https://www.biorxiv.org/content/10.1101/837765v2
         # some: expect1 <- apply(pedges,1,min) * apply(parent,1,max)
         return(expect1)
-    }, no_cores=no_cores, prll=length(cpind)>500))
+    }, no_cores=no_cores, prll=length(cpind)>1000))
     expecp[is.nan(expecp)] <- 0
     colnames(expecp) <- cells[cpind]
 
@@ -692,7 +692,7 @@ fg_feat_cumsum <- function(fg, no_cores) {
                 mcgis[marker] <- mcgis[marker]+1
                 jsib <- meta_cell$phenocode==paste0(mcgis,collapse="")
                 mc[,j] + mc[,jsib]
-            }, no_cores=no_cores, prll=length(coldo)>500))
+            }, no_cores=no_cores, prll=length(coldo)>1000))
 
     }
     fg@feat$node$count_original <- fg_get_feature(fg, "node", "count")
