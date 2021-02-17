@@ -188,7 +188,7 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
             chi <- Reduce("&", purrr::map(colj1, function(coli)
                 allcol__[[coli]][[as.character(mcgrow[coli])]]))
             meta_cell__$phenotype[chi]
-        }, no_cores=no_cores, prll=nrow(meta_cell__) > 2*no_cores)
+        }, no_cores=no_cores, prll=nrow(meta_cell__) > 3*no_cores)
         names(pchildl) <- meta_cell_$phenotype
         pchildl <- purrr::compact(pchildl)
         pchild <- append(pchild, pchildl)
@@ -201,7 +201,7 @@ get_phen_list <- function(meta_cell=NULL, phen=NULL, no_cores=1) {
                     allcol_[[coli]][[as.character(mcgrow[coli])]] ))
                 chi <- apply(chidf, 1, function(x) sum(!x) == 1)
                 meta_cell_$phenotype[chi]
-            }, no_cores=no_cores, prll=nrow(meta_cell__) > 2*no_cores)
+            }, no_cores=no_cores, prll=nrow(meta_cell__) > 3*no_cores)
         names(pparenl) <- meta_cell__$phenotype
         pchildl <- purrr::compact(pparenl)
         pparen <- append(pparen, pparenl)
