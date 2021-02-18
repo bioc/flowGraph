@@ -11,6 +11,7 @@ flowGraph(
   no_cores = 1,
   markers = NULL,
   layout_fun = "layout.reingold.tilford",
+  max_layer = NULL,
   cumsumpos = FALSE,
   prop = TRUE,
   specenr = TRUE,
@@ -56,6 +57,9 @@ column name \code{class}.}
 indicates what layout should be used if a cell hierarchy is to be ploted;
 all such functions have prefix \code{layout_}. This is defaulted to
 e.g. \code{layout_fun="layout.reingold.tilford"}.}
+
+\item{max_layer}{And integer indicating the maximum layer in the cell
+hierarchy to analyze; set to `NULL` to analyze all layers.}
 
 \item{cumsumpos}{A logical variable indicating whether
 or not to cumulate cell counts;

@@ -10,7 +10,7 @@ ms_psig(
   summary_adjust,
   test_cust,
   test_custom,
-  lyrs,
+  lyrno,
   mp_,
   me_
 )
@@ -26,12 +26,12 @@ ms_psig(
 
 \item{test_custom}{Raw significance test function.}
 
-\item{lyrs}{Total number of layers in hierarchy, used for byLayer p-value
-adjustment.}
-
 \item{mp_}{sample x phenotype proportion matrix.}
 
 \item{me_}{sample x phenotype expected proportion matrix.}
+
+\item{lyrs}{Total number of layers in hierarchy, used for byLayer p-value
+adjustment.}
 }
 \value{
 A logical vector the same length as the number of columns in

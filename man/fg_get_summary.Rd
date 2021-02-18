@@ -10,6 +10,7 @@ fg_get_summary(
   index = NULL,
   summary_meta = NULL,
   adjust_custom = "byLayer",
+  SpecEnr_filt = TRUE,
   summary_fun = colMeans,
   adjust0_lim = c(-0.1, 0.1),
   filter_adjust0 = 1,
@@ -48,6 +49,9 @@ test adjustment method to use.
  If a function is provided, it should take as input
  a numeric vector and output the
  same vector adjusted.}
+
+\item{SpecEnr_filt}{A logicle indicating whether or not to filter p-values
+for SpecEnr.}
 
 \item{summary_fun}{A function that takes in a matrix and outputs a
 vector the same length as the number of columns this matrix has.
