@@ -182,7 +182,7 @@ get_child <- function(parens, pchild, pc_i, ac__, meta_cell__) {
         chi <- Reduce("&", purrr::map(colj1, function(coli)
             ac__[[coli]][[as.character(mcgrow[coli])]] ))
         meta_cell__$phenotype[chi]
-    }, no_cores)#, pc=pc_i, ac=ac__, mcell=meta_cell__)
+    }, no_cores, prll=nrow(pc_i)>1000)#, pc=pc_i, ac=ac__, mcell=meta_cell__)
     names(res) <- rownames(pc_i)
 
     pchild <- append(pchild, purrr::compact(res))
@@ -224,7 +224,7 @@ get_paren <- function(childs, pparen, pc__i, ac_, meta_cell_) {
             ac_[[coli]][[as.character(mcgrow[coli])]] ))
         chi <- apply(chidf, 1, function(x) sum(!x) == 1)
         meta_cell_$phenotype[chi]
-    }, no_cores)
+    }, no_cores, prll=nrow(pc__i)>1000)
     names(res) <- rownames(pc__i)
 
     pparen <- append(pparen, purrr::compact(res))
@@ -253,7 +253,7 @@ get_eprop <- function(edf_, ep, mp_, no_cores=1) {
     ep_ <- do.call(cbind, fpurrr_map(todoi, function(i) {
         if (edf_$from[i]=="") return(mp_[,edf_$to[i]])
         mp_[,edf_$to[i]]/mp_[,edf_$from[i]]
-    }, no_cores, prll=length(todoi)>500))
+    }, no_cores, prll=length(todoi)>1000))
     colnames(ep_) <- clnm[todoi]
     if (is.null(ep))
         rownames(ep_) <- rownames(mp_)
@@ -642,7 +642,7 @@ flowGraph2 <- function(
     allcol <- fpurrr_map(seq_len(length(allcolu)), function(ci) {
         a <- purrr::map(allcolu[[ci]], function(ui) pc[, ci]==ui)
         names(a) <- allcolu[[ci]]; return(a)
-    }, no_cores=no_cores)
+    }, no_cores=no_cores, prll=length(allcolu)>1000)
 
     # split everything above by layer
     pcs <- acs <- meta_cells <- list()
@@ -738,7 +738,7 @@ flowGraph2 <- function(
         ep_min <- do.call(cbind, fpurrr_map(names(grprnt_ofchd), function(x) {
             ep_col <- grepl(paste0("_",x), colnames(ep_))
             matrixStats::rowMins(ep_[,ep_col,drop=FALSE])
-        }, no_cores))
+        }, no_cores, prll=length(grprnt_ofchd)>1000))
 
         # calculate expected proportion
         me_ <- do.call(cbind, fpurrr_map(p2, function(phen) {
