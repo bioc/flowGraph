@@ -487,7 +487,6 @@ flowGraph2 <- function(
 
     # summary parameters
     summary_pars=flowGraph2_summary_pars(),
-
     summary_adjust=flowGraph2_summary_adjust(),
 
     # plotting parameters
@@ -715,6 +714,7 @@ flowGraph2 <- function(
                 p2 <- unique(unlist(get_child(
                     p1, pchild, pc_i=pcs[[lyrc_]], ac__=acs[[lyrc__]],
                     meta_cell__=meta_cells[[lyrc__]])))
+        if (length(p2)==0) break
         p1 <- p2
 
         # get cell pops' parents
@@ -744,12 +744,12 @@ flowGraph2 <- function(
         me_ <- do.call(cbind, fpurrr_map(p2, function(phen) {
             matrixStats::rowMins(ep_min[,pparen[[phen]],drop=FALSE]) *
                 matrixStats::rowMaxs(mp[,pparen[[phen]],drop=FALSE])
-        }, no_cores))
+        }, no_cores, prll=length(p2)>1000))
         if (is.na(dim(me_)[1]))
             me_ <- matrix(me_, ncol=length(pparen_ofchd))
         me_[is.nan(me_)] <- 0
         me_[as.matrix(me_)<0] <- 0
-        dimnames(me_) <- list(rownames(mp), p2)
+        colnames(me_) <- p2
         me <- cbind(me, me_)
 
         # calculte SpecEnr
@@ -778,6 +778,7 @@ flowGraph2 <- function(
     ms <- ms[,match(sig_phens, colnames(ms)),drop=FALSE]
     me <- me[,match(sig_phens, colnames(me)),drop=FALSE]
     mp <- mp[,match(sig_phens, colnames(mp)),drop=FALSE]
+    rownames(ms) <- rownames(me) <- rownames(mp) <- rownames(input_)
     mc <- input_[,match(sig_phens, colnames(input_)),drop=FALSE]
     pparen <- pparen[names(pparen)%in%sig_phens]
     pparen <- purrr::map(pparen, function(x) x[x%in%sig_phens])
