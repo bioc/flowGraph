@@ -375,6 +375,8 @@ fg_get_summary_index <- function(fg, type="node", index=NULL, summary_meta=NULL)
 #'  If a function is provided, it should take as input
 #'  a numeric vector and output the
 #'  same vector adjusted.
+#' @param SpecEnr_filt A logicle indicating whether or not to filter p-values
+#'  for SpecEnr.
 #' @param summary_fun A function that takes in a matrix and outputs a
 #'  vector the same length as the number of columns this matrix has.
 #'  Set to \code{NULL} to not calculate this summary
@@ -476,6 +478,7 @@ fg_get_summary_index <- function(fg, type="node", index=NULL, summary_meta=NULL)
 #' @importFrom effsize cohen.d
 fg_get_summary <- function(
     fg, type="node", index=NULL, summary_meta=NULL, adjust_custom="byLayer",
+    SpecEnr_filt=TRUE,
     summary_fun=colMeans,
     adjust0_lim=c(-.1,.1), filter_adjust0=1, filter_es=0,
     filter_btwn_tpthres=.05, filter_btwn_es=.5,
@@ -543,7 +546,7 @@ fg_get_summary <- function(
 
     sl <- append(sl, fg_etc$effect_size[[type]][[ename]])
 
-    if (grepl("SpecEnr", summary_meta["feat"])) {
+    if (grepl("SpecEnr", summary_meta["feat"]) & SpecEnr_filt) {
         aname <- paste(summary_meta[c("feat","class","label1","label2")], collapse="_")
         if (is.null(fg_etc$adjust0[[type]]))
             fg_etc$adjust0[[type]] <- list()

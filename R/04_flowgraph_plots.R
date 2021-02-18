@@ -795,12 +795,11 @@ fg_plot_qq <- function(
 
 
 
-    df <- data.frame(y=qvals, cohensd_size=qvals_$cohensd_size,
+    df <- data.frame(y=qvals, x=uni, cohensd_size=qvals_$cohensd_size,
                      phenotype=names(qvals),
                      phenogroup=fg_get_graph(fg)$v$phenogroup,
                      d_size=colMeans(fg_get_feature(fg, "node", "count")))
     df <- df[qo,]
-    df$x <- uni
     qp <- ggplot2::ggplot(df, ggplot2::aes_(
         y=~y, x=~x, colour=~cohensd_size, alpha=.3, stroke=1)) +
         ggplot2::geom_abline(intercept=0, slope=1) +
