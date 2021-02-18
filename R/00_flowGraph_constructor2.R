@@ -19,7 +19,7 @@
 # #' @export
 #' @importFrom purrr map
 #' @importFrom furrr future_map
-fpurrr_map <- function(x, f, no_cores, prll=TRUE, ...) {
+fpurrr_map <- function(x, f, no_cores=1, prll=TRUE, ...) {
     if (length(x)==0) return(NULL)
     if (no_cores==1 | !prll) {
         res <- purrr::map(x, f)
@@ -28,7 +28,7 @@ fpurrr_map <- function(x, f, no_cores, prll=TRUE, ...) {
     } else {
         xxx <- loop_ind_f(x, no_cores)
         res <- furrr::future_map(xxx, function(xx) {
-            a <- purrr::map(x, f)
+            a <- purrr::map(xx, f)
             if (is.list(a)) return(a)
             list(a)
         })
