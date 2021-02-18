@@ -284,7 +284,7 @@ get_eprop <- function(edf_, ep, mp_, no_cores=1) {
 #' @rdname ms_psig
 # #' @export
 ms_psig <- function(ms_, summary_pars, summary_adjust,
-                    test_cust, test_custom, lyrs, mp_, me_) {
+                    test_cust, test_custom, lyrno, mp_, me_) {
     if (is.null(summary_adjust$filter_btwn_tpthres)) {
         warning("no p threshold specified in `summary_adjust$filter_btwn_tpthres`, aplying default threshold 0.05")
         summary_adjust$filter_btwn_tpthres <- .05
@@ -302,7 +302,7 @@ ms_psig <- function(ms_, summary_pars, summary_adjust,
             dual <- TRUE
 
     if (summary_adjust$adjust_custom=="byLayer")
-        p <- sapply(p*ncol(ms_)*lyrs, min, 1)
+        p <- sapply(p*ncol(ms_)*lyrno, min, 1)
     p[is.na(p)] <- 1
     ptf <- rep(FALSE, length(p))
     sigcands <- rep(TRUE, length(p))
@@ -627,7 +627,8 @@ flowGraph2 <- function(
     dt <- data.table::as.data.table(meta_cell$phenolayer)[
         , list(list(.I)), by=meta_cell$phenolayer]
     lyril <- data.table::setattr(dt$V1, 'names', dt$meta_cell)
-    lyrs <- length(lyril)
+    lyrno <- length(lyril)
+    lyrstf <- sapply(lyrs, function(x) (x-1)%in%lyrs & (x-2)%in%lyrs)
 
     # make phenocode matrix
     pc <- Matrix::Matrix(Reduce(
@@ -688,7 +689,7 @@ flowGraph2 <- function(
 
         # FAST trim
         p1 <- p1[ms_psig(ms_, summary_pars, summary_adjust,
-                         test_cust, test_custom, lyrs,
+                         test_cust, test_custom, lyrno,
                          mp[,colnames(ms_),drop=FALSE],
                          me[,colnames(ms_),drop=FALSE])]
         sig_phens <- append(sig_phens, p1)
@@ -697,9 +698,6 @@ flowGraph2 <- function(
 
 
     ## calculate features for each layer ####
-    lyrs <- sort(unique(meta_cell$phenolayer))
-    lyrstf <- sapply(lyrs, function(x) (x-1)%in%lyrs & (x-2)%in%lyrs)
-
     for (lyr in lyrs[lyrstf]) {
         if (length(p1)==0) break
 
@@ -759,7 +757,7 @@ flowGraph2 <- function(
 
         # FAST trim
         p1 <- p2[ms_psig(ms_, summary_pars, summary_adjust,
-                         test_cust, test_custom, lyrs,
+                         test_cust, test_custom, lyrno,
                          mp[,colnames(ms_),drop=FALSE],
                          me[,colnames(ms_),drop=FALSE])]
         sig_phens <- append(sig_phens, p1)
