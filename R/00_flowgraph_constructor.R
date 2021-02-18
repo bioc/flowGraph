@@ -36,6 +36,8 @@
 #'  indicates what layout should be used if a cell hierarchy is to be ploted;
 #'  all such functions have prefix \code{layout_}. This is defaulted to
 #'  e.g. \code{layout_fun="layout.reingold.tilford"}.
+#' @param max_layer And integer indicating the maximum layer in the cell
+#'  hierarchy to analyze; set to `NULL` to analyze all layers.
 #' @param cumsumpos A logical variable indicating whether
 #'  or not to cumulate cell counts;
 #'  this applies only when \code{partitionsPerMarker > 3} and will convert
@@ -145,6 +147,7 @@ flowGraph <- function(
     input_, meta=NULL, class="class", no_cores=1, markers=NULL,
     layout_fun="layout.reingold.tilford", # layout.circle
 
+    max_layer=NULL,
     cumsumpos=FALSE, # whether to make positives +=+/++ (cumsum)
     prop=TRUE, specenr=TRUE,
 
@@ -248,7 +251,13 @@ flowGraph <- function(
         meta_cell$phenotype <- gsub("_","", meta_cell$phenotype)
         colnames(mc) <- meta_cell$phenotype
     }
-    message("NOTE: markers/measurements should not contain underscores_!")
+    # get rid of lower layers if requested
+    if (!is.null(max_layer)) {
+        phen_id <- meta_cell$phenolayer <= max_layer
+        meta_cell <- meta_cell[phen_id,,drop=FALSE]
+        mc <- mc[,phen_id,drop=FALSE]
+    }
+
 
     # make parent list (for each cell popultion, list its parents)
     pccell <- get_phen_list(meta_cell=meta_cell, no_cores=no_cores)
