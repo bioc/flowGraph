@@ -250,11 +250,10 @@ get_eprop <- function(edf_, ep, mp_, no_cores=1) {
     todoi <- which(!clnm%in%colnames(ep))
     if (length(todoi)==0)
         return(ep[,clnm,drop=FALSE])
-    ep_ <- fpurrr_map(todoi, function(i) {
+    ep_ <- do.call(cbind, fpurrr_map(todoi, function(i) {
         if (edf_$from[i]=="") return(mp_[,edf_$to[i]])
         mp_[,edf_$to[i]]/mp_[,edf_$from[i]]
-    }, no_cores)
-    ep_ <- do.call(cbind, ep_)
+    }, no_cores, prll=length(todoi)>500))
     colnames(ep_) <- clnm[todoi]
     if (is.null(ep))
         rownames(ep_) <- rownames(mp_)
