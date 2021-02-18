@@ -627,6 +627,7 @@ flowGraph2 <- function(
         , list(list(.I)), by=meta_cell$phenolayer]
     lyril <- data.table::setattr(dt$V1, 'names', dt$meta_cell)
     lyrno <- length(lyril)
+    lyrs <- as.numeric(names(lyril))
     lyrstf <- sapply(lyrs, function(x) (x-1)%in%lyrs & (x-2)%in%lyrs)
 
     # make phenocode matrix
