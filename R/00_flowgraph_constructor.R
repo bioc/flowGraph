@@ -260,7 +260,7 @@ flowGraph <- function(
 
 
     # make parent list (for each cell popultion, list its parents)
-    pccell <- get_phen_list(meta_cell=meta_cell, no_cores=no_cores)
+    print(system.time({ pccell <- get_phen_list(meta_cell=meta_cell, no_cores=no_cores) }))
     edf <- pccell$edf
     pchild <- pccell$pchild # not used, returned
     pparen <- pccell$pparen
@@ -328,6 +328,7 @@ flowGraph <- function(
     if (cumsumpos)
         fg <- fg_feat_cumsum(fg, no_cores=no_cores)
 
+    print(system.time({
     if (prop) { # included in specenr
         fg <- fg_feat_node_prop(fg)
         fg <- fg_feat_edge_prop(fg, no_cores=no_cores)
@@ -336,7 +337,9 @@ flowGraph <- function(
     if (specenr) {
         fg <- fg_feat_node_specenr(fg, no_cores=no_cores)
     }
-    try({
+    }))
+
+    print(system.time({ try({
         if (calculate_summary &
             ifelse(length(class)==1, class%in%colnames(meta), TRUE) &
             all(node_features%in%c(names(fg_get_feature_all(fg)$node), "NONE")) &
@@ -357,7 +360,7 @@ flowGraph <- function(
                 test_name=test_name,
                 diminish=diminish)
         }
-    })
+    }) }))
     time_output(start1)
 
     saved <- FALSE
