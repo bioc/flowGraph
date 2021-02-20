@@ -897,6 +897,7 @@ fg_plot_qq <- function(
 #' @param outlier A logical indicating whether or not outliers should be plotted.
 #' @param all_labels A logical indicating whether or not to plot samples of all
 #'  classes outside of just those used in the summary statistic test.
+#' @param show_mean A logical indicating whether or not to label the mean.
 #' @param main A string or the title of the plot; if left as \code{NULL},
 #'  a default title will be applied.
 #' @param path A string indicating the path to where the function should save
@@ -935,7 +936,7 @@ fg_plot_box <- function(
     adjust_custom="byLayer", p_thres=.05,
     filter_adjust0=.5, filter_es=.5,
     filter_btwn_tpthres=.05, filter_btwn_es=.5,
-    paired=FALSE, dotplot=TRUE, outlier=TRUE, all_labels=FALSE,
+    paired=FALSE, dotplot=TRUE, outlier=TRUE, all_labels=FALSE, show_mean=TRUE,
     main=NULL, path=NULL
 ) {
     type <- match.arg(type, c("node", "edge"))
@@ -1012,9 +1013,11 @@ fg_plot_box <- function(
             binaxis='y', stackdir='center',
             position=ggplot2::position_dodge(1), dotsize=.5)
 
-    gp <- gp +
-        ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3) +
-        ggplot2::ggtitle(main)
+    gp <- gp + ggplot2::ggtitle(main)
+
+    if (show_mean)
+        gp <- gp + ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3)
+
 
     if (!outlier) {
         bstats <- purrr::map(unique(class_), function(x)
@@ -1044,7 +1047,7 @@ fg_plot_box_set <- function(
     adjust_custom="byLayer", node_edge=1,
     filter_adjust0=.5, filter_es=.5,
     filter_btwn_tpthres=.05, filter_btwn_es=.5,
-    paired=FALSE, dotplot=TRUE, outlier=TRUE,
+    paired=FALSE, dotplot=TRUE, outlier=TRUE, show_mean=TRUE,
     main=NULL, path=NULL
 ) {
     type <- match.arg(type, c("node", "edge"))
@@ -1119,19 +1122,23 @@ fg_plot_box_set <- function(
                           ggplot2::aes_(x=~class, y=~val, fill=~class)) +
         ggplot2::labs(y=paste0(type, " SpecEnr feature value")) +
         ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA)) +
-        ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3) +
         ggplot2::ggtitle(paste0(
             "(",classes[2],"-",length(a)," vs ",
             classes[2],"-",length(b),")\n",main))
+
+    if (show_mean)
+        gp <- gp + ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3)
 
     gpae <- ggplot2::ggplot(dta[dta$feature!=features[1],],
                             ggplot2::aes_(x=~class, y=~val, fill=~class)) +
         ggplot2::labs(y=paste0(type, " raw feature values")) +
         ggplot2::ggtitle(paste0("feature: ", features[2])) +
         ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA)) +
-        ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3) +
         ggplot2::theme(legend.position="none") +
         ggplot2::facet_grid(cols=ggplot2::vars(feature))
+
+    if (show_mean)
+        gpae <- gpae + ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3)
 
     # class 1/2 actual vs expected
     gp12 <- ggplot2::ggplot(dta[dta$feature!=feature,],
@@ -1142,9 +1149,11 @@ fg_plot_box_set <- function(
             signif(dfb$btp[node_edge],3),
             ", CohenD=",signif(dfb$bcd[node_edge],3),")")) +
         ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA)) +
-        ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3) +
         ggplot2::theme(legend.position="none") +
         ggplot2::facet_grid(cols=ggplot2::vars(class))
+
+    if (show_mean)
+        gp12 <- gp12 + ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3)
 
     if (paired) {
         gp <- gp + ggplot2::geom_line(
