@@ -131,6 +131,8 @@ test_c <- function(test_custom) {
 # #' @rdname ms_create
 # #' @export
 ms_create <- function(mp_, me_) {
+    mp_ <- as.matrix(mp_)
+    me_ <- as.matrix(me_)
     ms_ <- as.matrix(mp_/me_)
     if (is.na(dim(ms_)[1]))
         ms_ <- matrix(ms_, ncol=ncol(mp_))
@@ -490,7 +492,8 @@ flowGraph2 <- function(
     summary_adjust=flowGraph2_summary_adjust(),
 
     # plotting parameters
-    save_plots=TRUE) {
+    save_plots=TRUE
+) {
 
     warning("The fast version of flowGraph is in beta <(@u@<)")
 
@@ -698,7 +701,7 @@ flowGraph2 <- function(
 
 
     ## calculate features for each layer ####
-    for (lyr in lyrs[lyrstf]) {
+    for (lyr in sort(lyrs[lyrstf])) {
         if (length(p1)==0) break
 
         start2 <- Sys.time()
