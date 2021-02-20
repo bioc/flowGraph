@@ -238,7 +238,7 @@ fg_plot <- function(
                         m1=fg_get_feature_means(fg, "node", label, id=id1),
                         m2=fg_get_feature_means(fg, "node", label, id=id2))
                     vl <- paste0(round(vls$m1,3), "/",
-                                       round(vls$m2,3))
+                                 round(vls$m2,3))
                     gr$v$label_long <-
                         paste0(gr$v$label_long, "\n", label, ": ", vl)
                     gr$v$label <- paste0(gr$v$label, " ", vl)
@@ -280,12 +280,12 @@ fg_plot <- function(
             ggplot2::ggsave(ifelse(
                 grepl("[.]png$",path, ignore.case=TRUE),
                 path, paste0(path, ".png")),
-                            plot=gp, scale=1, width=width, height=height,
-                            units="in", dpi=600, limitsize=TRUE)
+                plot=gp, scale=1, width=width, height=height,
+                units="in", dpi=600, limitsize=TRUE)
         if (!is.null(path) & interactive & !visNet_plot)
             htmlwidgets::saveWidget(
                 gp, ifelse(grepl("[.]html$",path, ignore.case=TRUE),
-                       path, paste0(path, ".html")))
+                           path, paste0(path, ".html")))
         if (!is.null(path) & interactive & visNet_plot)
             visNetwork::visSave(
                 gp, file=ifelse(grepl("[.]html$",path, ignore.case=TRUE),
@@ -356,11 +356,11 @@ fg_plot <- function(
 #' @export
 ggdf <- function(gr0) {
     list(e=data.frame(gr0$e, colour=0, size=1, e_ind=FALSE),
-               v=data.frame(gr0$v,
-                                  size=1, colour=0,
-                                  #sizeb=1, colourb="", fill="",
-                                  label=gr0$v$phenotype,
-                                  label_ind=FALSE, v_ind=FALSE))
+         v=data.frame(gr0$v,
+                      size=1, colour=0,
+                      #sizeb=1, colourb="", fill="",
+                      label=gr0$v$phenotype,
+                      label_ind=FALSE, v_ind=FALSE))
 }
 
 #' @title Plots a cell hierarchy.
@@ -447,7 +447,7 @@ plot_gr <- function(
             main <- ""
         } else {
             main <- paste0("(",sum(gr_v$v_ind),"/",
-                                 nrow(gr_v),") ", gr$main)
+                           nrow(gr_v),") ", gr$main)
         }
     if (!is.null(gr$show_bgedges)) show_bgedges <- gr$show_bgedges
     if (!is.null(gr$interactive)) interactive <- gr$interactive
@@ -493,7 +493,7 @@ plot_gr <- function(
     if (show_bgedges)  # keep greyed out edges on
         gp <- gp +
         ggplot2::geom_segment(
-            data=gr_e[!gr_e$e_ind,], color="grey",
+            data=gr_e[!gr_e$e_ind,], color="grey75",
             ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y))
 
     if (!interactive) {
@@ -503,9 +503,9 @@ plot_gr <- function(
                 ggplot2::geom_segment(
                     data=gr_e[gr_e$e_ind,],
                     ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y,
-                                 color=~colour, size=~size)) +
+                                  color=~colour, size=~size)) +
                 ggplot2::geom_point(
-                    data=gr_v[gr_v$v_ind,], colour="grey50",
+                    data=gr_v[gr_v$v_ind,], colour="grey",
                     ggplot2::aes_(x=~x,y=~y))
         } else {
             if (colour_edges) {
@@ -513,11 +513,11 @@ plot_gr <- function(
                     ggplot2::geom_segment(
                         data=gr_e[gr_e$e_ind,],
                         ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y,
-                                     colour=~colour))
+                                      colour=~colour))
             } else {
                 gp <- gp +
                     ggplot2::geom_segment(
-                        data=gr_e[gr_e$e_ind,], colour="grey50",
+                        data=gr_e[gr_e$e_ind,], colour="grey",
                         ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y))
             }
             gp <- gp +
@@ -549,10 +549,10 @@ plot_gr <- function(
                 ggplot2::geom_segment(
                     data=gr_e[gr_e$e_ind,],
                     ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y,
-                                 color=~colour, size=~size,
-                                 tooltip=paste0(~from, " > ", ~to))) +
+                                  color=~colour, size=~size,
+                                  tooltip=paste0(~from, " > ", ~to))) +
                 ggplot2::geom_point(
-                    data=gr_v[gr_v$v_ind,], colour="grey50",
+                    data=gr_v[gr_v$v_ind,], colour="grey",
                     ggplot2::aes_(x=~x,y=~y))
         } else {
             if (colour_edges) {
@@ -560,11 +560,11 @@ plot_gr <- function(
                     ggplot2::geom_segment(
                         data=gr_e[gr_e$e_ind,],
                         ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y,
-                                     colour=~colour))
+                                      colour=~colour))
             } else {
                 gp <- gp +
                     ggplot2::geom_segment(
-                        data=gr_e[gr_e$e_ind,], colour="grey50",
+                        data=gr_e[gr_e$e_ind,], colour="grey",
                         ggplot2::aes_(x=~from.x, xend=~to.x, y=~from.y, yend=~to.y))
             }
 
@@ -572,12 +572,12 @@ plot_gr <- function(
                 gp <- gp + ggiraph::geom_point_interactive(
                     data=gr_v[gr_v$v_ind,],
                     ggplot2::aes_(x=~x, y=~y, color=~colour, size=~size,
-                                 tooltip=~label_long, data_id=~phenotype))
+                                  tooltip=~label_long, data_id=~phenotype))
             } else {
                 gp <- gp + ggiraph::geom_point_interactive(
                     data=gr_v[gr_v$v_ind,],
                     ggplot2::aes_(x=~x, y=~y, color=~colour, size=~size,
-                                 tooltip=~label_long, data_id=~phenogroup))
+                                  tooltip=~label_long, data_id=~phenogroup))
             }
         }
 
@@ -594,7 +594,7 @@ plot_gr <- function(
             label=v_label,
             title=gr$v$label_long[v_ind],
             color=noTOcol(gr$v$colour[v_ind],
-                                      colourp=colour_palette),
+                          colourp=colour_palette),
             size=gr$v$size[v_ind],
             group=gr$v$phenogroup[v_ind],
             level=gr$v$phenolayer[v_ind],
@@ -604,7 +604,7 @@ plot_gr <- function(
             gr$e$to%in%gr$v$phenotype[v_ind]
         if (sum(e_ind)==0) {
             edges <- data.frame(from=gr$e$from[1], to=gr$e$to[1],
-                                      hidden=TRUE)
+                                hidden=TRUE)
         } else {
             edges <- data.frame(
                 from=gr$e$from[e_ind],
@@ -637,7 +637,7 @@ plot_gr <- function(
 }
     # plot(gp)
     return(gp)
-}
+    }
 
 # colour palette; cols = a colour for each node
 noTOcol <- function(
@@ -795,11 +795,12 @@ fg_plot_qq <- function(
 
 
 
-    df <- data.frame(y=qvals, x=uni, cohensd_size=qvals_$cohensd_size,
+    df <- data.frame(y=qvals, cohensd_size=qvals_$cohensd_size,
                      phenotype=names(qvals),
                      phenogroup=fg_get_graph(fg)$v$phenogroup,
                      d_size=colMeans(fg_get_feature(fg, "node", "count")))
     df <- df[qo,]
+    df$x <- uni
     qp <- ggplot2::ggplot(df, ggplot2::aes_(
         y=~y, x=~x, colour=~cohensd_size, alpha=.3, stroke=1)) +
         ggplot2::geom_abline(intercept=0, slope=1) +
@@ -811,10 +812,10 @@ fg_plot_qq <- function(
     if (interactive) {
         if (shiny_plot) {
             qp <- qp + ggiraph::geom_point_interactive(alpha=.4,
-                ggplot2::aes_(tooltip=~phenotype, data_id=~phenotype, size=~d_size))
+                                                       ggplot2::aes_(tooltip=~phenotype, data_id=~phenotype, size=~d_size))
         } else {
             qp <- qp + ggiraph::geom_point_interactive(shape=1,
-                ggplot2::aes_(tooltip=~phenotype, data_id=~phenogroup, size=~d_size))
+                                                       ggplot2::aes_(tooltip=~phenotype, data_id=~phenogroup, size=~d_size))
         }
         if (!shiny_plot) {
             qp <- ggiraph::girafe(ggobj=qp)
@@ -970,12 +971,12 @@ fg_plot_box <- function(
 
         classes <- c(summary_meta["label1"], summary_meta["label2"])
         class_ <- append(rep(classes[1], length(a)),
-                               rep(classes[2], length(b)))
+                         rep(classes[2], length(b)))
         dta <- data.frame(
             val=append(a,b),
             class=class_,
             ID=append(seq_len(length(a)),
-                            seq_len(length(b)))) # paired
+                      seq_len(length(b)))) # paired
     }
 
     if (is.null(main))
@@ -1078,10 +1079,10 @@ fg_plot_box_set <- function(
     rownames(dfb) <- dfb$phenotype
 
     features <- se_feats(feature)
-        a1 <- fg_get_feature(fg, type, features[2])[pp$id1,node_edge]
-        a2 <- fg_get_feature(fg, type, features[2])[pp$id2,node_edge]
-        b1 <- fg_get_feature(fg, type, features[3])[pp$id1,node_edge]
-        b2 <- fg_get_feature(fg, type, features[3])[pp$id2,node_edge]
+    a1 <- fg_get_feature(fg, type, features[2])[pp$id1,node_edge]
+    a2 <- fg_get_feature(fg, type, features[2])[pp$id2,node_edge]
+    b1 <- fg_get_feature(fg, type, features[3])[pp$id1,node_edge]
+    b2 <- fg_get_feature(fg, type, features[3])[pp$id2,node_edge]
 
     a = fg_get_feature(fg, type, feature)[pp$id1,node_edge]
     b = fg_get_feature(fg, type, feature)[pp$id2,node_edge]
@@ -1093,9 +1094,9 @@ fg_plot_box_set <- function(
         val=c(a,b, a1,a2, b1,b2),
         feature=rep(features, each=al+bl),
         class=rep(append(rep(classes[1],length(a)),
-                               rep(classes[2],length(b))),3),
+                         rep(classes[2],length(b))),3),
         ID=rep(append(seq_len(length(a)),
-                                  seq_len(length(b))),3) # paired
+                      seq_len(length(b))),3) # paired
     )
 
 
@@ -1115,7 +1116,7 @@ fg_plot_box_set <- function(
 
     # specenr/actual/expect class 1 vs class 2
     gp <- ggplot2::ggplot(dta[dta$feature==feature,],
-                            ggplot2::aes_(x=~class, y=~val, fill=~class)) +
+                          ggplot2::aes_(x=~class, y=~val, fill=~class)) +
         ggplot2::labs(y=paste0(type, " SpecEnr feature value")) +
         ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA)) +
         ggplot2::stat_summary(fun=mean, geom="point", shape=23, size=3) +
@@ -1124,7 +1125,7 @@ fg_plot_box_set <- function(
             classes[2],"-",length(b),")\n",main))
 
     gpae <- ggplot2::ggplot(dta[dta$feature!=features[1],],
-                                ggplot2::aes_(x=~class, y=~val, fill=~class)) +
+                            ggplot2::aes_(x=~class, y=~val, fill=~class)) +
         ggplot2::labs(y=paste0(type, " raw feature values")) +
         ggplot2::ggtitle(paste0("feature: ", features[2])) +
         ggplot2::geom_boxplot(outlier.shape=ifelse(outlier,19,NA)) +
@@ -1134,7 +1135,7 @@ fg_plot_box_set <- function(
 
     # class 1/2 actual vs expected
     gp12 <- ggplot2::ggplot(dta[dta$feature!=feature,],
-                           ggplot2::aes_(x=~feature, y=~val))+
+                            ggplot2::aes_(x=~feature, y=~val))+
         ggplot2::labs(y=paste0(type, " raw feature values")) +
         ggplot2::ggtitle(paste0(
             "diff btwn diff (p=",
@@ -1350,7 +1351,7 @@ fg_plot_pVSdiff <- function(
         label_ind <- p<p_thres &
             (names(p) %in%
                  names(utils::head(sort(p),label_max)) |
-            names(p) %in%
+                 names(p) %in%
                  names(utils::tail(
                      sort(abs(mse_)),label_max)))
 
@@ -1358,12 +1359,12 @@ fg_plot_pVSdiff <- function(
 
         gp <- ggplot2::ggplot(
             dta, ggplot2::aes_(x=~log_p_value, y=~difference,
-                     color=~cohensd_size)) +
+                               color=~cohensd_size)) +
             ggplot2::geom_point(shape=1, ggplot2::aes_(size=~avg_count)) +
             ggplot2::ggtitle(main) +
             ggplot2::labs(x=ifelse(logged,"-ln(p-value)","p-value"),
-                            y="difference between mean feature values",
-                            col="cohen's d", size="mean count") +
+                          y="difference between mean feature values",
+                          col="cohen's d", size="mean count") +
             ggplot2::geom_vline(xintercept=ifelse(logged,-log(p_thres),p_thres))
         if (any(label_ind))
             gp <- gp + ggrepel::geom_text_repel(
@@ -1404,11 +1405,11 @@ fg_plot_pVSdiff <- function(
         if (shiny_plot) {
             gp <- gp + ggiraph::geom_point_interactive(
                 ggplot2::aes_(tooltip=~phenotype, data_id=~phenotype,
-                                       size=~avg_count), alpha=.3)
+                              size=~avg_count), alpha=.3)
         } else {
             gp <- gp + ggiraph::geom_point_interactive(
                 ggplot2::aes_(tooltip=~phenotype, data_id=~phenogroup,
-                             size=~avg_count))
+                              size=~avg_count))
             gp <- ggiraph::girafe(ggobj=gp)
         }
         gp
@@ -1416,7 +1417,7 @@ fg_plot_pVSdiff <- function(
         if (!is.null(path))
             htmlwidgets::saveWidget(
                 gp, ifelse(grepl("[.]html$", path, ignore.case=TRUE),
-                       path, paste0(path, ".html")))
+                           path, paste0(path, ".html")))
     }
     return(gp)
 
@@ -1544,34 +1545,34 @@ fg_save_plots <- function(
             try ({
                 ## boxplots for each node
                 if (box_no>0) {
-                pp = fg_get_summary(
-                    fg, type="node", index=index, adjust_custom=adjust_custom,
-                    filter_adjust0=filter_adjust0, filter_es=filter_es,
-                    filter_btwn_tpthres=filter_btwn_tpthres,
-                    filter_btwn_es=filter_btwn_es)
-                seda = abs(pp$m1 - pp$m2)
-                p = pp$values
-                node_edges = union(
-                    names(utils::head(sort(p),box_no)),
-                    names(utils::tail(sort(seda),box_no)))
-                rdir_ <- paste0(plot_path_, "/boxplots")
-                dir.create(rdir_, recursive=TRUE, showWarnings=FALSE)
-                for (node_edgei in seq_len(length(node_edges))) {
-                    node_edge = node_edges[node_edgei]
-                    if (node_edge=="") next
-                    # if (p[node_edge]==1) next
-                    # node_edge = "A+B+C+"
-                    path <- paste0(
-                        rdir_,"/",stringr::str_pad(node_edgei,width=3,pad="0"),
-                        "_",node_edge,".png")
-                    gp <- fg_plot_box_set(
-                        fg, type="node", index=index, node_edge=node_edge,
-                        adjust_custom=adjust_custom,
-                        path=path, paired=paired,
+                    pp = fg_get_summary(
+                        fg, type="node", index=index, adjust_custom=adjust_custom,
                         filter_adjust0=filter_adjust0, filter_es=filter_es,
                         filter_btwn_tpthres=filter_btwn_tpthres,
                         filter_btwn_es=filter_btwn_es)
-                }
+                    seda = abs(pp$m1 - pp$m2)
+                    p = pp$values
+                    node_edges = union(
+                        names(utils::head(sort(p),box_no)),
+                        names(utils::tail(sort(seda),box_no)))
+                    rdir_ <- paste0(plot_path_, "/boxplots")
+                    dir.create(rdir_, recursive=TRUE, showWarnings=FALSE)
+                    for (node_edgei in seq_len(length(node_edges))) {
+                        node_edge = node_edges[node_edgei]
+                        if (node_edge=="") next
+                        # if (p[node_edge]==1) next
+                        # node_edge = "A+B+C+"
+                        path <- paste0(
+                            rdir_,"/",stringr::str_pad(node_edgei,width=3,pad="0"),
+                            "_",node_edge,".png")
+                        gp <- fg_plot_box_set(
+                            fg, type="node", index=index, node_edge=node_edge,
+                            adjust_custom=adjust_custom,
+                            path=path, paired=paired,
+                            filter_adjust0=filter_adjust0, filter_es=filter_es,
+                            filter_btwn_tpthres=filter_btwn_tpthres,
+                            filter_btwn_es=filter_btwn_es)
+                    }
                 }
             })
 
