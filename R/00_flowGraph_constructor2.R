@@ -662,7 +662,6 @@ flowGraph2 <- function(
 
     ## initialize features (SpecEnr, expect_prop, edge prop) for lyr0/1 ####
     # expected prop/SpecEnr for node(m), edge(e)
-    print(system.time({
     me <- ep <- ms <- p <- lyrp <- sig_phens <- p1 <- NULL
     pchild <- pparen <- list()
 
@@ -776,7 +775,6 @@ flowGraph2 <- function(
         warning("no significant cell population phenotypes found. Try again with another set of class labels or use `flowGraph` the ful constructor instead.")
         return(NULL)
     }
-}))
 
     ## trim everything so there are only significant cell populations ####
     ms <- ms[,match(sig_phens, colnames(ms)),drop=FALSE]
