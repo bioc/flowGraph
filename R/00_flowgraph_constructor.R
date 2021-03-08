@@ -88,6 +88,7 @@
 #'  must contain a \code{id} column corresponding to sample names.
 #' @examples
 #'
+#' no_cores <- 1
 #' samplen <- 10
 #' meta_file <- data.frame(
 #'     id=1:samplen,
