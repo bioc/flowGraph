@@ -274,8 +274,8 @@ get_eprop <- function(edf_, ep, mp_, no_cores=1) {
 #' @param summary_adjust See \code{flowGraph2}.
 #' @param test_cust Final significance test function.
 #' @param test_custom Raw significance test function.
-#' @param lyrs Total number of layers in hierarchy, used for byLayer p-value
-#'  adjustment.
+#' @param lyrno An integer indicating total number of layers in the cell
+#'  hierarchy including layer 0.
 #' @param mp_ sample x phenotype proportion matrix.
 #' @param me_ sample x phenotype expected proportion matrix.
 #' @return A logical vector the same length as the number of columns in
