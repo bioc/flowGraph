@@ -4,7 +4,8 @@
 \name{fg_data_pos2}
 \alias{fg_data_pos2}
 \title{fg_data_pos2}
-\format{A list containing the following elements
+\format{
+A list containing the following elements
  for a positive control data set with markers A, B, C, D. This is a positive
  control data set where node A+B+C+ increased by 50%.
 \itemize{
@@ -17,7 +18,8 @@
       \item{\code{class}: a string indicating whether a sample is
        from a "control" or "exp" (experiment) subject.}
   }
-}}
+}
+}
 \usage{
 fg_data_pos2
 }

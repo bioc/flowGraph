@@ -4,7 +4,8 @@
 \name{fg_data_fca}
 \alias{fg_data_fca}
 \title{fg_data_fca}
-\format{A list containing the following elements
+\format{
+A list containing the following elements
  derived from the flowCAP-II AML data set for cell populations up to layer 3.
 \itemize{
   \item{\code{count}: A numeric sample x cell population node
@@ -23,7 +24,8 @@
        all samples in this data set is
        analyzed under the 6th panel.}
   }
-}}
+}
+}
 \source{
 {
   \insertRef{aghaeepour2013critical}{flowGraph}
