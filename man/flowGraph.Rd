@@ -128,6 +128,7 @@ Initializes a \code{flowGraph} object given the cell counts
 }
 \examples{
 
+no_cores <- 1
 samplen <- 10
 meta_file <- data.frame(
     id=1:samplen,

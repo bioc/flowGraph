@@ -20,6 +20,7 @@ fg_plot_box(
   dotplot = TRUE,
   outlier = TRUE,
   all_labels = FALSE,
+  show_mean = TRUE,
   main = NULL,
   path = NULL
 )
@@ -93,6 +94,8 @@ equal to, to be significant -- see \code{filter_btwn_tpthres}.}
 
 \item{all_labels}{A logical indicating whether or not to plot samples of all
 classes outside of just those used in the summary statistic test.}
+
+\item{show_mean}{A logical indicating whether or not to label the mean.}
 
 \item{main}{A string or the title of the plot; if left as \code{NULL},
 a default title will be applied.}

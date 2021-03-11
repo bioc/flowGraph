@@ -4,7 +4,7 @@
 \alias{fpurrr_map}
 \title{Wrapper for map}
 \usage{
-fpurrr_map(x, f, no_cores, prll = TRUE, ...)
+fpurrr_map(x, f, no_cores = 1, prll = TRUE, ...)
 }
 \arguments{
 \item{x}{Variable to recurse over; must be indices!}

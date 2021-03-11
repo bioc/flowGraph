@@ -26,12 +26,12 @@ ms_psig(
 
 \item{test_custom}{Raw significance test function.}
 
+\item{lyrno}{An integer indicating total number of layers in the cell
+hierarchy including layer 0.}
+
 \item{mp_}{sample x phenotype proportion matrix.}
 
 \item{me_}{sample x phenotype expected proportion matrix.}
-
-\item{lyrs}{Total number of layers in hierarchy, used for byLayer p-value
-adjustment.}
 }
 \value{
 A logical vector the same length as the number of columns in

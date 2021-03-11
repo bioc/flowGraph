@@ -4,8 +4,7 @@
 \name{fg_data_pos30}
 \alias{fg_data_pos30}
 \title{fg_data_pos30}
-\format{
-A list containing the following elements
+\format{A list containing the following elements
  for a positive control data set with
  markers A, B, C, D; note it was made with two and three thresholds
  for markers A and B to test functions with multiple thresholds
@@ -21,8 +20,7 @@ A list containing the following elements
       \item{\code{class}: a string indicating whether a sample is
        from a "control" or "exp" (experiment) subject.}
   }
-}
-}
+}}
 \usage{
 fg_data_pos30
 }
