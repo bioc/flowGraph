@@ -270,8 +270,8 @@ get_eprop <- function(edf_, ep, mp_, no_cores=1) {
 #' @description Determines which phenotypes are statistically significant based
 #'  on SpecEnr.
 #' @param ms_ sample x phenotype SpecEnr matrix
-#' @param summary_pars See \code{flowGraph2}.
-#' @param summary_adjust See \code{flowGraph2}.
+#' @param summary_pars See \code{flowGraphSubset}.
+#' @param summary_adjust See \code{flowGraphSubset}.
 #' @param test_cust Final significance test function.
 #' @param test_custom Raw significance test function.
 #' @param lyrno An integer indicating total number of layers in the cell
@@ -339,17 +339,17 @@ ms_psig <- function(ms_, summary_pars, summary_adjust,
 }
 
 
-#' @name flowGraph2_summary_pars
-#' @title Default for flowGraph2's summary_pars
-#' @description Default input for flowGraph2's \code{summary_pars} parameter.
-#' @return Default list parameter flowGraph2's \code{summary_pars} parameter.
-#' @rdname flowGraph2_summary_pars
+#' @name flowGraphSubset_summary_pars
+#' @title Default for flowGraphSubset's summary_pars
+#' @description Default input for flowGraphSubset's \code{summary_pars} parameter.
+#' @return Default list parameter flowGraphSubset's \code{summary_pars} parameter.
+#' @rdname flowGraphSubset_summary_pars
 #' @examples
 #'
-#'  flowGraph2_summary_pars()
+#'  flowGraphSubset_summary_pars()
 #'
 #' @export
-flowGraph2_summary_pars <- function()
+flowGraphSubset_summary_pars <- function()
     list(
         node_feature="SpecEnr",
         edge_feature="NONE",
@@ -360,24 +360,31 @@ flowGraph2_summary_pars <- function()
         labels=NULL)
 
 
-#' @name flowGraph2_summary_adjust
-#' @title Default for flowGraph2's summary_adjust
-#' @description Default input for flowGraph2's \code{summary_adjust} parameter.
-#' @return Default list parameter flowGraph2's \code{summary_adjust} parameter.
-#' @rdname flowGraph2_summary_adjust
+#' @name flowGraphSubset_summary_adjust
+#' @title Default for flowGraphSubset's summary_adjust
+#' @description Default input for flowGraphSubset's \code{summary_adjust}
+#'  parameter. ONLY USE THIS OVER flowGraph IF: 1) your data set has more than
+#'  10,000 cell populations and you want to speed up your calculation time AND
+#'  2) you only have one set of classes you want to test on the
+#'  SAME SET OF SAMPLES (e.g. control vs experiment). As flowGraphSubset doesn't
+#'  calculate the SpecEnr for all cell populations, so if you want to test other
+#'  sets of classes on the same sample, you will not be able to test all
+#'  possible cell populations on the new set of classes.
+#' @return Default list parameter flowGraphSubset's \code{summary_adjust} parameter.
+#' @rdname flowGraphSubset_summary_adjust
 #' @examples
 #'
-#'  flowGraph2_summary_adjust()
+#'  flowGraphSubset_summary_adjust()
 #'
 #' @export
-flowGraph2_summary_adjust <- function()
+flowGraphSubset_summary_adjust <- function()
     list(
         adjust_custom="byLayer", btwn_test_custom="t",
         adjust0_lim=c(-.1,.1), filter_adjust0=1, filter_es=0,
         filter_btwn_tpthres=.05, filter_btwn_es=.5)
 
 
-#' @name flowGraph2
+#' @name flowGraphSubset
 #' @title flowGraph object constructor.
 #' @description Initializes a \code{flowGraph} object given the cell counts
 #'  for one or more flow cytometry sample(s).
@@ -461,7 +468,7 @@ flowGraph2_summary_adjust <- function()
 #'   fg <- flowGraph(fg_data_pos2$count, meta=fg_data_pos2$meta, no_cores=1)
 #'  }
 #' }
-#' @rdname flowGraph2
+#' @rdname flowGraphSubset
 #' @export
 #' @importFrom Matrix Matrix
 #' @importFrom purrr map_lgl map map_dfr compact
@@ -471,7 +478,7 @@ flowGraph2_summary_adjust <- function()
 #' @importFrom stringr str_split
 #' @importFrom matrixStats rowMins rowMaxs
 #' @importFrom stringi stri_rand_strings
-flowGraph2 <- function(
+flowGraphSubset <- function(
     input_,
     meta=NULL,
     class="class",
@@ -488,8 +495,8 @@ flowGraph2 <- function(
     path=NULL,
 
     # summary parameters
-    summary_pars=flowGraph2_summary_pars(),
-    summary_adjust=flowGraph2_summary_adjust(),
+    summary_pars=flowGraphSubset_summary_pars(),
+    summary_adjust=flowGraphSubset_summary_adjust(),
 
     # plotting parameters
     save_plots=TRUE
