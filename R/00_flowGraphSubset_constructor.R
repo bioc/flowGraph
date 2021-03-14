@@ -366,9 +366,10 @@ flowGraphSubset_summary_pars <- function()
 #'  parameter. ONLY USE THIS OVER flowGraph IF: 1) your data set has more than
 #'  10,000 cell populations and you want to speed up your calculation time AND
 #'  2) you only have one set of classes you want to test on the
-#'  SAME SET OF SAMPLES (e.g. control vs experiment). As flowGraphSubset doesn't
+#'  SAME SET OF SAMPLES (e.g. control vs experiment).
+#'  As flowGraphSubset does not
 #'  calculate the SpecEnr for all cell populations, so if you want to test other
-#'  sets of classes on the same sample, you will not be able to test all
+#'  sets of classes on the same samples, you will not be able to test all
 #'  possible cell populations on the new set of classes.
 #' @return Default list parameter flowGraphSubset's \code{summary_adjust} parameter.
 #' @rdname flowGraphSubset_summary_adjust

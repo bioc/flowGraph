@@ -543,7 +543,7 @@ However, if the user wants to test different sets of sample class labels on the
 same set of samples, we recommend using the default `flowGraph` constructor
 as it calculates SpecEnr for all cell populations. Since SpecEnr only has to be
 calculated once, the user can apply multiple statistically significance tests
-and ask questions about different class samples on the same SpecEnr values.
+and ask questions about different class sets on the same SpecEnr values.
 
 So in summary, ONLY USE THIS OVER flowGraph IF: 1) your data set has more than
 10,000 cell populations and you want to speed up your calculation time AND
