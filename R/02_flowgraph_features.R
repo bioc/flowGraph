@@ -402,6 +402,22 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
         # cpop's parents and grandparents.
         pedges <- ep_[,pnames,drop=FALSE]
 
+        # p <- pnames[apply(parent,1,which.max)]
+        # pmin <- apply(parent,1,which.max)
+        # for (pname in pnames) {
+        #     eind <- Reduce("|", lapply(pnames, function(pname)
+        #         grepl(paste0("_",gsub("[+]","[+]",pname),"$"),colnames(ep)) ))
+        #     enames <- colnames(ep)[eind]
+        #     e <- enames[apply(ep[p==pname,enames,drop=FALSE],1,which.min)]
+        #
+        #     print(pname)
+        #     print(table(e))
+        # }
+        # # working great: p=HLA, q=CD34 or CD117
+        # # HLA: CD34 HLA, CD117 HLA
+        # # CD45: HLA CD45, CD34 CD45
+        # # CD34: HLA CD34, CD117 CD34
+
         # using the above, get expected proportion; see formula in
         # https://www.biorxiv.org/content/10.1101/837765v2
         expect1 <- apply(pedges,1,min) * apply(parent,1,max)
