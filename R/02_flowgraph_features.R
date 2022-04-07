@@ -96,11 +96,11 @@ fg_feat_edge_prop <- function(fg, no_cores=1, overwrite=FALSE) {
     return(fg)
 }
 
-#' @importFrom future plan multiprocess
+#' @importFrom future plan multisession sequential
 #' @importFrom furrr future_map
 #' @importFrom purrr map
 fg_feat_edge_prop_ <- function(fg, no_cores=1) {
-    if (no_cores>1) future::plan(future::multiprocess)
+    if (no_cores>1) future::plan(future::multisession)
 
     edf <- fg_get_graph(fg)$e
     mc <- fg_get_feature(fg, "node", "count")
@@ -114,6 +114,7 @@ fg_feat_edge_prop_ <- function(fg, no_cores=1) {
     colnames(childprop_) <- paste0(edf$from,"__",edf$to)
     childprop_[is.nan(as.matrix(childprop_))] <- 0
 
+    future::plan(future::sequential)
     return(childprop_)
 }
 
@@ -201,11 +202,11 @@ fg_feat_edge_specenr <- function(fg, no_cores=1, overwrite=FALSE) {
     return(fg)
 }
 
-#' @importFrom future plan multiprocess
+#' @importFrom future plan multisession sequential
 #' @importFrom furrr future_map
 #' @importFrom purrr map
 fg_feat_edge_exprop_ <- function(fg, no_cores=1) {
-    if (no_cores>1) future::plan(future::multiprocess)
+    if (no_cores>1) future:: plan(future::multisession)
 
     edf <- fg_get_graph(fg)$e
     mp <- fg_get_feature(fg, "node", "prop")
@@ -220,6 +221,7 @@ fg_feat_edge_exprop_ <- function(fg, no_cores=1) {
     colnames(childprop_) <- paste0(edf$from,"__",edf$to)
     childprop_[is.nan(as.matrix(childprop_))] <- 0
 
+    future::plan(future::sequential)
     return(childprop_)
 }
 
@@ -325,14 +327,14 @@ fg_feat_node_specenr <- function(fg,no_cores=1,feature="prop",overwrite=FALSE) {
 # expected proportion: this is the version currently used.
 # this version is the same as the new version, but the new
 # version is easier to experiment on and calculates everything at once.
-#' @importFrom future plan multiprocess
+#' @importFrom future plan multisession sequential
 #' @importFrom stringr str_extract_all str_extract str_count
 #' @importFrom furrr future_map
 #' @importFrom purrr map
 #' @importFrom stats median
 fg_feat_node_exprop_ <- function(fg, no_cores=1) {
     # prepare parallel backend
-    if (no_cores>1) future::plan(future::multiprocess)
+    if (no_cores>1) future::plan(future::multisession)
 
     fg_graph <- fg_get_graph(fg)
 
@@ -402,21 +404,37 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
         # cpop's parents and grandparents.
         pedges <- ep_[,pnames,drop=FALSE]
 
-        # p <- pnames[apply(parent,1,which.max)]
-        # pmin <- apply(parent,1,which.max)
-        # for (pname in pnames) {
-        #     eind <- Reduce("|", lapply(pnames, function(pname)
-        #         grepl(paste0("_",gsub("[+]","[+]",pname),"$"),colnames(ep)) ))
-        #     enames <- colnames(ep)[eind]
-        #     e <- enames[apply(ep[p==pname,enames,drop=FALSE],1,which.min)]
+        p <- pnames[apply(parent,1,which.max)]
+        p_ <- pnames[apply(parent,1,which.min)]
+        pmin <- apply(parent,1,which.max)
+        for (pname in pnames) {
+            eind <- Reduce("|", lapply(pnames, function(pname)
+                grepl(paste0("_",gsub("[+]","[+]",pname),"$"),colnames(ep)) ))
+            # enames <- colnames(ep)[eind]
+            # e <- enames[apply(ep[p==pname,enames,drop=FALSE],1,which.min)]
+
+            print(pname)
+            print(table(e))
+
+        }
+        for (pname in unique(pnames)) {
+
+            p__ = p_[p==pname]
+
+            print(pname)
+            print(table(p__))
+
+        }
+
+        # working great: p=HLA, q=CD34 or CD117
+        # HLA: CD34 HLA, CD117 HLA
+        # CD45: HLA CD45, CD34 CD45
+        # CD34: HLA CD34, CD117 CD34
         #
-        #     print(pname)
-        #     print(table(e))
-        # }
-        # # working great: p=HLA, q=CD34 or CD117
-        # # HLA: CD34 HLA, CD117 HLA
-        # # CD45: HLA CD45, CD34 CD45
-        # # CD34: HLA CD34, CD117 CD34
+        # NOT JUST MAX AND IN PARENTS
+        # HLA: CD117
+        # CD45: HLA, CD117
+        # CD34: HLA, CD117
 
         # using the above, get expected proportion; see formula in
         # https://www.biorxiv.org/content/10.1101/837765v2
@@ -502,7 +520,7 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
 
 fg_feat_node_exprop_new <- function(fg, no_cores=1) {
     # prepare parallel backend
-    if (no_cores>1) future::plan(future::multiprocess)
+    if (no_cores>1) future::plan(future::multisession)
 
     fg_graph <- fg_get_graph(fg)
 
@@ -637,6 +655,7 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
     exp1 <- expec0
     exp1[as.matrix(exp1)<0] <- 0
     # exp1 <- cbind(expe1,expecp[,match(cells,colnames(expecp)),drop=FALSE])
+    future::plan(future::sequential)
     return(exp1) ### EXPECTED PROPORTION
 }
 
@@ -671,13 +690,13 @@ fg_feat_node_exprop_new <- function(fg, no_cores=1) {
 #'  \code{\link[flowGraph]{flowGraph-class}}
 #'  \code{\link[Matrix]{Matrix}}
 #' @rdname fg_feat_cumsum
-#' @importFrom future plan multiprocess
+#' @importFrom future plan multisession sequential
 #' @importFrom stringr str_split
 #' @importFrom Matrix Matrix
 #' @importFrom furrr future_map
 #' @importFrom purrr map
 fg_feat_cumsum <- function(fg, no_cores) {
-    if (no_cores>1) future::plan(future::multiprocess)
+    if (no_cores>1) future::plan(future::multisession)
 
     # check if already cumsum
     if (fg_get_etc(fg)$cumsumpos) return(fg)
@@ -718,6 +737,7 @@ fg_feat_cumsum <- function(fg, no_cores) {
         length(fg_get_feature_all(fg)$edge)>0)
         warning("IMPORTANT: see function fg_rm_features to remove
                 node features (other than count), and edge features.")
+    future::plan(future::sequential)
     return(fg)
 }
 
@@ -768,12 +788,12 @@ fg_feat_cumsum <- function(fg, no_cores) {
 #'  \code{\link[flowGraph]{flowGraph-class}}
 #' @rdname fg_feat_mean_class
 #' @export
-#' @importFrom future plan multiprocess
+#' @importFrom future plan multisession sequential
 #' @importFrom furrr future_map
 fg_feat_mean_class <- function(
     fg, class, no_cores=1, node_features=NULL, edge_features=NULL
 ) {
-    if (no_cores>1) future::plan(future::multiprocess)
+    if (no_cores>1) future::plan(future::multisession)
 
     fg_meta <- fg_get_meta(fg)
 
@@ -810,6 +830,7 @@ fg_feat_mean_class <- function(
     }
 
     fg@feat_desc <- fg_get_feature_desc(fg, re_calc=TRUE)
+    future::plan(future::sequential)
     return(fg)
 }
 

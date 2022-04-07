@@ -138,7 +138,7 @@
 #' @export
 #' @importFrom stringr str_split
 #' @importFrom stringi stri_rand_strings
-#' @importFrom future plan multiprocess
+#' @importFrom future plan multisession sequential
 #' @importFrom furrr future_map
 #' @importFrom purrr map_lgl map_chr map_dfr map compact map_int
 #' @importFrom Matrix Matrix

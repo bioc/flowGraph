@@ -362,7 +362,7 @@ fg_cohensd_ <- function(m, id1, id2) {
 }
 
 # calculates summary statistics
-#' @importFrom future plan multiprocess
+#' @importFrom future plan multisession sequential
 #' @importFrom furrr future_map
 #' @importFrom purrr map
 fg_summary_ <- function(
@@ -370,7 +370,7 @@ fg_summary_ <- function(
     test_custom, p_thres, p_rate, save_functions,
     no_cores=1
 ) {
-    if (no_cores>1) future::plan(future::multiprocess)
+    if (no_cores>1) future::plan(future::multisession)
 
     # split feature matrix into sample classes
     mnames <- colnames(m1)
@@ -440,6 +440,7 @@ fg_summary_ <- function(
     if (save_functions)
         p_$test_fun <- test_custom
 
+    future::plan(future::sequential)
     return(p_)
 }
 

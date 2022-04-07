@@ -10,17 +10,19 @@ flowGraph takes cell counts as input and outputs SpecEnr values for each cell po
 
 ## Citation
 
-The theory, proof, and algorithm behind the SpecEnr statistic used in the flowGraph package can be found in the following [paper](https://www.biorxiv.org/content/10.1101/837765v3.abstract). Please consider citing if you found it helpful.
+The theory, proof, and algorithm behind the SpecEnr statistic used in the flowGraph package can be found in the following [paper](https://doi.org/10.1002/cyto.a.24503). Please consider citing if you found it helpful.
 
 bibtex:
 ```
-@article{yue2019identifying,
-  title={Identifying differential cell populations in flow cytometry data accounting for marker frequency},
-  author={Yue, Alice and Chauve, Cedric and Libbrecht, Maxwell and Brinkman, Ryan},
-  journal={BioRxiv},
-  pages={837765},
-  year={2019},
-  publisher={Cold Spring Harbor Laboratory}
+@article{yue2022automated,
+  title={Automated identification of maximal differential cell populations in flow cytometry data},
+  author={Yue, Alice and Chauve, Cedric and Libbrecht, Maxwell W and Brinkman, Ryan R},
+  journal={Cytometry Part A},
+  volume={101},
+  number={2},
+  pages={177--184},
+  year={2022},
+  publisher={Wiley Online Library}
 }
 ```
 

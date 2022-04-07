@@ -474,7 +474,7 @@ flowGraphSubset_summary_adjust <- function()
 #' @importFrom Matrix Matrix
 #' @importFrom purrr map_lgl map map_dfr compact
 #' @importFrom methods new
-#' @importFrom future plan multiprocess
+#' @importFrom future plan multisession sequential
 #' @importFrom data.table as.data.table setattr ".I"
 #' @importFrom stringr str_split
 #' @importFrom matrixStats rowMins rowMaxs
@@ -599,7 +599,7 @@ flowGraphSubset <- function(
 
 
     ## START ####
-    if (no_cores>1) future::plan(future::multiprocess)
+    if (no_cores>1) future::plan(future::multisession)
 
 
     ## initialize significance test ####
@@ -781,6 +781,7 @@ flowGraphSubset <- function(
     start1 <- Sys.time()
     if (length(sig_phens[!sig_phens%in%""])==0) {
         warning("no significant cell population phenotypes found. Try again with another set of class labels or use `flowGraph` the ful constructor instead.")
+        future::plan(future::sequential)
         return(NULL)
     }
 
@@ -866,5 +867,6 @@ flowGraphSubset <- function(
         fg_save_plots(fg, plot_path=paste0(path, "/plots"))
 
     time_output(start, "total time used")
+    future::plan(future::sequential)
     return(fg)
 }

@@ -4,7 +4,7 @@ library(testthat)
 
 # prepare parallel backend
 no_cores <- 1#parallel::detectCores()-1
-# future::plan(future::multiprocess)
+# future::plan(future::multisession)
 
 ## create Phenotypes data ----------------------
 
