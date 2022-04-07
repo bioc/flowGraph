@@ -40,6 +40,8 @@ if (!require("BiocManager")) install.packages('BiocManager')
 BiocManager::install("aya49/flowGraph")
 ```
 
+This package has been tested on R version 3.5+. If you have R version 3.5 - 4.0, download this package as a zip file, go to the `DESCRIPTION` file, change the R version requirement, and install the package locally.
+
 ## Usage
 
 See our [vignette](vignettes/flowGraph.Rmd) for different use cases of the package: generating features, calculating summary statistics, visualizing results, and data specific use cases.
