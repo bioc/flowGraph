@@ -16,20 +16,20 @@ e.g. \code{layout_fun="layout.reingold.tilford"}.}
 }
 \value{
 A list containing data frames \code{e} and \code{v}; each data frame
- contains an X, Y column or coordinate for each node and edge.
+   contains an X, Y column or coordinate for each node and edge.
 }
 \description{
 Determines cell hierarchy layout and returns the X, Y coordinate
- of each cell population.
+   of each cell population.
 }
 \examples{
 
- no_cores <- 1
- data(fg_data_pos30)
- fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-                 prop=FALSE, specenr=FALSE,
-                 no_cores=no_cores)
+   no_cores <- 1
+   data(fg_data_pos30)
+   fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
+                                   prop=FALSE, specenr=FALSE,
+                                   no_cores=no_cores)
 
- head(set_layout_graph(fg_get_graph(fg)))
+   head(set_layout_graph(fg_get_graph(fg)))
 
 }

@@ -17,27 +17,27 @@ e.g. \code{layout_fun="layout.reingold.tilford"}.}
 }
 \value{
 flowGraph object with coordinate meta data on cell populations
- and edges for plotting use.
+   and edges for plotting use.
 }
 \description{
 Determines cell hierarchy layout and returns the X, Y coordinate
- of each cell population. This function is a wrapper for
- \code{\link[flowGraph]{set_layout_graph}}.
+   of each cell population. This function is a wrapper for
+   \code{\link[flowGraph]{set_layout_graph}}.
 }
 \details{
 Given a flowGraph object, modifies the \code{graph} slot such that
- it contains X, Y axes for each node in accordance to a user specified
- layout.
+   it contains X, Y axes for each node in accordance to a user specified
+   layout.
 }
 \examples{
 
- no_cores <- 1
- data(fg_data_pos30)
- fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
-                 prop=FALSE, specenr=FALSE,
-                 no_cores=no_cores)
+   no_cores <- 1
+   data(fg_data_pos30)
+   fg <- flowGraph(fg_data_pos30$count, class=fg_data_pos30$meta$class,
+                                   prop=FALSE, specenr=FALSE,
+                                   no_cores=no_cores)
 
- fg <- fg_set_layout(fg)
- head(fg_get_graph(fg)$v)
+   fg <- fg_set_layout(fg)
+   head(fg_get_graph(fg)$v)
 
 }

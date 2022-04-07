@@ -17,24 +17,24 @@ Cannot be set to \code{NULL} if \code{meta_cell} is set to \code{NULL}.}
 }
 \value{
 A list containing 'pchild', an edge list
- indicating where edges point to,
- 'pparen', an edge list indicating where edges point from, and
- 'edf', a data frame where each row contains
- the nodes an edge points 'from' and 'to'.
+   indicating where edges point to,
+   'pparen', an edge list indicating where edges point from, and
+   'edf', a data frame where each row contains
+   the nodes an edge points 'from' and 'to'.
 }
 \description{
 Creates edge lists indicating relationships
 between cell populations
- given meta data on these cell populations
- produced by the \code{get_phen_meta} function.
+   given meta data on these cell populations
+   produced by the \code{get_phen_meta} function.
 }
 \examples{
 
- phen <- c('A+B-C+', 'A+B-', 'A+')
- get_phen_list(phen=phen)
+   phen <- c('A+B-C+', 'A+B-', 'A+')
+   get_phen_list(phen=phen)
 
 }
 \seealso{
 \code{\link[flowGraph]{get_phen_meta}}
- \code{\link[flowGraph]{cell_type_layers}}
+   \code{\link[flowGraph]{cell_type_layers}}
 }

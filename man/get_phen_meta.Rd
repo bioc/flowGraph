@@ -14,27 +14,27 @@ to the phenotypes in \code{phen}.}
 }
 \value{
 A data frame with columns containing meta data on
- cell poulation nodes with columns:
- \itemize{
-   \item{\code{phenotype}: cell population node label e.g. "A+B+".}
-   \item{\code{phenocode}: a string penocode containing a numeric
-    corresponding to the phenotype column e.g. "2200".}
-   \item{\code{phenolayer}: a numeric layer on which a cell population
-    resides in e.g. 2.}
- }
+   cell poulation nodes with columns:
+   \itemize{
+       \item{\code{phenotype}: cell population node label e.g. "A+B+".}
+       \item{\code{phenocode}: a string penocode containing a numeric
+        corresponding to the phenotype column e.g. "2200".}
+       \item{\code{phenolayer}: a numeric layer on which a cell population
+        resides in e.g. 2.}
+   }
 }
 \description{
 Generates phenotype meta data given a vector of
- phenotypes and optionally phenocodes.
+   phenotypes and optionally phenocodes.
 }
 \examples{
 
- phen <- c('A+B+C-D++', 'A+B-', '', 'B++D-E+')
- phenc <- c('22130','21000','00000','03012')
- get_phen_meta(phen, phenc)
+   phen <- c('A+B+C-D++', 'A+B-', '', 'B++D-E+')
+   phenc <- c('22130','21000','00000','03012')
+   get_phen_meta(phen, phenc)
 
 }
 \seealso{
 \code{\link[flowGraph]{get_phen_list}}
- \code{\link[flowGraph]{cell_type_layers}}
+   \code{\link[flowGraph]{cell_type_layers}}
 }

@@ -11,22 +11,22 @@ cell_type_layers(phen)
 }
 \value{
 A numeric vector with the same length as \code{phen} indicating which
- layer each phenotype resides on.
+   layer each phenotype resides on.
 }
 \description{
 Determines the layer on which the given phenotypes reside.
 }
 \details{
 Given a vector of phenotypes, returns an equal length vector of
- the number of markers in each phenotype.
+   the number of markers in each phenotype.
 }
 \examples{
 
- phen <- c('A+B+C-D++', 'A+B-', '', 'B++D-E+')
- cell_type_layers(phen)
+   phen <- c('A+B+C-D++', 'A+B-', '', 'B++D-E+')
+   cell_type_layers(phen)
 
 }
 \seealso{
 \code{\link[flowGraph]{get_phen_list}}
- \code{\link[flowGraph]{get_phen_meta}}
+   \code{\link[flowGraph]{get_phen_meta}}
 }
