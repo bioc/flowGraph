@@ -413,16 +413,16 @@ fg_feat_node_exprop_ <- function(fg, no_cores=1) {
             # enames <- colnames(ep)[eind]
             # e <- enames[apply(ep[p==pname,enames,drop=FALSE],1,which.min)]
 
-            print(pname)
-            print(table(e))
+            # print(pname)
+            # print(table(e))
 
         }
         for (pname in unique(pnames)) {
 
             p__ = p_[p==pname]
 
-            print(pname)
-            print(table(p__))
+            # print(pname)
+            # print(table(p__))
 
         }
 

@@ -7,7 +7,7 @@ Date: 2019-11-30
 Authors@R: person("Alice", "Yue", email = "aya43@sfu.ca", role = c("aut", "cre"))
 License: Artistic-2.0
 VignetteBuilder: knitr
-Depends: R (>= 4.1)
+Depends: R (>= 3.5)
 Imports: 
     effsize,
     furrr, 
@@ -25,7 +25,6 @@ Imports:
     htmlwidgets, 
     grDevices, 
     methods,
-    parallelly,
     stringr, 
     stringi,
     Rdpack,
