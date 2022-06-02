@@ -25,7 +25,7 @@ list of \code{n} vectors with elements from \code{x}.
  no_cores <- 5
 
  new_loop_inds <- flowGraph:::loop_ind_f(old_loop_inds, no_cores)
- # future::plan(future::multiprocess)
+ # future::plan(future::multisession)
  # example_indices <- furrr::future_map(new_loop_inds, function(ii) {
  #     purrr::map(ii, function(i) i )
  # s})
